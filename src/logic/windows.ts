@@ -82,9 +82,17 @@ function turnosAnteriores(semana: Semana, anterior?: Semana): Turno[] {
   return anterior.turnos.map((t) => ({ inicio: t.inicio - MIN_SEMANA, fin: t.fin - MIN_SEMANA }))
 }
 
-export function computeWindows(semana: Semana, ajustes: Ajustes, semanaAnterior?: Semana): DiaCalculado[] {
+/** Lo mismo con la semana siguiente (corridos +10080): así el domingo ve si el lunes arranca temprano. */
+function turnosSiguientes(semana: Semana, siguiente?: Semana): Turno[] {
+  if (!siguiente || sumarDias(semana.lunes, 7) !== siguiente.lunes) return []
+  return siguiente.turnos.map((t) => ({ inicio: t.inicio + MIN_SEMANA, fin: t.fin + MIN_SEMANA }))
+}
+
+export function computeWindows(semana: Semana, ajustes: Ajustes, semanaAnterior?: Semana, semanaSiguiente?: Semana): DiaCalculado[] {
   const a = ajustes
-  const turnos = [...turnosAnteriores(semana, semanaAnterior), ...semana.turnos].sort((x, y) => x.inicio - y.inicio)
+  const turnos = [...turnosAnteriores(semana, semanaAnterior), ...semana.turnos, ...turnosSiguientes(semana, semanaSiguiente)].sort(
+    (x, y) => x.inicio - y.inicio,
+  )
   // Antes de un turno hay que levantarse (despertar) y viajar; el sueño termina antes de eso (regla 5).
   const margenSalida = a.trasladoMin + a.despertarMin
   const candidatos: Tramo[] = []

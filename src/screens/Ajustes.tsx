@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { almacen } from '../almacenGlobal'
+import { IconoAdelante } from '../components/Iconos'
 import { HojaConfirmacion } from '../components/HojaConfirmacion'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
 import { estadoRespaldo, nombreArchivoRespaldo } from '../logic/respaldo'
 import { resumir, validarRespaldo, type Resumen } from '../logic/storage'
 import { estaPersistente } from '../plataforma'
+import { EditarHorarios } from './EditarHorarios'
 
 const MOTIVOS = {
   'no-es-json': 'El archivo no es un respaldo de Bloques (no se pudo leer).',
@@ -28,6 +31,8 @@ export function Ajustes() {
   const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'error'; texto: string } | null>(null)
   const [actual, setActual] = useState(() => resumir(almacen.leer()))
   const entrada = useRef<HTMLInputElement>(null)
+  const [horarios, setHorarios] = useState(false)
+  const reducido = useReducedMotion() ?? false
 
   useEffect(() => {
     void estaPersistente().then(setPersistente)
@@ -101,7 +106,19 @@ export function Ajustes() {
   }
 
   return (
+    <>
     <Pantalla titulo="Ajustes">
+      <h2 className="seccion-titulo">Horarios</h2>
+      <div className="grupo">
+        <Presionable className="fila" onClick={() => setHorarios(true)}>
+          <span>Sueño, traslados y comidas</span>
+          <span className="meta-flecha" aria-hidden>
+            <IconoAdelante />
+          </span>
+        </Presionable>
+        <p className="fila-nota">Las reglas con las que se calculan las ventanas libres de cada semana.</p>
+      </div>
+
       <h2 className="seccion-titulo">Almacenamiento</h2>
       <div className="grupo">
         <div className="fila">
@@ -176,5 +193,21 @@ export function Ajustes() {
         <p className="hoja-nota">Se guarda una copia de lo actual antes de reemplazar.</p>
       </HojaConfirmacion>
     </Pantalla>
+
+      {/* Segundo nivel: entra desde la derecha y sale por el mismo lado (§7). Con movimiento reducido, solo fundido */}
+      <AnimatePresence initial={false}>
+        {horarios && (
+          <motion.div
+            key="horarios"
+            className="pantalla-capa capa-detalle"
+            initial={reducido ? { opacity: 0 } : { x: '100%' }}
+            animate={reducido ? { opacity: 1 } : { x: 0 }}
+            exit={reducido ? { opacity: 0, pointerEvents: 'none' } : { x: '100%', pointerEvents: 'none' }}
+          >
+            <EditarHorarios alVolver={() => setHorarios(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }

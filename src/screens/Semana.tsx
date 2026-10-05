@@ -33,7 +33,10 @@ export function Semana() {
   const lunes = cual === 'esta' ? actual : sumarDias(actual, 7)
   const semana = datos.semanas[lunes] ?? semanaVacia(lunes)
   const vecinas = vecinasDe(datos, lunes)
-  const dias = useMemo(() => computeWindows(semana, datos.ajustes, vecinas.anterior), [semana, datos.ajustes, vecinas.anterior])
+  const dias = useMemo(
+    () => computeWindows(semana, datos.ajustes, vecinas.anterior, vecinas.siguiente),
+    [semana, datos.ajustes, vecinas.anterior, vecinas.siguiente],
+  )
 
   // Una vez pedida, se recalcula sola si cambian los turnos o las metas: nunca queda una sugerencia vieja en pantalla
   const sugerencia = useMemo(

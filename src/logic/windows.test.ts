@@ -226,3 +226,19 @@ describe('computeWindows: choques entre reglas', () => {
     expect(JSON.stringify(SEMANA_EJEMPLO)).toBe(copia)
   })
 })
+
+describe('computeWindows: la semana siguiente', () => {
+  it('un lunes temprano adelanta el sueño del domingo a las 21:30', () => {
+    const siguiente = semanaCon([turno(0, 6, 14)], LUNES_SIGUIENTE)
+    const sin = calcular(SEMANA_EJEMPLO)[6]
+    const con = computeWindows(SEMANA_EJEMPLO, AJUSTES_POR_DEFECTO, undefined, siguiente)[6]
+    expect(ventanas(sin)).toEqual(['15:30–20:30', '21:30–24:00'])
+    expect(tipos(con, 'sueno')).toEqual(['00:00–05:00', '21:30–24:00'])
+    expect(ventanas(con)).toEqual(['15:30–20:30'])
+  })
+
+  it('una semana que no es la contigua se ignora', () => {
+    const lejana = semanaCon([turno(0, 6, 14)], '2026-10-19')
+    expect(computeWindows(SEMANA_EJEMPLO, AJUSTES_POR_DEFECTO, undefined, lejana)).toEqual(calcular(SEMANA_EJEMPLO))
+  })
+})
