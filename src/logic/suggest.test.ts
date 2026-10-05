@@ -3,6 +3,7 @@ import { ACTIVIDADES_POR_DEFECTO, AJUSTES_POR_DEFECTO } from './defaults'
 import { SEMANA_EJEMPLO } from './ejemplo'
 import {
   MARGEN_SUENO_GIMNASIO_MIN,
+  MARGEN_SUENO_SIESTA_MIN,
   TOPE_DIA,
   TOPE_SEMANA,
   TRASLADO_GIMNASIO_MIN,
@@ -189,7 +190,7 @@ describe('suggest: informe de lo que no entró', () => {
     const vacias = ventanasDe(semanaVacia(SEMANA_EJEMPLO.lunes)).map((d) => ({ ...d, ventanas: [] }))
     const r = suggest(vacias, ACTIVIDADES_POR_DEFECTO, [])
     expect(r.bloques).toEqual([])
-    expect(r.faltantes.map((f) => f.actividad).sort()).toEqual(['caminata', 'gimnasio', 'ingles', 'libre', 'programacion', 'psicologo'])
+    expect(r.faltantes.map((f) => f.actividad).sort()).toEqual(['caminata', 'gimnasio', 'ingles', 'libre', 'programacion', 'psicologo', 'siesta'])
     expect(r.faltantes.find((f) => f.actividad === 'ingles')).toMatchObject({ bloquesFaltantes: 7, faltanMin: 10 * H, motivo: 'sin-espacio' })
   })
 
@@ -244,6 +245,20 @@ describe('suggest: reglas por actividad', () => {
     expect(r.bloques).toHaveLength(1)
     expect(r.bloques[0].fin % MIN_DIA).toBeLessThanOrEqual(20 * H)
     expect(violaciones(dias, metas, [], r)).toEqual([])
+  })
+
+  it('siesta: bloques de 35 min (3 seguidos si es larga) que terminan 3 h antes de dormir', () => {
+    const sueno = (n: number) => ({ tipo: 'sueno' as const, inicio: n * MIN_DIA + 22 * H, fin: n * MIN_DIA + 24 * H })
+    const dias = semana((n) => ({ ...dia(n, [[12, 22]]), tramos: [sueno(n)] }))
+    for (const duracionMin of [35, 105]) {
+      const metas = [por('siesta', { meta: 3, duracionMin, franjas: ['manana', 'tarde', 'noche'] })]
+      const r = suggest(dias, metas, [])
+      expect(r.bloques).toHaveLength(3)
+      for (const b of r.bloques) {
+        expect(b.fin - b.inicio).toBe(duracionMin)
+        expect(b.fin % MIN_DIA).toBeLessThanOrEqual(22 * H - MARGEN_SUENO_SIESTA_MIN)
+      }
+    }
   })
 
   it('gimnasio: reserva 15 min de traslado de cada lado', () => {

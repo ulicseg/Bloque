@@ -133,7 +133,9 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Sin Calendario y plan del día corregido (2026-10-05):** se quita la pestaña Calendario. Arreglo en `lineaDelDia`: `computeWindows` entrega minutos desde el lunes y se leían como minutos del día, así que de martes a domingo lo ocupado salía todo arriba y los bloques fuera de hora; ahora cada día se ordena por su horario real.
 
-- **Siestas (2026-10-05):** nueva actividad `siesta` (esquema v9, la migración la agrega al final de la lista). Un bloque de siesta dura 35 min (rápida) o 3 × 35 = 1 h 45 min (larga); el editor de bloque ofrece los dos botones y completa la hora de fin (`src/logic/siestas.ts`, con tests). Es fija y con meta 0: la sugerencia no la ubica, se agrega a mano. Sin verificar en pantalla.
+- **Siestas (2026-10-05):** nueva actividad `siesta` (esquema v9, la migración la agrega al final de la lista). Un bloque de siesta dura 35 min (rápida) o 3 × 35 = 1 h 45 min (larga); el editor de bloque ofrece los dos botones y completa la hora de fin (`src/logic/siestas.ts`, con tests). x Sin verificar en pantalla.
+
+- **La sugerencia ubica siestas (2026-10-05):** la siesta deja de ser fija (esquema v10: si seguía como la dejó la v9, pasa a meta 3 por semana). Se sugiere en la franja de tarde, uno por día, termina al menos 3 h antes del sueño de la noche (`MARGEN_SUENO_SIESTA_MIN`) y es lo último que se ubica cuando falta lugar (prioridad 7). Siesta larga = duración 105 min en Metas. Sin verificar en pantalla.
 
 ## Pendientes conocidos
 

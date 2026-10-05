@@ -17,6 +17,8 @@ export const TOPE_SEMANA = 0.7
 
 export const TRASLADO_GIMNASIO_MIN = 15
 export const MARGEN_SUENO_GIMNASIO_MIN = 120
+/** La siesta tiene que terminar 3 h antes del sueño de la noche, para no robarle el sueño. */
+export const MARGEN_SUENO_SIESTA_MIN = 180
 export const VENTANA_MIN_PROGRAMACION = 120
 export const VENTANA_MIN_LIBRE = 180
 
@@ -59,7 +61,7 @@ const TEXTO_MOTIVO: Record<MotivoFalta, string> = {
   foco: 'las ventanas que quedan son «foco: no»',
   'ventana-corta': `no hay ventanas de ${VENTANA_MIN_PROGRAMACION / 60} h o más`,
   'noche-libre': `no hay una noche sin turno con una ventana de ${VENTANA_MIN_LIBRE / 60} h o más`,
-  sueno: `lo que queda cae en las ${MARGEN_SUENO_GIMNASIO_MIN / 60} h previas a dormir`,
+  sueno: `lo que queda cae muy cerca de la hora de dormir (el gimnasio pide ${MARGEN_SUENO_GIMNASIO_MIN / 60} h de margen y la siesta ${MARGEN_SUENO_SIESTA_MIN / 60} h)`,
   'sin-espacio': 'no queda lugar en las ventanas libres',
   'dias-no': 'los días en que sí se puede ya no tienen lugar',
   fija: 'es un bloque fijo: ubicalo a mano',
@@ -181,11 +183,9 @@ function candidatos(ctx: Contexto, a: Actividad, dur: number, relajar: Relajar =
         if (a.id === 'programacion' && largo < VENTANA_MIN_PROGRAMACION) return
         if (a.id === 'libre' && (ctx.conTurno[dia] || largo < VENTANA_MIN_LIBRE)) return
       }
-      // El gimnasio tiene que terminar 2 h antes del próximo sueño
-      const limite =
-        a.id === 'gimnasio' && !relajar.especial
-          ? (ctx.suenos.find((s) => s >= w.fin) ?? Infinity) - MARGEN_SUENO_GIMNASIO_MIN
-          : Infinity
+      // El gimnasio tiene que terminar 2 h antes del próximo sueño, y la siesta 3 h antes
+      const margenSueno = a.id === 'gimnasio' ? MARGEN_SUENO_GIMNASIO_MIN : a.id === 'siesta' ? MARGEN_SUENO_SIESTA_MIN : 0
+      const limite = margenSueno > 0 && !relajar.especial ? (ctx.suenos.find((s) => s >= w.fin) ?? Infinity) - margenSueno : Infinity
       for (const [pa, pb] of restar(w.inicio, w.fin, ctx.ocupados[dia])) {
         const desde = pa + traslado
         const hasta = Math.min(pb - traslado, limite)
@@ -209,7 +209,7 @@ function motivoDe(ctx: Contexto, a: Actividad, dur: number): MotivoFalta {
   if (hay({ topes: true, maxDia: true })) return 'maximo-dia'
   if (hay({ topes: true, maxDia: true, foco: true })) return 'foco'
   if (hay({ topes: true, maxDia: true, foco: true, especial: true })) {
-    return a.id === 'gimnasio' ? 'sueno' : a.id === 'programacion' ? 'ventana-corta' : 'noche-libre'
+    return a.id === 'gimnasio' || a.id === 'siesta' ? 'sueno' : a.id === 'programacion' ? 'ventana-corta' : 'noche-libre'
   }
   if (hay({ topes: true, maxDia: true, foco: true, especial: true, dias: true })) return 'dias-no'
   return 'sin-espacio'

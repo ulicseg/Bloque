@@ -7,7 +7,7 @@ import type { Datos } from './types'
 export type { Datos } from './types'
 
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 9
+export const VERSION_ACTUAL = 10
 
 export interface Guardado {
   schemaVersion: number
@@ -125,6 +125,14 @@ export const MIGRACIONES: Migracion[] = [
     const ultima = datos.actividades.reduce<number>((n, a) => (esObjeto(a) && typeof a.prioridad === 'number' ? Math.max(n, a.prioridad) : n), 0)
     const siesta = { ...ACTIVIDADES_POR_DEFECTO.find((a) => a.id === 'siesta'), prioridad: ultima + 1 }
     return { ...v8, schemaVersion: 9, datos: { ...datos, actividades: [...datos.actividades, siesta] } }
+  },
+  // v9 → v10: la siesta pasa a sugerirse. Si quedó tal cual se creó en la v9 (fija y sin meta) se activa con la meta
+  // por defecto; si la persona ya la tocó (meta distinta de cero o no fija) no se pisa.
+  (v9) => {
+    const datos = v9.datos as Record<string, unknown>
+    if (!Array.isArray(datos.actividades)) return { ...v9, schemaVersion: 10 }
+    const actividades = datos.actividades.map((a) => (esObjeto(a) && a.id === 'siesta' && a.fija === true && a.meta === 0 ? { ...a, fija: false, meta: 3 } : a))
+    return { ...v9, schemaVersion: 10, datos: { ...datos, actividades } }
   },
 ]
 

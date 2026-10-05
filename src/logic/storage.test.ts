@@ -320,6 +320,22 @@ describe('migrar', () => {
     })
   })
 
+  describe('v9 → v10', () => {
+    const v9 = (actividades: unknown) => ({ schemaVersion: 9, datos: { pestaña: 'hoy', semanas: {}, ajustes: {}, actividades } })
+
+    it('la siesta tal cual salió de la v9 (fija y sin meta) pasa a sugerirse', () => {
+      const r = migrar(v9([{ id: 'siesta', fija: true, meta: 0, prioridad: 7 }]))
+      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
+      expect(r?.datos.actividades).toEqual([{ id: 'siesta', fija: false, meta: 3, prioridad: 7 }])
+    })
+
+    it('si la persona ya la tocó no se pisa, y con datos vacíos no se cae', () => {
+      const propia = [{ id: 'siesta', fija: false, meta: 5, prioridad: 2 }]
+      expect(migrar(v9(propia))?.datos.actividades).toEqual(propia)
+      expect(migrar(v9(undefined))?.schemaVersion).toBe(VERSION_ACTUAL)
+    })
+  })
+
   describe('v8 → v9', () => {
     const v8 = (actividades: unknown) => ({ schemaVersion: 8, datos: { pestaña: 'hoy', semanas: {}, ajustes: {}, actividades } })
 
@@ -328,7 +344,7 @@ describe('migrar', () => {
       const r = migrar(v8(previas))
       expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
       expect(r?.datos.actividades.slice(0, 2)).toEqual(previas)
-      expect(r?.datos.actividades[2]).toMatchObject({ id: 'siesta', prioridad: 7, duracionMin: 35, meta: 0, fija: true })
+      expect(r?.datos.actividades[2]).toMatchObject({ id: 'siesta', prioridad: 7, duracionMin: 35 })
     })
 
     it('si ya estaba no se duplica, y con datos vacíos no se cae', () => {
