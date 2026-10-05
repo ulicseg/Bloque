@@ -1,0 +1,32 @@
+# Dependencias
+node_modules/
+
+# Builds (dev-dist lo genera vite-plugin-pwa en desarrollo)
+dist/
+dist-ssr/
+dev-dist/
+*.tsbuildinfo
+
+# Tests
+coverage/
+
+# Vercel
+.vercel/
+
+# Variables de entorno
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor y sistema operativo
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code: la configuración personal no se versiona (el resto de .claude/ sí)
+.claude/settings.local.json
