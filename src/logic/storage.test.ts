@@ -307,10 +307,29 @@ describe('migrar', () => {
 
     it('si hay alguna otra prioridad, o faltan actividades, se conserva tal cual', () => {
       const tocadas = viejas().map((a) => (a.id === 'caminata' ? { ...a, prioridad: 1, meta: 5 } : a))
-      expect(migrar(v4(tocadas))?.datos.actividades).toEqual(tocadas)
+      // lo único que suma la v6 es el gimnasio cerrado los domingos
+      const conDomingo = tocadas.map((a) => (a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a))
+      expect(migrar(v4(tocadas))?.datos.actividades).toEqual(conDomingo)
       const incompletas = viejas().slice(0, 3)
-      expect(migrar(v4(incompletas))?.datos.actividades).toEqual(incompletas)
+      expect(migrar(v4(incompletas))?.datos.actividades).toEqual(incompletas.map((a) => (a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a)))
       expect(migrar(v4([]))?.datos.actividades).toEqual([])
+    })
+  })
+
+  describe('v5 → v6', () => {
+    const v5 = (actividades: unknown) => ({ schemaVersion: 5, datos: { pestaña: 'metas', semanas: {}, ajustes: {}, actividades, rareza: 3 } })
+
+    it('el gimnasio pasa a estar cerrado los domingos y el resto queda igual', () => {
+      const sinCampo = ACTIVIDADES_POR_DEFECTO.map(({ diasNo, ...a }) => (void diasNo, a))
+      const r = migrar(v5(sinCampo))
+      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
+      expect(r?.datos.actividades).toEqual(ACTIVIDADES_POR_DEFECTO)
+      expect((r?.datos as unknown as Record<string, unknown>).rareza).toBe(3)
+    })
+
+    it('si el gimnasio ya traía sus días, no se pisan', () => {
+      const propios = [{ id: 'gimnasio', diasNo: [2] }]
+      expect(migrar(v5(propios))?.datos.actividades).toEqual(propios)
     })
   })
 })

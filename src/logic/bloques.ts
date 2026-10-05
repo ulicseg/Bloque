@@ -83,3 +83,6 @@ export function bloqueDesdeCampos(
 /** true si el bloque no cae entero dentro de una ventana libre: se puede guardar igual, pero se avisa. */
 export const fueraDeVentanas = (b: Pick<Bloque, 'inicio' | 'fin'>, dias: DiaCalculado[]): boolean =>
   !dias.some((d) => d.ventanas.some((w) => b.inicio >= w.inicio && b.fin <= w.fin))
+
+/** true si la actividad no se puede hacer ese día (por ejemplo, el gimnasio cerrado el domingo). Se avisa, no se impide. */
+export const diaNoPermitido = (a: { diasNo?: number[] } | undefined, dia: number): boolean => a?.diasNo?.includes(dia) ?? false

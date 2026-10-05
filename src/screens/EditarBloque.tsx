@@ -3,7 +3,7 @@ import { HojaConfirmacion } from '../components/HojaConfirmacion'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
 import { Segmentado } from '../components/Segmentado'
-import { bloqueDesdeCampos, diaDeBloque, fueraDeVentanas, guardarBloque, idNuevo, quitarBloque } from '../logic/bloques'
+import { bloqueDesdeCampos, diaDeBloque, diaNoPermitido, fueraDeVentanas, guardarBloque, idNuevo, quitarBloque } from '../logic/bloques'
 import { DIAS, MIN_DIA, horaCampo, numeroDelDia } from '../logic/tiempo'
 import type { Actividad, Bloque, IdActividad, Semana } from '../logic/types'
 import type { DiaCalculado } from '../logic/windows'
@@ -34,6 +34,7 @@ export function EditarBloque({ semana, bloque, actividades, dias, alGuardar, alV
     bloqueDesdeCampos({ id, actividad, estado: bloque?.estado ?? 'planificado', fijo }, dia, desde, hasta)
   const candidato = armar(bloque?.id ?? 'nuevo')
   const afuera = candidato !== null && fueraDeVentanas(candidato, dias)
+  const cerrado = diaNoPermitido(actividades.find((a) => a.id === actividad), dia)
 
   const guardar = () => {
     const previo = armar(bloque?.id ?? 'nuevo')
@@ -107,6 +108,11 @@ export function EditarBloque({ semana, bloque, actividades, dias, alGuardar, alV
         ]}
       />
 
+      {cerrado && (
+        <p className="aviso aviso-atencion" role="status">
+          Marcaste que {actividades.find((a) => a.id === actividad)?.nombre} no se puede los {DIAS[dia].toLowerCase()}. Se puede guardar igual.
+        </p>
+      )}
       {afuera && (
         <p className="aviso aviso-atencion" role="status">
           Este horario no cae dentro de una ventana libre (turno, sueño, traslado o comida). Se puede guardar igual.

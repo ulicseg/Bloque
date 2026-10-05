@@ -312,3 +312,14 @@
   color: var(--texto-2);
   margin: var(--space-1) var(--space-1) 0;
 }
+
+/* Días que no se puede: siete chips en una fila */
+.opciones-dias {
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-1);
+}
+
+.opciones-dias .opcion {
+  padding: var(--space-1);
+  font-size: 0.8125rem;
+}

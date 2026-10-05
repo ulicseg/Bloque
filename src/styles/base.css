@@ -13,6 +13,8 @@ body,
 
 /* Sin zoom por doble toque en toda la app; el pellizco de accesibilidad sigue funcionando */
 html {
+  /* Si algo no llega a cubrir hasta abajo, que se vea el fondo de la app y no el negro del sistema */
+  background: var(--fondo);
   touch-action: manipulation;
   /* Escala general de la app: todo está en rem, así que 87,5 % lo achica por igual (14 px base) y respeta el tamaño de texto del usuario */
   font-size: 87.5%;

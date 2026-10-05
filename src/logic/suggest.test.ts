@@ -20,6 +20,9 @@ const por = (id: IdActividad, cambios: Partial<Actividad> = {}): Actividad => ({
   ...ACTIVIDADES_POR_DEFECTO.find((a) => a.id === id)!,
   ...cambios,
 })
+// Las mismas metas sin días prohibidos: la semana de ejemplo es justa y con el gimnasio cerrado los domingos
+// una caminata de 30 min queda afuera (se prueba aparte, más abajo)
+const SIN_DIAS_NO = ACTIVIDADES_POR_DEFECTO.map((a) => ({ ...a, diasNo: [] as number[] }))
 const fijo = (actividad: IdActividad, dia: number, desde: number, hasta: number): Bloque => ({
   id: `fijo-${actividad}-${dia}`,
   actividad,
@@ -116,6 +119,7 @@ describe('suggest: la semana de ejemplo', () => {
   })
 
   it('cumple todas las metas por defecto', () => {
+    const r = suggest(dias, SIN_DIAS_NO, fijos)
     expect(r.faltantes).toEqual([])
     const min = (id: IdActividad) => r.bloques.filter((b) => b.actividad === id).reduce((n, b) => n + (b.fin - b.inicio), 0)
     expect(min('ingles')).toBe(10 * H)
@@ -157,7 +161,7 @@ describe('suggest: la semana de ejemplo', () => {
 
 describe('suggest: informe de lo que no entró', () => {
   it('el psicólogo sin bloque fijo aparece como faltante "fija"', () => {
-    const r = suggest(ventanasDe(SEMANA_EJEMPLO), ACTIVIDADES_POR_DEFECTO, [])
+    const r = suggest(ventanasDe(SEMANA_EJEMPLO), SIN_DIAS_NO, [])
     expect(r.faltantes).toHaveLength(1)
     expect(r.faltantes[0]).toMatchObject({ actividad: 'psicologo', motivo: 'fija', bloquesFaltantes: 1, faltanMin: 60 })
     expect(r.faltantes[0].detalle).toBe('Psicólogo: falta 1 bloque (1 h); es un bloque fijo: ubicalo a mano.')
@@ -346,5 +350,23 @@ describe('suggest: propiedades en semanas al azar', () => {
       if (mal.length) malas.push(`semilla ${caso + 1}: ${mal.slice(0, 3).join(' | ')}`)
     }
     expect(malas).toEqual([])
+  })
+
+})
+
+describe('días en que una actividad no se puede', () => {
+  const dias = ventanasDe(SEMANA_EJEMPLO)
+
+  it('el gimnasio por defecto no se ubica el domingo', () => {
+    const r = suggest(dias, ACTIVIDADES_POR_DEFECTO, [])
+    const gim = r.bloques.filter((b) => b.actividad === 'gimnasio')
+    expect(gim.length).toBeGreaterThan(0)
+    expect(gim.every((b) => Math.floor(b.inicio / MIN_DIA) !== 6)).toBe(true)
+  })
+
+  it('si solo quedan días prohibidos, el informe lo dice', () => {
+    const r = suggest(dias, [por('gimnasio', { diasNo: [0, 1, 2, 3, 4, 5, 6] })], [])
+    expect(r.bloques).toEqual([])
+    expect(r.faltantes[0]?.motivo).toBe('dias-no')
   })
 })

@@ -62,6 +62,8 @@ export interface Actividad {
   prioridad: number
   /** Siempre va en el mismo horario (psicólogo): se ubica a mano, no se sugiere. */
   fija: boolean
+  /** Días de la semana (0 = lunes … 6 = domingo) en que no se puede hacer, por ejemplo el gimnasio cerrado. Agregado en v6. */
+  diasNo?: number[]
 }
 
 /** Intervalo [inicio, fin) en minutos desde el lunes 00:00. `fin` puede superar el fin de la semana. */

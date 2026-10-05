@@ -2,7 +2,8 @@ import { Contador } from '../components/Contador'
 import { Pantalla } from '../components/Pantalla'
 import { Segmentado } from '../components/Segmentado'
 import { FRANJAS, puede, resumen, siguiente, textoMeta, textoMinimo, type Cambio, type Campo } from '../logic/metas'
-import { formatearDuracion } from '../logic/tiempo'
+import { DIAS, formatearDuracion } from '../logic/tiempo'
+import { Presionable } from '../components/Presionable'
 import type { Actividad, Franja } from '../logic/types'
 
 interface Props {
@@ -54,6 +55,27 @@ export function EditarMeta({ actividad: a, total, alCambiar, alMoverPrioridad, a
           />
           <p className="fila-nota fila-nota-suelta">
             Es una preferencia, no una regla: si no hay lugar en esa franja, se busca en otra.
+          </p>
+
+          <h2 className="seccion-titulo">Días que no se puede</h2>
+          <div className="opciones opciones-dias" role="group" aria-label="Días que no se puede">
+            {DIAS.map((nombre, i) => {
+              const cerrado = a.diasNo?.includes(i) ?? false
+              return (
+                <Presionable
+                  key={nombre}
+                  className="opcion"
+                  aria-label={nombre}
+                  aria-pressed={cerrado}
+                  onClick={() => alCambiar({ diasNo: cerrado ? (a.diasNo ?? []).filter((d) => d !== i) : [...(a.diasNo ?? []), i] })}
+                >
+                  {nombre.slice(0, 3)}
+                </Presionable>
+              )
+            })}
+          </div>
+          <p className="fila-nota fila-nota-suelta">
+            Marcá los días en que no vas (por ejemplo, el gimnasio cerrado). La sugerencia no ubica nada ahí.
           </p>
 
           <div className="grupo">

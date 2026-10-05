@@ -116,6 +116,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Todo a escala iPhone 16 (2026-10-04):** `html { font-size: 87.5% }` achica toda la app por igual (todo está en rem); `--tap-min` pasa a 44 px fijos y los campos a 16 px fijos; márgenes laterales de 12 px; la barra de pestañas va pegada abajo de punta a punta, con la zona segura adentro.
 
+- **Mañana, gimnasio cerrado los domingos y alto completo (2026-10-05):** Hoy tiene selector Hoy / Mañana (mañana es solo lectura y cruza de semana los domingos). Las actividades tienen `diasNo` (esquema v6, migración v5→v6: el gimnasio queda cerrado los domingos si no traía el campo); la sugerencia no ubica nada esos días, el editor de bloque avisa y Metas permite marcarlos. Con el gimnasio fuera del domingo la semana de ejemplo es justa y una caminata de 30 min puede quedar afuera. Para el espacio negro de abajo en iOS: fondo en `html` y `.app` con `100lvh`.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

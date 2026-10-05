@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { AvanceSemana } from '../components/AvanceSemana'
 import { Pantalla } from '../components/Pantalla'
+import { Segmentado } from '../components/Segmentado'
 import { TarjetaBloque } from '../components/TarjetaBloque'
 import { bloquesDelDia, cambiarEstado } from '../logic/bloques'
 import { avanceSemana } from '../logic/progreso'
-import { MIN_DIA, diaDeLaSemana, fechaEnArgentina, formatearDuracion, horaCampo, horaDeFin, lunesDe, textoFecha } from '../logic/tiempo'
+import { MIN_DIA, diaDeLaSemana, fechaEnArgentina, formatearDuracion, horaCampo, horaDeFin, lunesDe, sumarDias, textoFecha } from '../logic/tiempo'
 import { conSemana, duracionTurno, semanaVacia, turnoDelDia } from '../logic/turnos'
 import type { Bloque, EstadoBloque } from '../logic/types'
 import { useDatos } from '../useDatos'
@@ -20,7 +21,12 @@ export function Hoy() {
     return () => document.removeEventListener('visibilitychange', alVolver)
   }, [])
 
-  const fecha = fechaEnArgentina(ahora)
+  const [vista, setVista] = useState<'hoy' | 'manana'>('hoy')
+
+  // Mañana puede caer en la semana siguiente (los domingos): por eso todo se calcula desde la fecha que se mira
+  const hoy = fechaEnArgentina(ahora)
+  const fecha = vista === 'hoy' ? hoy : sumarDias(hoy, 1)
+  const esHoy = vista === 'hoy'
   const lunes = lunesDe(fecha)
   const dia = diaDeLaSemana(fecha)
   const semana = datos.semanas[lunes] ?? semanaVacia(lunes)
@@ -45,7 +51,17 @@ export function Hoy() {
   ].sort((x, y) => x.inicio - y.inicio)
 
   return (
-    <Pantalla clase="pantalla-hoy" titulo="Hoy" sobretitulo={textoFecha(fecha)}>
+    <Pantalla clase="pantalla-hoy" titulo={esHoy ? 'Hoy' : 'Mañana'} sobretitulo={textoFecha(fecha)}>
+      <Segmentado<'hoy' | 'manana'>
+        etiqueta="Día a mirar"
+        valor={vista}
+        alElegir={setVista}
+        opciones={[
+          { valor: 'hoy', titulo: 'Hoy' },
+          { valor: 'manana', titulo: 'Mañana' },
+        ]}
+      />
+
       {fallo && (
         <p className="aviso aviso-error" role="alert">
           No se pudo guardar el último cambio. Exportá un respaldo desde Ajustes.
@@ -54,10 +70,14 @@ export function Hoy() {
 
       <div className="resumen-hoy">
         <p className="resumen-principal">
-          {bloques.length === 0 ? 'Sin bloques hoy' : `${hechos} de ${bloques.length} hechos`}
+          {bloques.length === 0
+            ? `Sin bloques ${esHoy ? 'hoy' : 'mañana'}`
+            : esHoy
+              ? `${hechos} de ${bloques.length} hechos`
+              : `${bloques.length} ${bloques.length === 1 ? 'bloque' : 'bloques'}`}
         </p>
-        <p className="resumen-turno">{turno ? 'Hoy trabajás' : 'Hoy no trabajás'}</p>
-        {bloques.length > 0 && (
+        <p className="resumen-turno">{turno ? (esHoy ? 'Hoy trabajás' : 'Mañana trabajás') : esHoy ? 'Hoy no trabajás' : 'Mañana no trabajás'}</p>
+        {esHoy && bloques.length > 0 && (
           <div className="resumen-barra" role="progressbar" aria-label="Bloques resueltos hoy" aria-valuemin={0} aria-valuemax={bloques.length} aria-valuenow={resueltos}>
             <div className="resumen-relleno" style={{ width: `${(resueltos / bloques.length) * 100}%` }} />
           </div>
@@ -66,7 +86,7 @@ export function Hoy() {
 
       {bloques.length === 0 && (
         <p className="aviso aviso-atencion" role="status">
-          No hay bloques para hoy. Armalos desde la pestaña Semana.
+          No hay bloques para {esHoy ? 'hoy' : 'mañana'}. Armalos desde la pestaña Semana.
         </p>
       )}
 
@@ -77,6 +97,7 @@ export function Hoy() {
             bloque={it.bloque}
             dia={dia}
             actividad={datos.actividades.find((a) => a.id === it.bloque.actividad)}
+            soloLectura={!esHoy}
             alMarcar={(estado) => marcar(it.bloque, estado)}
           />
         ) : (

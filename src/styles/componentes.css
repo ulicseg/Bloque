@@ -1,6 +1,9 @@
 .app {
   position: fixed;
   inset: 0;
+  /* iOS en pantalla de inicio a veces deja el alto fijo corto: se pide el alto grande de la pantalla entera */
+  min-height: 100vh;
+  min-height: 100lvh;
   overflow: hidden;
 }
 

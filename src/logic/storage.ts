@@ -7,7 +7,7 @@ import type { Datos } from './types'
 export type { Datos } from './types'
 
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 5
+export const VERSION_ACTUAL = 6
 
 export interface Guardado {
   schemaVersion: number
@@ -78,6 +78,16 @@ export const MIGRACIONES: Migracion[] = [
     const nueva = new Map<string, number>(ACTIVIDADES_POR_DEFECTO.map((a) => [a.id, a.prioridad]))
     const actividades = (lista as Record<string, unknown>[]).map((a) => ({ ...a, prioridad: nueva.get(a.id as string) ?? a.prioridad }))
     return { ...v4, schemaVersion: 5, datos: { ...datos, actividades } }
+  },
+  // v5 → v6: aparecen los días en que una actividad no se puede hacer. El gimnasio queda cerrado los domingos;
+  // solo se completa a las actividades que todavía no traen el campo, así que nada escrito se pisa.
+  (v5) => {
+    const datos = v5.datos as Record<string, unknown>
+    if (!Array.isArray(datos.actividades)) return { ...v5, schemaVersion: 6 }
+    const actividades = datos.actividades.map((a) =>
+      esObjeto(a) && !('diasNo' in a) && a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a,
+    )
+    return { ...v5, schemaVersion: 6, datos: { ...datos, actividades } }
   },
 ]
 

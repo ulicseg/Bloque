@@ -47,6 +47,7 @@ export type MotivoFalta =
   | 'noche-libre'
   | 'sueno'
   | 'sin-espacio'
+  | 'dias-no'
   | 'fija'
 
 const pct = (x: number) => `${Math.round(x * 100)} %`
@@ -60,6 +61,7 @@ const TEXTO_MOTIVO: Record<MotivoFalta, string> = {
   'noche-libre': `no hay una noche sin turno con una ventana de ${VENTANA_MIN_LIBRE / 60} h o más`,
   sueno: `lo que queda cae en las ${MARGEN_SUENO_GIMNASIO_MIN / 60} h previas a dormir`,
   'sin-espacio': 'no queda lugar en las ventanas libres',
+  'dias-no': 'los días en que sí se puede ya no tienen lugar',
   fija: 'es un bloque fijo: ubicalo a mano',
 }
 
@@ -121,6 +123,8 @@ interface Relajar {
   maxDia?: boolean
   foco?: boolean
   especial?: boolean
+  /** Ignora los días en que la actividad no se puede hacer. */
+  dias?: boolean
 }
 
 const trasladoDe = (a: Actividad) => (a.id === 'gimnasio' ? TRASLADO_GIMNASIO_MIN : 0)
@@ -167,6 +171,7 @@ function candidatos(ctx: Contexto, a: Actividad, dur: number, relajar: Relajar =
   const costo = dur + 2 * traslado
   const salida: Candidato[] = []
   ctx.dias.forEach((d, dia) => {
+    if (!relajar.dias && a.diasNo?.includes(dia)) return
     if (!relajar.maxDia && cuenta(ctx, a.id, dia) >= MAXIMO_POR_DIA[a.id]) return
     if (!relajar.topes && (ctx.asignadoDia[dia] + costo > ctx.capDia[dia] || ctx.asignado + costo > ctx.capSemana)) return
     d.ventanas.forEach((w, idx) => {
@@ -206,6 +211,7 @@ function motivoDe(ctx: Contexto, a: Actividad, dur: number): MotivoFalta {
   if (hay({ topes: true, maxDia: true, foco: true, especial: true })) {
     return a.id === 'gimnasio' ? 'sueno' : a.id === 'programacion' ? 'ventana-corta' : 'noche-libre'
   }
+  if (hay({ topes: true, maxDia: true, foco: true, especial: true, dias: true })) return 'dias-no'
   return 'sin-espacio'
 }
 

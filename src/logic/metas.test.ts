@@ -93,4 +93,10 @@ describe('contadores', () => {
     expect(editarActividad([cinco], 'libre', siguiente(cinco, 'minimoMin', -1))[0].minimoMin).toBeNull()
     expect(puede({ ...libre, minimoMin: libre.duracionMin }, 'minimoMin', 1)).toBe(false)
   })
+
+  it('los días que no se puede se ordenan, sin repetir y sin valores imposibles', () => {
+    const r = editarActividad([gimnasio], 'gimnasio', { diasNo: [6, 2, 6, 9, -1] })[0]
+    expect(r.diasNo).toEqual([2, 6])
+    expect(editarActividad([gimnasio], 'gimnasio', { meta: 5 })[0].diasNo).toEqual(gimnasio.diasNo)
+  })
 })

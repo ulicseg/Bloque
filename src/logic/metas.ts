@@ -21,7 +21,7 @@ export const FRANJAS: readonly { valor: Franja; titulo: string }[] = [
 const limitar = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
 const aPaso = (n: number, paso: number) => Math.round(n / paso) * paso
 
-export type Cambio = Partial<Pick<Actividad, 'meta' | 'duracionMin' | 'minimoMin' | 'franja'>>
+export type Cambio = Partial<Pick<Actividad, 'meta' | 'duracionMin' | 'minimoMin' | 'franja' | 'diasNo'>>
 
 /** Aplica un cambio a una actividad corrigiéndolo para que siga siendo válido. */
 function corregir(a: Actividad, cambio: Cambio): Actividad {
@@ -36,7 +36,8 @@ function corregir(a: Actividad, cambio: Cambio): Actividad {
   const pedido = cambio.minimoMin === undefined ? a.minimoMin : cambio.minimoMin
   const minimoMin =
     pedido === null || pedido < LIMITES.minimoMin.paso ? null : Math.min(aPaso(pedido, LIMITES.minimoMin.paso), duracionMin)
-  return { ...a, meta, duracionMin, minimoMin, franja: cambio.franja ?? a.franja }
+  const diasNo = cambio.diasNo === undefined ? a.diasNo : [...new Set(cambio.diasNo.filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort((x, y) => x - y)
+  return { ...a, meta, duracionMin, minimoMin, franja: cambio.franja ?? a.franja, ...(diasNo === undefined ? {} : { diasNo }) }
 }
 
 /** Cambia meta, duración, mínimo o franja de una actividad. La prioridad va aparte (`moverPrioridad`). */
