@@ -9,15 +9,15 @@ import './styles/accesibilidad.css'
 import { App } from './App'
 import { pedirPersistencia } from './plataforma'
 
-// En la app instalada en iOS el viewport puede medir menos que la pantalla (queda un hueco abajo hasta que se
-// hace scroll). El alto físico de la pantalla no miente, así que se usa como mínimo para el contenedor.
-const alturaPantalla = () => {
-  const instalada = window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true
-  const alto = instalada ? Math.max(window.screen.height, window.screen.width) : 0
-  document.documentElement.style.setProperty('--alto-pantalla', `${alto}px`)
+// iOS instalado a veces arranca con la ventana más corta que la pantalla (hueco abajo) y la corrige recién con el
+// primer gesto de scroll. Un empujoncito programático de 1 px, y de vuelta, hace lo mismo sin que se note.
+const empujar = () => {
+  window.scrollTo(0, 1)
+  setTimeout(() => window.scrollTo(0, 0), 50)
 }
-alturaPantalla()
-window.addEventListener('orientationchange', alturaPantalla)
+window.addEventListener('load', () => [0, 300, 1000].forEach((ms) => setTimeout(empujar, ms)))
+window.addEventListener('pageshow', empujar)
+document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && empujar())
 
 // Cuanto antes se pida, antes puede el navegador marcar los datos como protegidos del borrado automático
 void pedirPersistencia()

@@ -11,6 +11,10 @@ body,
   margin: 0;
 }
 
+body {
+  height: auto;
+}
+
 /* Sin zoom por doble toque en toda la app; el pellizco de accesibilidad sigue funcionando */
 html {
   /* Si algo no llega a cubrir hasta abajo, que se vea el fondo de la app y no el negro del sistema */
@@ -21,6 +25,10 @@ html {
 }
 
 body {
+  /* 2 px más alto que la ventana: así la página cuenta como "desplazable" para iOS instalado, que si no deja
+     el hueco del indicador de inicio sin usar hasta el primer gesto de scroll. Nada se mueve: cada pantalla
+     tiene su propio scroll y el de la página está bloqueado con overscroll-behavior. */
+  min-height: calc(100% + 2px);
   background: var(--fondo);
   color: var(--texto);
   font: var(--t-cuerpo);

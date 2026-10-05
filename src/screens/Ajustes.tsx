@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { almacen } from '../almacenGlobal'
 import { IconoAdelante } from '../components/Iconos'
 import { HojaConfirmacion } from '../components/HojaConfirmacion'
+import { DiagnosticoPantalla } from '../components/DiagnosticoPantalla'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
 import { estadoRespaldo, nombreArchivoRespaldo } from '../logic/respaldo'
@@ -172,6 +173,7 @@ export function Ajustes() {
       )}
 
       <p className="fila-nota fila-nota-suelta">Versión {__VERSION__}</p>
+      <DiagnosticoPantalla />
 
       <HojaConfirmacion
         abierta={pendiente !== null}
