@@ -30,3 +30,6 @@ Thumbs.db
 
 # Claude Code: la configuración personal no se versiona (el resto de .claude/ sí)
 .claude/settings.local.json
+
+.vercel
+.env*
