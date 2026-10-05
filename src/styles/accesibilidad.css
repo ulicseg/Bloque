@@ -1,0 +1,44 @@
+/* Variantes de accesibilidad (§14). Van después de tokens.css y de los componentes para ganar por orden. */
+
+/* Menos transparencia: superficies sólidas y sin desenfoque */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --barra-fondo: var(--superficie);
+    --barra-blur: none;
+    --hoja-fondo: var(--superficie);
+    --hoja-blur: none;
+  }
+}
+
+/* Más contraste: fondos sólidos, bordes definidos y texto al máximo */
+@media (prefers-contrast: more) {
+  :root {
+    --barra-fondo: var(--superficie);
+    --barra-blur: none;
+    --barra-borde: var(--texto);
+    --hoja-fondo: var(--superficie);
+    --hoja-blur: none;
+    --separador: var(--texto);
+    --texto-2: var(--texto);
+    --texto-3: var(--texto);
+  }
+
+  .barra-pestanas {
+    border-top: 0.125rem solid var(--texto);
+  }
+
+  .pestana[aria-current='page'] {
+    outline: 0.125rem solid var(--texto);
+  }
+}
+
+/* Menos movimiento: sin escalas ni desplazamientos, solo cambios de opacidad */
+@media (prefers-reduced-motion: reduce) {
+  .presionable[data-presionado] {
+    transform: none;
+  }
+
+  .presionable {
+    transition: opacity 0.15s ease-out;
+  }
+}

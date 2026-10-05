@@ -1,0 +1,57 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font: var(--t-cuerpo);
+  letter-spacing: var(--ls-cuerpo);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  /* Evita el rebote de la página entera: el que rebota es el scroll de cada pantalla */
+  overscroll-behavior: none;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  /* Sin la demora de ~300 ms del doble toque (§1) y sin selección accidental */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* iOS hace zoom al enfocar campos con menos de 16 px */
+input,
+select,
+textarea {
+  font-size: 1rem;
+}
+
+:focus-visible {
+  outline: 0.125rem solid var(--tinte);
+  outline-offset: 0.125rem;
+}

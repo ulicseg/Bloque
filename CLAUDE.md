@@ -99,3 +99,4 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 ## Progreso
 
 - **Paso 0 (2026-10-04):** CLAUDE.md con reglas y versiones verificadas, `.gitignore`, repo privado `bloques` en GitHub.
+- **Paso 1 (2026-10-04):** proyecto Vite + React + TS, sistema de diseño (tokens, resortes, materiales, variantes de accesibilidad), barra de pestañas y pantallas vacías, capa de almacenamiento versionada con tests.

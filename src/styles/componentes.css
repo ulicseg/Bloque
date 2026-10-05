@@ -1,0 +1,127 @@
+.app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ---------- Pantallas ---------- */
+
+.pantalla-capa {
+  position: absolute;
+  inset: 0;
+}
+
+.pantalla {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  /* El contenido llega hasta abajo de la barra; el padding de abajo evita que quede tapado */
+  padding: var(--safe-top) max(var(--space-4), var(--safe-right))
+    calc(var(--alto-barra-pestanas) + var(--safe-bottom) + var(--space-5)) max(var(--space-4), var(--safe-left));
+}
+
+.pantalla-contenido {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding-top: var(--space-5);
+}
+
+.titulo-grande {
+  font: var(--t-titulo-grande);
+  letter-spacing: var(--ls-titulo-grande);
+  margin-bottom: var(--space-4);
+}
+
+/* Degradé sobre la zona del reloj: reemplaza a la línea divisoria */
+.pantalla-borde-superior {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--safe-top) + 1.5rem);
+  background: linear-gradient(to bottom, var(--fondo) 25%, transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pantalla-borde-superior[data-visible] {
+  opacity: 0.92;
+}
+
+/* ---------- Barra de pestañas ---------- */
+
+.barra-pestanas {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  padding: var(--space-1) max(var(--space-2), var(--safe-right)) calc(var(--space-1) + var(--safe-bottom))
+    max(var(--space-2), var(--safe-left));
+  background: var(--barra-fondo);
+  -webkit-backdrop-filter: var(--barra-blur);
+  backdrop-filter: var(--barra-blur);
+}
+
+/* Degradé hacia el contenido que pasa por debajo, en vez de una raya divisoria */
+.barra-pestanas::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 1.75rem;
+  background: linear-gradient(to top, color-mix(in srgb, var(--fondo) 70%, transparent), transparent);
+  pointer-events: none;
+}
+
+/* Borde superior de luz: el material atrapa la luz, sin ser una línea dura */
+.barra-pestanas::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--barra-borde), transparent);
+  pointer-events: none;
+}
+
+.pestana {
+  flex: 1;
+  min-height: var(--tap-min);
+  min-width: var(--tap-min);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  font: var(--t-pestana);
+  letter-spacing: var(--ls-pestana);
+  color: var(--texto-2);
+  border-radius: var(--radio-m);
+}
+
+.pestana[aria-current='page'] {
+  color: var(--tinte);
+}
+
+/* ---------- Respuesta al apoyar el dedo ---------- */
+
+.presionable {
+  /* La vuelta al soltar es una transición corta; la ida es instantánea */
+  transition:
+    transform 0.25s ease-out,
+    opacity 0.25s ease-out;
+}
+
+.presionable[data-presionado] {
+  transform: scale(0.94);
+  opacity: 0.6;
+  transition: none;
+}

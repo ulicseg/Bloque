@@ -1,0 +1,117 @@
+/* Sistema de diseño: todas las variables viven acá. Medidas en rem para respetar el tamaño de texto del usuario. */
+
+:root {
+  color-scheme: light dark;
+
+  /* Tipografía del sistema. Tracking según el tamaño: negativo en títulos, ~0 en cuerpo, leve positivo en chico (§15). */
+  --fuente: system-ui, -apple-system, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+
+  --t-titulo-grande: 700 2.125rem/1.1 var(--fuente);
+  --ls-titulo-grande: -0.022em;
+  --t-titulo-1: 700 1.75rem/1.14 var(--fuente);
+  --ls-titulo-1: -0.02em;
+  --t-titulo-2: 600 1.375rem/1.2 var(--fuente);
+  --ls-titulo-2: -0.016em;
+  --t-titulo-3: 600 1.25rem/1.25 var(--fuente);
+  --ls-titulo-3: -0.012em;
+  --t-cuerpo-destacado: 600 1.0625rem/1.4 var(--fuente);
+  --ls-cuerpo-destacado: -0.004em;
+  --t-cuerpo: 400 1.0625rem/1.47 var(--fuente);
+  --ls-cuerpo: -0.002em;
+  --t-detalle: 400 0.9375rem/1.4 var(--fuente);
+  --ls-detalle: 0em;
+  --t-nota: 400 0.8125rem/1.38 var(--fuente);
+  --ls-nota: 0.004em;
+  --t-pestana: 500 0.6875rem/1.2 var(--fuente);
+  --ls-pestana: 0.02em;
+
+  /* Espaciado y formas */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+  --radio-s: 0.5rem;
+  --radio-m: 0.875rem;
+  --radio-l: 1.25rem;
+  --tap-min: 2.75rem;
+
+  /* Zonas seguras (notch, barra inferior); requieren viewport-fit=cover */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* Alturas de las barras flotantes: el contenido pasa por debajo y se compensa con padding */
+  --alto-barra-pestanas: 3.25rem;
+
+  /* Colores (modo claro) */
+  --fondo: #f2f2f7;
+  --superficie: #ffffff;
+  --texto: #111114;
+  --texto-2: #55555e;
+  --texto-3: #6b6b75;
+  --separador: rgb(60 60 67 / 0.18);
+  --tinte: #0a6cff;
+  --presionado: rgb(0 0 0 / 0.08);
+
+  /* Materiales translúcidos. La hoja es más gruesa que la barra: superficie mayor, más blur y sombra más profunda (§12). */
+  --barra-fondo: rgb(249 249 251 / 0.72);
+  --barra-blur: blur(1.25rem) saturate(180%);
+  --barra-borde: rgb(255 255 255 / 0.5);
+  --hoja-fondo: rgb(255 255 255 / 0.85);
+  --hoja-blur: blur(2.5rem) saturate(180%);
+  --hoja-sombra: 0 0.5rem 2.5rem rgb(0 0 0 / 0.18);
+
+  /* Actividades: color = texto/íconos, fondo = tinte suave. Verificados ≥ 4.5:1 en actividades.test.ts */
+  --act-ingles: #0a5fc4;
+  --act-ingles-fondo: #e3effd;
+  --act-gimnasio: #c4310a;
+  --act-gimnasio-fondo: #fde9e3;
+  --act-programacion: #5b3fc9;
+  --act-programacion-fondo: #ece8fb;
+  --act-psicologo: #a8247f;
+  --act-psicologo-fondo: #fbe6f4;
+  --act-caminata: #1b7a35;
+  --act-caminata-fondo: #e2f5e7;
+  --act-libre: #8a5a00;
+  --act-libre-fondo: #fcf0d6;
+  --act-revision: #3d5a6c;
+  --act-revision-fondo: #e6edf1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #000000;
+    --superficie: #1c1c1e;
+    --texto: #f5f5f7;
+    --texto-2: #b4b4bd;
+    --texto-3: #9a9aa5;
+    --separador: rgb(84 84 88 / 0.5);
+    --tinte: #4d9bff;
+    --presionado: rgb(255 255 255 / 0.12);
+
+    --barra-fondo: rgb(28 28 30 / 0.72);
+    --barra-borde: rgb(255 255 255 / 0.08);
+    --hoja-fondo: rgb(36 36 38 / 0.82);
+    --hoja-sombra: 0 0.5rem 2.5rem rgb(0 0 0 / 0.6);
+
+    --act-ingles: #6fb0ff;
+    --act-ingles-fondo: #0f2740;
+    --act-gimnasio: #ff8a6b;
+    --act-gimnasio-fondo: #3a1a12;
+    --act-programacion: #a99bff;
+    --act-programacion-fondo: #221b46;
+    --act-psicologo: #ff8ccf;
+    --act-psicologo-fondo: #3d1530;
+    --act-caminata: #62d487;
+    --act-caminata-fondo: #123522;
+    --act-libre: #ffc65c;
+    --act-libre-fondo: #3a2c0a;
+    --act-revision: #9fbccd;
+    --act-revision-fondo: #1c2a33;
+  }
+}
