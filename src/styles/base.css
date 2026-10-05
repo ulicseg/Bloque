@@ -14,6 +14,8 @@ body,
 /* Sin zoom por doble toque en toda la app; el pellizco de accesibilidad sigue funcionando */
 html {
   touch-action: manipulation;
+  /* Escala general de la app: todo está en rem, así que 87,5 % lo achica por igual (14 px base) y respeta el tamaño de texto del usuario */
+  font-size: 87.5%;
 }
 
 body {
@@ -53,7 +55,7 @@ button {
 input,
 select,
 textarea {
-  font-size: 1rem;
+  font-size: 16px;
 }
 
 :focus-visible {

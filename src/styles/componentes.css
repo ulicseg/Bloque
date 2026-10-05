@@ -18,14 +18,14 @@
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
   /* El contenido llega hasta abajo de la barra; el padding de abajo evita que quede tapado */
-  padding: var(--safe-top) max(var(--space-4), var(--safe-right))
-    calc(var(--alto-barra-pestanas) + var(--safe-bottom) + var(--space-5)) max(var(--space-4), var(--safe-left));
+  padding: var(--safe-top) max(var(--space-3), var(--safe-right))
+    calc(var(--alto-barra-pestanas) + var(--safe-bottom) + var(--space-4)) max(var(--space-3), var(--safe-left));
 }
 
 .pantalla-contenido {
   max-width: 40rem;
   margin: 0 auto;
-  padding-top: var(--space-5);
+  padding-top: var(--space-4);
 }
 
 .titulo-grande {
@@ -513,7 +513,7 @@
   border-radius: var(--radio-m);
   background: var(--fondo);
   color: var(--texto);
-  font-size: 1rem;
+  font-size: 16px;
   font-family: inherit;
 }
 
@@ -728,7 +728,7 @@
   border-radius: var(--radio-m);
   background: var(--fondo);
   color: var(--texto);
-  font-size: 1rem;
+  font-size: 16px;
   font-family: inherit;
 }
 

@@ -114,6 +114,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Hoy y turnos más claros (2026-10-04):** Hoy es una línea del día (hora a la izquierda, tarjeta teñida con el color de la actividad, turno en gris, resumen "X de N hechos", estados con color propio: verde, ámbar, gris). Cargar turnos elige primero el largo (Libre / 4 h / 8 h / Otro) y después la hora; `TURNOS_CORTOS` y `largoDeTurno` en `src/logic/turnos.ts`, con test.
 
+- **Todo a escala iPhone 16 (2026-10-04):** `html { font-size: 87.5% }` achica toda la app por igual (todo está en rem); `--tap-min` pasa a 44 px fijos y los campos a 16 px fijos; márgenes laterales de 12 px; la barra de pestañas va pegada abajo de punta a punta, con la zona segura adentro.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

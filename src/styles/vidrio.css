@@ -203,14 +203,14 @@
 /* ---------- Barra de pestañas flotante ---------- */
 
 .barra-pestanas {
-  left: max(var(--space-4), var(--safe-left));
-  right: max(var(--space-4), var(--safe-right));
-  bottom: calc(var(--safe-bottom) + var(--space-2));
-  max-width: 26rem;
-  margin-inline: auto;
-  padding: 0.3125rem;
-  border-radius: 2.25rem;
+  /* Pegada al borde de abajo y de punta a punta: la zona segura queda adentro, no como hueco */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.25rem max(var(--space-2), var(--safe-right)) calc(0.25rem + var(--safe-bottom)) max(var(--space-2), var(--safe-left));
+  border-radius: var(--radio-l) var(--radio-l) 0 0;
   border: 1px solid var(--vidrio-borde);
+  border-bottom: 0;
   box-shadow: var(--vidrio-sombra);
 }
 
@@ -220,8 +220,8 @@
 }
 
 .pestana {
-  min-height: 3.25rem;
-  border-radius: 1.875rem;
+  min-height: var(--tap-min);
+  border-radius: 1.25rem;
   font-weight: 600;
   transition:
     background-color 0.2s ease-out,
