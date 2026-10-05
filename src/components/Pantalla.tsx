@@ -7,6 +7,8 @@ interface Props {
   titulo: string
   /** Línea chica sobre el título grande (la fecha, en Hoy). */
   sobretitulo?: string
+  /** Clase extra para ajustar una pantalla puntual (Hoy es más compacta). */
+  clase?: string
   children?: ReactNode
   /** Pantalla de segundo nivel: muestra un botón para volver con el nombre de la anterior. */
   atras?: { texto: string; alVolver: () => void }
@@ -14,10 +16,10 @@ interface Props {
 
 // Contenedor desplazable con encabezado grande. El degradé superior solo aparece cuando el
 // contenido ya pasó por debajo de la zona del reloj; no se muestra una línea divisoria (§12).
-export function Pantalla({ titulo, sobretitulo, children, atras }: Props) {
+export function Pantalla({ titulo, sobretitulo, clase, children, atras }: Props) {
   const [pasaPorDebajo, setPasaPorDebajo] = useState(false)
   return (
-    <div className="pantalla" onScroll={(e) => setPasaPorDebajo(e.currentTarget.scrollTop > 4)}>
+    <div className={clase ? `pantalla ${clase}` : 'pantalla'} onScroll={(e) => setPasaPorDebajo(e.currentTarget.scrollTop > 4)}>
       <div className="pantalla-borde-superior" data-visible={pasaPorDebajo || undefined} aria-hidden />
       <main className="pantalla-contenido">
         {atras && (

@@ -36,7 +36,7 @@ export function Hoy() {
     })
 
   return (
-    <Pantalla titulo="Hoy" sobretitulo={textoFecha(fecha)}>
+    <Pantalla clase="pantalla-hoy" titulo="Hoy" sobretitulo={textoFecha(fecha)}>
       <p className="subtitulo">{turno ? `Turno de ${etiquetaTurno(turno)}` : 'Hoy no tenés turno'}</p>
 
       {fallo && (

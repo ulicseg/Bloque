@@ -110,6 +110,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 - **Paso 9 (2026-10-04):** Ajustes → Horarios editable (sueño, traslado, despertar, recuperación, reglas de sueño según el turno, foco, ventana mínima y comidas, con restablecer; `src/logic/ajustes.ts` corrige valores imposibles, con tests). `computeWindows` recibe también la semana siguiente: el domingo ya ve si el lunes arranca temprano (se resolvió la limitación del Paso 4).
 - **Paso 10 (2026-10-04):** revisión en navegador (Chrome, datos de prueba): sugerir, usar la sugerencia, Hoy con Hecho/Mínimo y avance, editor de Metas, sin errores en consola. Repo publicado en https://github.com/ulicseg/Bloque. Pendiente de la persona: desplegar en Vercel (importar el repo; Node 24 ya está en `engines`, `vercel.json` ya evita la caché agresiva de `sw.js` y del manifest) e instalarla desde Safari en el iPhone para probar gestos y zonas seguras, que no se pueden verificar desde escritorio.
 
+- **Hoy compacta (2026-10-04):** la pestaña Hoy baja un escalón de tamaños (títulos, tarjetas, botones, barras) para el iPhone 16; los botones mantienen 44 px de alto. Clase `pantalla-hoy` en `hoy.css`.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.
