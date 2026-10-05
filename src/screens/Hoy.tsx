@@ -84,12 +84,6 @@ export function Hoy() {
         )}
       </div>
 
-      {bloques.length === 0 && (
-        <p className="aviso aviso-atencion" role="status">
-          No hay bloques para {esHoy ? 'hoy' : 'mañana'}. Armalos desde la pestaña Semana.
-        </p>
-      )}
-
       {items.map((it) =>
         it.bloque ? (
           <TarjetaBloque
