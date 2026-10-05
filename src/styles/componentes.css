@@ -732,3 +732,30 @@
   font: var(--t-detalle);
   letter-spacing: var(--ls-detalle);
 }
+
+/* ---------- Edición de bloques ---------- */
+
+.grupo-formulario {
+  padding: var(--space-3) var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.otro-campos-suelto {
+  padding-top: 0;
+}
+
+.campo select {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radio-m);
+  background: var(--fondo);
+  color: var(--texto);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.fila-boton-destructivo {
+  color: var(--act-gimnasio);
+}

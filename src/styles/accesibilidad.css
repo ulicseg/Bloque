@@ -93,3 +93,9 @@
     border: 0.0625rem solid var(--texto);
   }
 }
+
+@media (prefers-contrast: more) {
+  .campo select {
+    border: 0.0625rem solid var(--texto);
+  }
+}

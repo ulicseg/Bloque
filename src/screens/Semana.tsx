@@ -3,14 +3,18 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
 import { Segmentado } from '../components/Segmentado'
+import { BloquesSemana } from '../components/BloquesSemana'
 import { ListaSugerencia } from '../components/ListaSugerencia'
 import { VentanasProvisorias } from '../components/VentanasProvisorias'
+import { aceptarSugerencia, bloquesQueCuentan } from '../logic/bloques'
+import type { Bloque } from '../logic/types'
 import { conSemana, descripcionFin, etiquetaTurno, semanaVacia, textoTotal, turnoDelDia, vecinasDe } from '../logic/turnos'
 import { lunesActual, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
 import { suggest } from '../logic/suggest'
 import { computeWindows } from '../logic/windows'
 import { useDatos } from '../useDatos'
 import { CargarTurnos } from './CargarTurnos'
+import { EditarBloque } from './EditarBloque'
 
 type Cual = 'esta' | 'proxima'
 
@@ -18,6 +22,8 @@ export function Semana() {
   const { datos, cambiar, fallo } = useDatos()
   const [cual, setCual] = useState<Cual>('esta')
   const [cargando, setCargando] = useState(false)
+  // undefined = cerrado; null = bloque nuevo; un bloque = editarlo
+  const [editando, setEditando] = useState<Bloque | null | undefined>(undefined)
   // Semana para la que se pidió la sugerencia: al cambiar de semana no se muestra una ajena
   const [pedida, setPedida] = useState<string | null>(null)
   const reducido = useReducedMotion() ?? false
@@ -31,7 +37,7 @@ export function Semana() {
 
   // Una vez pedida, se recalcula sola si cambian los turnos o las metas: nunca queda una sugerencia vieja en pantalla
   const sugerencia = useMemo(
-    () => (pedida === lunes ? suggest(dias, datos.actividades, semana.bloques.filter((b) => b.fijo), datos.ajustes) : null),
+    () => (pedida === lunes ? suggest(dias, datos.actividades, bloquesQueCuentan(semana), datos.ajustes) : null),
     [pedida, lunes, dias, datos.actividades, datos.ajustes, semana.bloques],
   )
 
@@ -96,7 +102,33 @@ export function Semana() {
               : 'Propone dónde ubicar cada bloque según tus metas. Por ahora solo se muestra: no se guarda.'}
           </p>
         </div>
-        {sugerencia && <ListaSugerencia lunes={lunes} sugerencia={sugerencia} actividades={datos.actividades} />}
+        {sugerencia && (
+          <>
+            <ListaSugerencia lunes={lunes} sugerencia={sugerencia} actividades={datos.actividades} />
+            {sugerencia.bloques.length > 0 && (
+              <div className="grupo">
+                <Presionable
+                  className="fila fila-boton"
+                  onClick={() => {
+                    cambiar((d) => conSemana(d, aceptarSugerencia(semana, sugerencia.bloques)))
+                    setPedida(null)
+                  }}
+                >
+                  Usar esta sugerencia
+                </Presionable>
+                <p className="fila-nota">Reemplaza los bloques que solo estaban planificados. Los fijos y los ya hechos no se tocan.</p>
+              </div>
+            )}
+          </>
+        )}
+
+        <h2 className="seccion-titulo">Bloques de la semana</h2>
+        <BloquesSemana semana={semana} actividades={datos.actividades} alElegir={(b) => setEditando(b)} />
+        <div className="grupo">
+          <Presionable className="fila fila-boton" onClick={() => setEditando(null)}>
+            Agregar bloque
+          </Presionable>
+        </div>
 
         {import.meta.env.DEV && (
           <>
@@ -133,6 +165,24 @@ export function Semana() {
               vecinas={vecinas}
               alGuardar={(s) => cambiar((d) => conSemana(d, s))}
               alVolver={() => setCargando(false)}
+            />
+          </motion.div>
+        )}
+        {editando !== undefined && (
+          <motion.div
+            key="editar-bloque"
+            className="pantalla-capa capa-detalle"
+            initial={reducido ? { opacity: 0 } : { x: '100%' }}
+            animate={reducido ? { opacity: 1 } : { x: 0 }}
+            exit={reducido ? { opacity: 0, pointerEvents: 'none' } : { x: '100%', pointerEvents: 'none' }}
+          >
+            <EditarBloque
+              semana={semana}
+              bloque={editando}
+              actividades={datos.actividades}
+              dias={dias}
+              alGuardar={(s) => cambiar((d) => conSemana(d, s))}
+              alVolver={() => setEditando(undefined)}
             />
           </motion.div>
         )}
