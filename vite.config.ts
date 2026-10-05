@@ -4,6 +4,8 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  // Marca de cuándo se armó esta versión: se muestra en Ajustes para saber qué versión está corriendo en el teléfono
+  define: { __VERSION__: JSON.stringify(new Date().toLocaleString('sv-SE', { timeZone: 'America/Argentina/Buenos_Aires' }).slice(0, 16)) },
   plugins: [
     react(),
     VitePWA({

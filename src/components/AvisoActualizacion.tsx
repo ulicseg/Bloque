@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { RESORTE_DEFECTO, transicion } from '../design/resortes'
@@ -23,6 +24,12 @@ export function AvisoActualizacion() {
       })
     },
   })
+
+  // Si la versión nueva llega en los primeros segundos de abrir la app, se aplica sola: todavía no hay nada
+  // que cortar, y evita quedarse con una versión vieja guardada sin darse cuenta. Pasado eso, decide la persona.
+  useEffect(() => {
+    if (hayNueva && performance.now() < 15_000) void updateServiceWorker(true)
+  }, [hayNueva, updateServiceWorker])
 
   return (
     <AnimatePresence>

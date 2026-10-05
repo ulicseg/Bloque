@@ -171,6 +171,8 @@ export function Ajustes() {
         </p>
       )}
 
+      <p className="fila-nota fila-nota-suelta">Versión {__VERSION__}</p>
+
       <HojaConfirmacion
         abierta={pendiente !== null}
         titulo="¿Reemplazar tus datos?"
