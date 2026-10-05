@@ -1,9 +1,13 @@
 .app {
   position: fixed;
-  inset: 0;
-  /* iOS en pantalla de inicio a veces deja el alto fijo corto: se pide el alto grande de la pantalla entera */
-  min-height: 100vh;
-  min-height: 100lvh;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* En iOS instalado, `bottom: 0` de un elemento fijo a veces queda un poco más arriba del borde real
+     (el alto del indicador de inicio) hasta que se hace scroll. Por eso el alto no sale de `inset`:
+     se pide el alto grande, y como mínimo el de la pantalla física (--alto-pantalla, ver main.tsx). */
+  height: 100vh;
+  height: max(100lvh, var(--alto-pantalla, 0px));
   overflow: hidden;
 }
 
@@ -58,7 +62,8 @@
 /* ---------- Barra de pestañas ---------- */
 
 .barra-pestanas {
-  position: fixed;
+  /* Absoluta dentro de .app (que ya mide la pantalla entera) y no fija al viewport, que en iOS puede quedar corto */
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
