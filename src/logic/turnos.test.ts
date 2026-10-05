@@ -218,7 +218,7 @@ describe('metas por defecto', () => {
       const a = por(id)
       expect([a.tipoMeta, a.meta, a.duracionMin, a.minimoMin], id).toEqual([tipo, meta, duracion, minimo])
     }
-    expect(ACTIVIDADES_POR_DEFECTO.filter((a) => a.fija).map((a) => a.id)).toEqual(['psicologo'])
+    expect(ACTIVIDADES_POR_DEFECTO.filter((a) => a.fija).map((a) => a.id)).toEqual(['psicologo', 'siesta'])
   })
 
   it('las prioridades no se repiten y hay ajustes completos', () => {

@@ -97,6 +97,8 @@
   --act-caminata-fondo: #e2f5e7;
   --act-libre: #8a5a00;
   --act-libre-fondo: #fcf0d6;
+  --act-siesta: #0b6b7a;
+  --act-siesta-fondo: #dff3f6;
 
 }
 
@@ -137,5 +139,7 @@
     --act-caminata-fondo: #123522;
     --act-libre: #ffc65c;
     --act-libre-fondo: #3a2c0a;
+    --act-siesta: #5fd0e0;
+    --act-siesta-fondo: #0f3038;
   }
 }

@@ -7,7 +7,7 @@ import type { Datos } from './types'
 export type { Datos } from './types'
 
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 8
+export const VERSION_ACTUAL = 9
 
 export interface Guardado {
   schemaVersion: number
@@ -116,6 +116,15 @@ export const MIGRACIONES: Migracion[] = [
       return { ...resto, franjas }
     })
     return { ...v7, schemaVersion: 8, datos: { ...datos, actividades } }
+  },
+  // v8 → v9: aparece la siesta. Se agrega al final de la lista si todavía no estaba; lo demás queda como está.
+  (v8) => {
+    const datos = v8.datos as Record<string, unknown>
+    if (!Array.isArray(datos.actividades)) return { ...v8, schemaVersion: 9 }
+    if (datos.actividades.some((a) => esObjeto(a) && a.id === 'siesta')) return { ...v8, schemaVersion: 9 }
+    const ultima = datos.actividades.reduce<number>((n, a) => (esObjeto(a) && typeof a.prioridad === 'number' ? Math.max(n, a.prioridad) : n), 0)
+    const siesta = { ...ACTIVIDADES_POR_DEFECTO.find((a) => a.id === 'siesta'), prioridad: ultima + 1 }
+    return { ...v8, schemaVersion: 9, datos: { ...datos, actividades: [...datos.actividades, siesta] } }
   },
 ]
 

@@ -133,6 +133,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Sin Calendario y plan del día corregido (2026-10-05):** se quita la pestaña Calendario. Arreglo en `lineaDelDia`: `computeWindows` entrega minutos desde el lunes y se leían como minutos del día, así que de martes a domingo lo ocupado salía todo arriba y los bloques fuera de hora; ahora cada día se ordena por su horario real.
 
+- **Siestas (2026-10-05):** nueva actividad `siesta` (esquema v9, la migración la agrega al final de la lista). Un bloque de siesta dura 35 min (rápida) o 3 × 35 = 1 h 45 min (larga); el editor de bloque ofrece los dos botones y completa la hora de fin (`src/logic/siestas.ts`, con tests). Es fija y con meta 0: la sugerencia no la ubica, se agrega a mano. Sin verificar en pantalla.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

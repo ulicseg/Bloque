@@ -43,8 +43,8 @@ describe('reordenar', () => {
 
   it('la lista acomodada a mano define las prioridades 1..N y las fijas quedan al final', () => {
     const r = reordenar(lista, sortables)
-    expect(ordenadas(r).map((a) => a.id)).toEqual([...sortables, 'psicologo'])
-    expect(r.map((a) => a.prioridad).sort()).toEqual([1, 2, 3, 4, 5, 6])
+    expect(ordenadas(r).map((a) => a.id)).toEqual([...sortables, 'psicologo', 'siesta'])
+    expect(r.map((a) => a.prioridad).sort()).toEqual([1, 2, 3, 4, 5, 6, 7])
     expect(de(r, 'gimnasio').prioridad).toBe(1)
   })
 

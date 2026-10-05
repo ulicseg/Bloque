@@ -35,6 +35,7 @@ const MAXIMO_POR_DIA: Record<IdActividad, number> = {
   psicologo: 1,
   caminata: 1,
   libre: 1,
+  siesta: 1,
 }
 
 export type MotivoFalta =

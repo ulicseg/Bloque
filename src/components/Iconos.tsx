@@ -59,6 +59,7 @@ const ICONOS_ACTIVIDAD: Record<IdActividad, ReactNode> = {
       <path d="m10 21 2-6-2.5-2.5 1-4.5 3 1.5 2.5 2M8 11l2-3" />
     </>
   ),
+  siesta: <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" />,
   libre: <path d="M12 3.5l2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z" />,
 }
 

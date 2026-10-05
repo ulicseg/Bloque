@@ -4,7 +4,8 @@ import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
 import { Segmentado } from '../components/Segmentado'
 import { bloqueDesdeCampos, diaDeBloque, diaNoPermitido, fueraDeVentanas, guardarBloque, idNuevo, quitarBloque } from '../logic/bloques'
-import { DIAS, MIN_DIA, horaCampo, numeroDelDia } from '../logic/tiempo'
+import { SIESTAS, finDeSiesta, minutosDeSiesta } from '../logic/siestas'
+import { DIAS, MIN_DIA, formatearDuracion, horaCampo, numeroDelDia } from '../logic/tiempo'
 import type { Actividad, Bloque, IdActividad, Semana } from '../logic/types'
 import type { DiaCalculado } from '../logic/windows'
 
@@ -88,6 +89,23 @@ export function EditarBloque({ semana, bloque, inicial, actividades, dias, alGua
             ))}
           </select>
         </label>
+        {actividad === 'siesta' && (
+          <div className="opciones opciones-franjas" role="group" aria-label="Tipo de siesta">
+            {SIESTAS.map((s) => (
+              <Presionable
+                key={s.id}
+                className="opcion"
+                aria-pressed={finDeSiesta(desde, s.bloques) === hasta}
+                onClick={() => {
+                  const fin = finDeSiesta(desde, s.bloques)
+                  if (fin) setHasta(fin)
+                }}
+              >
+                {s.titulo} · {formatearDuracion(minutosDeSiesta(s.bloques))}
+              </Presionable>
+            ))}
+          </div>
+        )}
         <div className="otro-campos otro-campos-suelto">
           <label className="campo">
             <span>Desde</span>

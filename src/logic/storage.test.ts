@@ -197,6 +197,8 @@ describe('exportar e importar', () => {
   })
 })
 
+const sinSiesta = <T extends { id: string }>(a: T[] | undefined) => a?.filter((x) => x.id !== 'siesta')
+
 describe('migrar', () => {
   it('lleva un respaldo v1 a la versión actual sin perder nada', () => {
     const r = migrar({ schemaVersion: 1, datos: { pestaña: 'metas' } })
@@ -298,12 +300,12 @@ describe('migrar', () => {
     const v4 = (actividades: unknown) => ({ schemaVersion: 4, datos: { pestaña: 'metas', semanas: {}, ajustes: {}, actividades, rareza: 3 } })
     // La v4 todavía traía la revisión semanal (la v7 la quita): se agrega a mano para armar la lista de entonces
     const revision = { id: 'revision', nombre: 'Revisión semanal', color: 'revision', tipoMeta: 'sesiones', meta: 1, duracionMin: 20, minimoMin: null, franja: 'noche', prioridad: PRIORIDADES_V4.revision, fija: false }
-    const viejas = () => [...ACTIVIDADES_POR_DEFECTO.map((a) => ({ ...a, prioridad: PRIORIDADES_V4[a.id] })), revision]
+    const viejas = () => [...ACTIVIDADES_POR_DEFECTO.filter((a) => a.id !== 'siesta').map((a) => ({ ...a, prioridad: PRIORIDADES_V4[a.id] })), revision]
 
     it('con las prioridades de la v4 sin tocar, pasan al orden nuevo y no cambia nada más', () => {
       const r = migrar(v4(viejas()))
       expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
-      expect(r?.datos.actividades).toEqual(ACTIVIDADES_POR_DEFECTO)
+      expect(sinSiesta(r?.datos.actividades)).toEqual(sinSiesta(ACTIVIDADES_POR_DEFECTO))
       expect((r?.datos as unknown as Record<string, unknown>).rareza).toBe(3)
     })
 
@@ -311,10 +313,28 @@ describe('migrar', () => {
       const tocadas = viejas().map((a) => (a.id === 'caminata' ? { ...a, prioridad: 1, meta: 5 } : a))
       // lo único que suman las migraciones siguientes es el gimnasio cerrado los domingos (v6) y sacar la revisión (v7)
       const conDomingo = tocadas.filter((a) => a.id !== 'revision').map((a) => (a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a))
-      expect(migrar(v4(tocadas))?.datos.actividades).toEqual(conDomingo)
+      expect(sinSiesta(migrar(v4(tocadas))?.datos.actividades)).toEqual(conDomingo)
       const incompletas = viejas().slice(0, 3)
-      expect(migrar(v4(incompletas))?.datos.actividades).toEqual(incompletas.map((a) => (a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a)))
-      expect(migrar(v4([]))?.datos.actividades).toEqual([])
+      expect(sinSiesta(migrar(v4(incompletas))?.datos.actividades)).toEqual(incompletas.map((a) => (a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a)))
+      expect(sinSiesta(migrar(v4([]))?.datos.actividades)).toEqual([])
+    })
+  })
+
+  describe('v8 → v9', () => {
+    const v8 = (actividades: unknown) => ({ schemaVersion: 8, datos: { pestaña: 'hoy', semanas: {}, ajustes: {}, actividades } })
+
+    it('agrega la siesta al final, con la prioridad siguiente, sin tocar lo demás', () => {
+      const previas = [{ id: 'ingles', prioridad: 1 }, { id: 'psicologo', prioridad: 6 }]
+      const r = migrar(v8(previas))
+      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
+      expect(r?.datos.actividades.slice(0, 2)).toEqual(previas)
+      expect(r?.datos.actividades[2]).toMatchObject({ id: 'siesta', prioridad: 7, duracionMin: 35, meta: 0, fija: true })
+    })
+
+    it('si ya estaba no se duplica, y con datos vacíos no se cae', () => {
+      const propias = [{ id: 'siesta', prioridad: 3 }]
+      expect(migrar(v8(propias))?.datos.actividades).toEqual(propias)
+      expect(migrar(v8(undefined))?.schemaVersion).toBe(VERSION_ACTUAL)
     })
   })
 
@@ -330,7 +350,7 @@ describe('migrar', () => {
         ]),
       )
       expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
-      expect(r?.datos.actividades).toEqual([
+      expect(sinSiesta(r?.datos.actividades)).toEqual([
         { id: 'ingles', franjas: ['manana', 'tarde', 'noche'], meta: 10 },
         { id: 'gimnasio', franjas: ['tarde'], meta: 4 },
         { id: 'raro', franjas: ['manana', 'tarde', 'noche'] },
@@ -340,7 +360,7 @@ describe('migrar', () => {
 
     it('si ya traía franjas no se toca, y con datos vacíos no se cae', () => {
       const propias = [{ id: 'ingles', franjas: ['noche'] }]
-      expect(migrar(v7(propias))?.datos.actividades).toEqual(propias)
+      expect(sinSiesta(migrar(v7(propias))?.datos.actividades)).toEqual(propias)
       expect(migrar(v7(undefined))?.schemaVersion).toBe(VERSION_ACTUAL)
     })
   })
@@ -358,7 +378,7 @@ describe('migrar', () => {
         }),
       )
       expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
-      expect(r?.datos.actividades).toEqual([{ id: 'ingles', prioridad: 1 }, { id: 'psicologo', prioridad: 7 }])
+      expect(sinSiesta(r?.datos.actividades)).toEqual([{ id: 'ingles', prioridad: 1 }, { id: 'psicologo', prioridad: 7 }])
       expect(r?.datos.semanas['2026-10-05']).toMatchObject({ bloques: [bloque('a', 'ingles')], rara: 1 })
       expect((r?.datos as unknown as Record<string, unknown>).rareza).toBe(3)
     })
@@ -381,7 +401,7 @@ describe('migrar', () => {
 
     it('si el gimnasio ya traía sus días, no se pisan', () => {
       const propios = [{ id: 'gimnasio', diasNo: [2] }]
-      expect(migrar(v5(propios))?.datos.actividades).toEqual(propios)
+      expect(sinSiesta(migrar(v5(propios))?.datos.actividades)).toEqual(propios)
     })
   })
 })
