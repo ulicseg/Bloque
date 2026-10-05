@@ -118,6 +118,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Mañana, gimnasio cerrado los domingos y alto completo (2026-10-05):** Hoy tiene selector Hoy / Mañana (mañana es solo lectura y cruza de semana los domingos). Las actividades tienen `diasNo` (esquema v6, migración v5→v6: el gimnasio queda cerrado los domingos si no traía el campo); la sugerencia no ubica nada esos días, el editor de bloque avisa y Metas permite marcarlos. Con el gimnasio fuera del domingo la semana de ejemplo es justa y una caminata de 30 min puede quedar afuera. Para el espacio negro de abajo en iOS: fondo en `html` y `.app` con `100lvh`.
 
+- **Hueco inferior en iOS, medido (2026-10-05):** en el iPhone 16 instalado la ventana mide 795 y la pantalla 852. `--desfase` (main.tsx) guarda la diferencia y el CSS baja la barra de pestañas y estira `.app` para cubrirla.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

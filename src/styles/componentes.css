@@ -1,6 +1,8 @@
 .app {
   position: fixed;
   inset: 0;
+  /* Cubre el hueco cuando iOS da una ventana más corta que la pantalla (ver --desfase en main.tsx) */
+  bottom: calc(var(--desfase, 0px) * -1);
   overflow: hidden;
 }
 
