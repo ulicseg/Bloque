@@ -1,6 +1,10 @@
 import { useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AvanceSemana } from '../components/AvanceSemana'
 import { IconoAdelante } from '../components/Iconos'
+import { avanceSemana } from '../logic/progreso'
+import { lunesActual } from '../logic/tiempo'
+import { semanaVacia } from '../logic/turnos'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
 import { conActividades, editarActividad, moverPrioridad, ordenadas, resumen } from '../logic/metas'
@@ -13,6 +17,8 @@ export function Metas() {
   const [abierta, setAbierta] = useState<IdActividad | null>(null)
   const reducido = useReducedMotion() ?? false
 
+  const [lunes] = useState(() => lunesActual(Date.now()))
+  const semanaActual = datos.semanas[lunes] ?? semanaVacia(lunes)
   const lista = ordenadas(datos.actividades)
   const editando = datos.actividades.find((a) => a.id === abierta)
 
@@ -26,6 +32,9 @@ export function Metas() {
             No se pudo guardar el último cambio. Exportá un respaldo desde Ajustes.
           </p>
         )}
+
+        <h2 className="seccion-titulo">Esta semana</h2>
+        <AvanceSemana avances={avanceSemana(semanaActual, datos.actividades)} actividades={datos.actividades} />
 
         <h2 className="seccion-titulo">Por orden de prioridad</h2>
         <div className="grupo">

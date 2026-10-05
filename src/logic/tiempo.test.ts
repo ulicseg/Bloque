@@ -68,3 +68,15 @@ describe('horaDeFin', () => {
     expect(horaDeFin(1440 + 750)).toBe('12:30')
   })
 })
+
+describe('fechas de hoy', () => {
+  it('día de la semana y texto de fecha', async () => {
+    const { diaDeLaSemana, textoFecha, fechaEnArgentina } = await import('./tiempo')
+    expect(diaDeLaSemana('2026-10-05')).toBe(0)
+    expect(diaDeLaSemana('2026-10-11')).toBe(6)
+    expect(textoFecha('2026-10-04')).toBe('Domingo 4 de octubre')
+    expect(textoFecha('2026-01-01')).toBe('Jueves 1 de enero')
+    // 01:00 UTC del lunes 5 sigue siendo domingo 4 en Argentina
+    expect(fechaEnArgentina(Date.UTC(2026, 9, 5, 1, 0))).toBe('2026-10-04')
+  })
+})

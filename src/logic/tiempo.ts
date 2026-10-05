@@ -85,3 +85,12 @@ export function formatearDuracion(min: number): string {
 export function horaDeFin(min: number): string {
   return min > 0 && min % MIN_DIA === 0 ? '24:00' : horaCampo(min)
 }
+
+const MESES_LARGOS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+
+/** Día de la semana (0 = lunes) de una fecha calendario. */
+export const diaDeLaSemana = (f: FechaISO): number => (new Date(aMs(f)).getUTCDay() + 6) % 7
+
+/** "Domingo 4 de octubre". */
+export const textoFecha = (f: FechaISO): string =>
+  `${DIAS[diaDeLaSemana(f)]} ${Number(f.slice(8))} de ${MESES_LARGOS[Number(f.slice(5, 7)) - 1]}`

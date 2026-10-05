@@ -1,0 +1,90 @@
+/* ---------- Hoy: tarjetas de bloque y avance ---------- */
+
+.tarjeta {
+  background: var(--superficie);
+  border-radius: var(--radio-l);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  margin-bottom: var(--space-3);
+  border-left: 0.3125rem solid var(--act);
+}
+
+/* Lo salteado se apaga un poco: sigue legible, pero deja de competir con lo que falta hacer */
+.tarjeta[data-estado='salteado'] .tarjeta-cabecera,
+.tarjeta[data-estado='salteado'] .tarjeta-hora {
+  opacity: 0.6;
+}
+
+.tarjeta-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.tarjeta-cabecera .sug-actividad::before {
+  display: none;
+}
+
+.tarjeta-hora {
+  font: var(--t-cuerpo);
+  letter-spacing: var(--ls-cuerpo);
+  font-variant-numeric: tabular-nums;
+  margin: var(--space-1) 0 var(--space-3);
+}
+
+.estados {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.avance {
+  padding: var(--space-3) var(--space-4);
+}
+
+.avance + .avance {
+  border-top: 1px solid var(--separador);
+}
+
+.avance-linea {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.avance-nombre {
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+}
+
+.avance-texto {
+  font: var(--t-detalle);
+  letter-spacing: var(--ls-detalle);
+  color: var(--texto-2);
+  text-align: right;
+}
+
+.avance-barra {
+  height: 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--fondo);
+  overflow: hidden;
+}
+
+.avance-relleno {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--act);
+  transform-origin: left center;
+}
+
+@media (prefers-contrast: more) {
+  .tarjeta {
+    border: 0.0625rem solid var(--texto);
+    border-left-width: 0.3125rem;
+  }
+
+  .avance-barra {
+    border: 0.0625rem solid var(--texto);
+  }
+}
