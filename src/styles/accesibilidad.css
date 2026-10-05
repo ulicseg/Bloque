@@ -81,7 +81,7 @@
 /* Metas y sugerencia: mismas variantes. No hay superficies translúcidas nuevas ni desplazamientos propios. */
 @media (prefers-contrast: more) {
   .contador-boton,
-  .meta-marca {
+  .chip-actividad {
     border: 0.0625rem solid var(--texto);
   }
 
@@ -89,13 +89,45 @@
     opacity: 0.6;
   }
 
-  .sug-actividad::before {
-    border: 0.0625rem solid var(--texto);
-  }
 }
 
 @media (prefers-contrast: more) {
   .campo select {
     border: 0.0625rem solid var(--texto);
+  }
+}
+
+/* Vidrio: con menos transparencia o más contraste, las tarjetas pasan a superficies sólidas y desaparece la luz de fondo */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --vidrio-fondo: var(--superficie);
+    --vidrio-blur: none;
+    --aurora: none;
+  }
+
+  .pantalla-borde-superior {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: linear-gradient(to bottom, var(--fondo) 25%, transparent);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --vidrio-fondo: var(--superficie);
+    --vidrio-blur: none;
+    --vidrio-borde: var(--texto);
+    --aurora: none;
+  }
+
+  .pantalla-borde-superior {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: linear-gradient(to bottom, var(--fondo) 25%, transparent);
+  }
+
+  .barra-pestanas,
+  .tarjeta {
+    border-width: 0.125rem;
   }
 }

@@ -1,0 +1,340 @@
+/* Capa visual: estilo iOS con vidrio. Va después de los componentes y antes de las variantes de accesibilidad,
+   que reemplazan los tokens (--vidrio-*, --barra-*) por superficies sólidas cuando hace falta. */
+
+/* ---------- Fondo con luz ---------- */
+
+.app {
+  isolation: isolate;
+  background: var(--fondo);
+}
+
+.app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--aurora);
+  pointer-events: none;
+}
+
+/* Las capas de segundo nivel tapan lo de abajo, así que llevan su propio fondo con la misma luz */
+.capa-detalle {
+  background: var(--aurora), var(--fondo);
+}
+
+/* ---------- Encabezado ---------- */
+
+.sobretitulo {
+  font: var(--t-nota);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-2);
+  margin-bottom: var(--space-1);
+}
+
+.titulo-grande {
+  margin-bottom: var(--space-3);
+}
+
+.subtitulo {
+  margin-bottom: var(--space-4);
+}
+
+/* Borde de scroll: el contenido se desenfoca al pasar bajo la zona del reloj, sin línea ni degradé plano (§12) */
+.pantalla-borde-superior {
+  background: none;
+  -webkit-backdrop-filter: blur(1.25rem);
+  backdrop-filter: blur(1.25rem);
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent);
+  mask-image: linear-gradient(to bottom, #000 45%, transparent);
+  height: calc(var(--safe-top) + 1.75rem);
+}
+
+.pantalla-borde-superior[data-visible] {
+  opacity: 1;
+}
+
+/* ---------- Superficies de vidrio ---------- */
+
+.grupo,
+.tarjeta {
+  position: relative;
+  background: var(--vidrio-fondo);
+  -webkit-backdrop-filter: var(--vidrio-blur);
+  backdrop-filter: var(--vidrio-blur);
+  border: 1px solid var(--vidrio-borde);
+  box-shadow: var(--vidrio-sombra);
+  border-radius: var(--radio-l);
+}
+
+.grupo {
+  margin-bottom: var(--space-4);
+}
+
+/* Filas: se iluminan al apoyar el dedo, como en iOS, en vez de achicarse */
+.fila.presionable[data-presionado],
+.sug-bloque.presionable[data-presionado] {
+  transform: none;
+  opacity: 1;
+  background: var(--presionado);
+}
+
+.fila + .fila,
+.fila + .fila-nota {
+  border-top-color: var(--separador);
+}
+
+.seccion-titulo {
+  margin: var(--space-6) var(--space-4) var(--space-2);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.fila-boton {
+  font-weight: 600;
+}
+
+/* ---------- Tarjeta de bloque ---------- */
+
+.tarjeta {
+  border-left: 1px solid var(--vidrio-borde);
+  padding: var(--space-4) var(--space-4) var(--space-4) calc(var(--space-4) + 0.5rem);
+  margin-bottom: var(--space-3);
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--act) 14%, transparent), transparent 62%), var(--vidrio-fondo);
+}
+
+/* Marca de color de la actividad, adentro de la tarjeta */
+.tarjeta::before {
+  content: '';
+  position: absolute;
+  left: 0.6875rem;
+  top: 1rem;
+  bottom: 1rem;
+  width: 0.25rem;
+  border-radius: 0.125rem;
+  background: var(--act);
+}
+
+.tarjeta-cabecera {
+  gap: var(--space-3);
+}
+
+.tarjeta-cabecera .sug-actividad {
+  font: var(--t-titulo-3);
+  letter-spacing: var(--ls-titulo-3);
+  gap: var(--space-3);
+}
+
+.tarjeta-hora {
+  margin-bottom: var(--space-4);
+}
+
+/* ---------- Chip de actividad (ícono sobre su tinte) ---------- */
+
+.chip-actividad {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.6875rem;
+  background: var(--act-fondo);
+  color: var(--act);
+}
+
+.chip-actividad svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.sug-actividad .chip-actividad {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* ---------- Controles sobre vidrio: rellenos grises, no más vidrio ---------- */
+
+.opcion,
+.contador-boton,
+.boton-hoja,
+.campo input,
+.campo select {
+  background: var(--relleno);
+}
+
+.opcion {
+  border-radius: var(--radio-m);
+  transition:
+    background-color 0.2s ease-out,
+    box-shadow 0.2s ease-out,
+    transform 0.25s ease-out,
+    opacity 0.25s ease-out;
+}
+
+.opcion[aria-pressed='true'] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tinte) 86%, #fff), var(--tinte));
+  box-shadow: 0 0.25rem 0.875rem color-mix(in srgb, var(--tinte) 38%, transparent);
+}
+
+.boton-hoja-tinte {
+  background: var(--tinte);
+}
+
+.segmentado {
+  background: var(--relleno);
+  border: 1px solid var(--vidrio-borde);
+  border-radius: var(--radio-l);
+  padding: 0.1875rem;
+}
+
+.segmento {
+  border-radius: calc(var(--radio-l) - 0.1875rem);
+}
+
+.segmento-fondo {
+  background: var(--segmento-activo);
+  box-shadow:
+    0 0.0625rem 0.125rem rgb(0 0 0 / 0.1),
+    0 0.25rem 0.75rem rgb(0 0 0 / 0.08);
+}
+
+/* ---------- Barra de pestañas flotante ---------- */
+
+.barra-pestanas {
+  left: max(var(--space-4), var(--safe-left));
+  right: max(var(--space-4), var(--safe-right));
+  bottom: calc(var(--safe-bottom) + var(--space-2));
+  max-width: 26rem;
+  margin-inline: auto;
+  padding: 0.3125rem;
+  border-radius: 2.25rem;
+  border: 1px solid var(--vidrio-borde);
+  box-shadow: var(--vidrio-sombra);
+}
+
+.barra-pestanas::before,
+.barra-pestanas::after {
+  display: none;
+}
+
+.pestana {
+  min-height: 3.25rem;
+  border-radius: 1.875rem;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease-out,
+    color 0.2s ease-out;
+}
+
+.pestana[aria-current='page'] {
+  color: var(--tinte);
+  background: color-mix(in srgb, var(--tinte) 14%, transparent);
+}
+
+/* ---------- Hojas, avisos flotantes y total ---------- */
+
+.hoja {
+  border-radius: var(--radio-xl);
+  border: 1px solid var(--vidrio-borde);
+}
+
+.aviso-actualizacion,
+.total-flotante {
+  border: 1px solid var(--vidrio-borde);
+}
+
+.aviso {
+  border-radius: var(--radio-l);
+}
+
+/* ---------- Avance ---------- */
+
+.avance {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.avance-linea {
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.avance-nombre {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.avance-barra {
+  height: 0.625rem;
+  border-radius: 0.3125rem;
+  background: var(--relleno);
+}
+
+.avance-relleno {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--act) 72%, #fff), var(--act));
+}
+
+/* ---------- Lista de Metas ---------- */
+
+.fila-meta {
+  gap: var(--space-3);
+}
+
+.contador-valor {
+  font-size: 1.125rem;
+}
+
+/* ---------- Detalles ---------- */
+
+.dia-numero {
+  font-weight: 500;
+}
+
+.sug-dia-titulo {
+  padding-top: var(--space-4);
+}
+
+/* ---------- Filas de bloques (Semana): nombre que se parte en vez de cortarse ---------- */
+
+.sug-bloque {
+  gap: var(--space-3);
+}
+
+.sug-hora {
+  min-width: 0;
+  flex: none;
+  width: 5.75rem;
+  font: var(--t-detalle);
+  letter-spacing: var(--ls-detalle);
+}
+
+.sug-actividad {
+  min-width: 0;
+  gap: var(--space-2);
+}
+
+.sug-texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sug-nota {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  font-weight: 400;
+  color: var(--texto-2);
+}
+
+.sug-duracion {
+  white-space: nowrap;
+}
+
+.chip-actividad svg,
+.sug-actividad .chip-actividad svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}

@@ -6,8 +6,8 @@
   /* Tipografía del sistema. Tracking según el tamaño: negativo en títulos, ~0 en cuerpo, leve positivo en chico (§15). */
   --fuente: system-ui, -apple-system, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
 
-  --t-titulo-grande: 700 2.125rem/1.1 var(--fuente);
-  --ls-titulo-grande: -0.022em;
+  --t-titulo-grande: 700 2.375rem/1.08 var(--fuente);
+  --ls-titulo-grande: -0.026em;
   --t-titulo-1: 700 1.75rem/1.14 var(--fuente);
   --ls-titulo-1: -0.02em;
   --t-titulo-2: 600 1.375rem/1.2 var(--fuente);
@@ -35,8 +35,9 @@
   --space-7: 2.5rem;
   --space-8: 3rem;
   --radio-s: 0.5rem;
-  --radio-m: 0.875rem;
-  --radio-l: 1.25rem;
+  --radio-m: 1rem;
+  --radio-l: 1.5rem;
+  --radio-xl: 1.875rem;
   --tap-min: 2.75rem;
 
   /* Zonas seguras (notch, barra inferior); requieren viewport-fit=cover */
@@ -46,7 +47,7 @@
   --safe-right: env(safe-area-inset-right, 0px);
 
   /* Alturas de las barras flotantes: el contenido pasa por debajo y se compensa con padding */
-  --alto-barra-pestanas: 3.25rem;
+  --alto-barra-pestanas: 4.75rem;
 
   /* Colores (modo claro) */
   --fondo: #f2f2f7;
@@ -58,6 +59,22 @@
   --tinte: #0a6cff;
   --tinte-texto: #ffffff;
   --presionado: rgb(0 0 0 / 0.08);
+
+  /* Vidrio: la superficie de las tarjetas. Translúcida, con borde de luz y sombra suave larga. Sobre ella nada
+     más es translúcido-claro: los controles de adentro usan --relleno, un gris casi transparente (§12). */
+  --vidrio-fondo: rgb(255 255 255 / 0.62);
+  --vidrio-borde: rgb(255 255 255 / 0.8);
+  --vidrio-sombra: 0 0.125rem 0.5rem rgb(40 50 110 / 0.06), 0 1rem 2.25rem rgb(40 50 110 / 0.09);
+  --vidrio-blur: blur(1.5rem) saturate(190%);
+  --relleno: rgb(120 120 128 / 0.12);
+  --segmento-activo: #ffffff;
+
+  /* Fondo con luz de colores detrás del vidrio: sin nada que desenfocar, el vidrio no se nota */
+  --aurora:
+    radial-gradient(60% 38% at 8% 0%, rgb(110 160 255 / 0.38), transparent 72%),
+    radial-gradient(50% 36% at 100% 14%, rgb(200 140 255 / 0.3), transparent 72%),
+    radial-gradient(60% 40% at 0% 78%, rgb(255 175 140 / 0.28), transparent 72%),
+    radial-gradient(55% 38% at 100% 100%, rgb(90 210 200 / 0.28), transparent 72%);
 
   /* Materiales translúcidos. La hoja es más gruesa que la barra: superficie mayor, más blur y sombra más profunda (§12). */
   --barra-fondo: rgb(249 249 251 / 0.72);
@@ -95,6 +112,17 @@
     --tinte: #4d9bff;
     --tinte-texto: #000000;
     --presionado: rgb(255 255 255 / 0.12);
+
+    --vidrio-fondo: rgb(40 40 46 / 0.55);
+    --vidrio-borde: rgb(255 255 255 / 0.13);
+    --vidrio-sombra: 0 0.125rem 0.5rem rgb(0 0 0 / 0.3), 0 1rem 2.25rem rgb(0 0 0 / 0.45);
+    --relleno: rgb(255 255 255 / 0.1);
+    --segmento-activo: #636366;
+    --aurora:
+      radial-gradient(60% 38% at 8% 0%, rgb(60 90 230 / 0.42), transparent 72%),
+      radial-gradient(50% 36% at 100% 14%, rgb(150 70 220 / 0.34), transparent 72%),
+      radial-gradient(60% 40% at 0% 78%, rgb(220 90 90 / 0.24), transparent 72%),
+      radial-gradient(55% 38% at 100% 100%, rgb(30 150 150 / 0.3), transparent 72%);
 
     --barra-fondo: rgb(28 28 30 / 0.72);
     --barra-borde: rgb(255 255 255 / 0.08);

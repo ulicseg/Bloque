@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { IconoActividad } from './Iconos'
 import { Presionable } from './Presionable'
 import { bloquesDelDia } from '../logic/bloques'
 import { DIAS, MIN_DIA, formatearDuracion, horaCampo, horaDeFin, numeroDelDia } from '../logic/tiempo'
@@ -29,7 +30,7 @@ export function BloquesSemana({ semana, actividades, alElegir }: Props) {
             </h3>
             {bloques.map((b) => {
               const act = actividades.find((a) => a.id === b.actividad)
-              const estilo = act ? ({ '--act': `var(--act-${act.color})` } as CSSProperties) : undefined
+              const estilo = act ? ({ '--act': `var(--act-${act.color})`, '--act-fondo': `var(--act-${act.color}-fondo)` } as CSSProperties) : undefined
               const nota = [b.fijo ? 'fijo' : '', ESTADOS[b.estado].toLowerCase()].filter(Boolean).join(' · ')
               return (
                 <Presionable key={b.id} className="fila sug-bloque" style={estilo} onClick={() => alElegir(b)}>
@@ -37,8 +38,11 @@ export function BloquesSemana({ semana, actividades, alElegir }: Props) {
                     {horaCampo(b.inicio - dia * MIN_DIA)}–{horaDeFin(b.fin - dia * MIN_DIA)}
                   </span>
                   <span className="sug-actividad">
-                    {act?.nombre ?? b.actividad}
-                    {nota && <span className="fila-valor-nota"> · {nota}</span>}
+                    <IconoActividad id={b.actividad} />
+                    <span className="sug-texto">
+                      {act?.nombre ?? b.actividad}
+                      {nota && <span className="sug-nota">{nota}</span>}
+                    </span>
                   </span>
                   <span className="sug-duracion">{formatearDuracion(b.fin - b.inicio)}</span>
                 </Presionable>

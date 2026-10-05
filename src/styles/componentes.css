@@ -560,21 +560,6 @@
   padding-bottom: var(--space-3);
 }
 
-/* El número de prioridad en el color de la actividad: texto sobre su tinte, verificado ≥ 4.5:1 */
-.meta-marca {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: var(--act-fondo);
-  color: var(--act);
-  font: var(--t-cuerpo-destacado);
-  letter-spacing: 0;
-  font-variant-numeric: tabular-nums;
-}
-
 .meta-texto {
   flex: 1;
   min-width: 0;
@@ -716,15 +701,6 @@
   font-weight: 600;
 }
 
-/* La marca de color es un adorno: el nombre ya dice la actividad, así que no depende solo del color */
-.sug-actividad::before {
-  content: '';
-  flex: none;
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 50%;
-  background: var(--act);
-}
 
 .sug-duracion {
   flex: none;

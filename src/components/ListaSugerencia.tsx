@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { IconoActividad } from './Iconos'
 import { bloquesPorDia, type Sugerencia } from '../logic/suggest'
 import { DIAS, MIN_DIA, formatearDuracion, horaCampo, horaDeFin, numeroDelDia } from '../logic/tiempo'
 import type { Actividad, FechaISO } from '../logic/types'
@@ -51,7 +52,10 @@ export function ListaSugerencia({ lunes, sugerencia, actividades }: Props) {
                       <span className="sug-hora">
                         {horaCampo(b.inicio - dia * MIN_DIA)}–{horaDeFin(b.fin - dia * MIN_DIA)}
                       </span>
-                      <span className="sug-actividad">{act?.nombre ?? b.actividad}</span>
+                      <span className="sug-actividad">
+                        <IconoActividad id={b.actividad} />
+                        <span className="sug-texto">{act?.nombre ?? b.actividad}</span>
+                      </span>
                       <span className="sug-duracion">{formatearDuracion(b.fin - b.inicio)}</span>
                     </div>
                   )

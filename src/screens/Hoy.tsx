@@ -36,11 +36,8 @@ export function Hoy() {
     })
 
   return (
-    <Pantalla titulo="Hoy">
-      <p className="subtitulo">
-        {textoFecha(fecha)}
-        {turno ? ` · turno ${etiquetaTurno(turno)}` : ' · sin turno'}
-      </p>
+    <Pantalla titulo="Hoy" sobretitulo={textoFecha(fecha)}>
+      <p className="subtitulo">{turno ? `Turno de ${etiquetaTurno(turno)}` : 'Hoy no tenés turno'}</p>
 
       {fallo && (
         <p className="aviso aviso-error" role="alert">

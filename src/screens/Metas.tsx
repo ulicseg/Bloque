@@ -1,7 +1,7 @@
 import { useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { AvanceSemana } from '../components/AvanceSemana'
-import { IconoAdelante } from '../components/Iconos'
+import { IconoActividad, IconoAdelante } from '../components/Iconos'
 import { avanceSemana } from '../logic/progreso'
 import { lunesActual } from '../logic/tiempo'
 import { semanaVacia } from '../logic/turnos'
@@ -40,9 +40,7 @@ export function Metas() {
         <div className="grupo">
           {lista.map((a) => (
             <Presionable key={a.id} className="fila fila-meta" onClick={() => setAbierta(a.id)} style={{ '--act': `var(--act-${a.color})`, '--act-fondo': `var(--act-${a.color}-fondo)` } as CSSProperties}>
-              <span className="meta-marca" aria-hidden>
-                {a.fija ? '·' : a.prioridad}
-              </span>
+              <IconoActividad id={a.id} />
               <span className="meta-texto">
                 <span className="meta-nombre">{a.nombre}</span>
                 <span className="meta-resumen">{resumen(a)}</span>
@@ -54,7 +52,7 @@ export function Metas() {
           ))}
         </div>
         <p className="fila-nota fila-nota-suelta">
-          El número es la prioridad de cada actividad: la 1 se ubica primero. Las fijas (como el psicólogo) no se sugieren.
+          La lista va de la que se ubica primero a la última. Las fijas (como el psicólogo) no se sugieren.
         </p>
       </Pantalla>
 

@@ -21,10 +21,6 @@
   gap: var(--space-3);
 }
 
-.tarjeta-cabecera .sug-actividad::before {
-  display: none;
-}
-
 .tarjeta-hora {
   font: var(--t-cuerpo);
   letter-spacing: var(--ls-cuerpo);

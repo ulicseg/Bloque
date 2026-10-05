@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { motion } from 'motion/react'
+import { IconoActividad } from './Iconos'
 import type { Avance } from '../logic/progreso'
 import type { Actividad } from '../logic/types'
 
@@ -15,9 +16,12 @@ export function AvanceSemana({ avances, actividades }: Props) {
       {avances.map((a) => {
         const color = actividades.find((x) => x.id === a.actividad)?.color ?? a.actividad
         return (
-          <div key={a.actividad} className="avance" style={{ '--act': `var(--act-${color})` } as CSSProperties}>
+          <div key={a.actividad} className="avance" style={{ '--act': `var(--act-${color})`, '--act-fondo': `var(--act-${color}-fondo)` } as CSSProperties}>
             <div className="avance-linea">
-              <span className="avance-nombre">{a.nombre}</span>
+              <span className="avance-nombre">
+                <IconoActividad id={a.actividad} />
+                {a.nombre}
+              </span>
               <span className="avance-texto">{a.cumplida ? `${a.texto} ✓` : a.texto}</span>
             </div>
             <div
