@@ -5,7 +5,7 @@
 /** Fecha calendario AAAA-MM-DD. Argentina no tiene horario de verano, así que no hay días de 23 o 25 h. */
 export type FechaISO = string
 
-export type IdActividad = 'ingles' | 'gimnasio' | 'programacion' | 'psicologo' | 'caminata' | 'libre' | 'revision'
+export type IdActividad = 'ingles' | 'gimnasio' | 'programacion' | 'psicologo' | 'caminata' | 'libre'
 
 export type EstadoBloque = 'planificado' | 'hecho' | 'minimo' | 'salteado'
 export const ESTADOS_BLOQUE: readonly EstadoBloque[] = ['planificado', 'hecho', 'minimo', 'salteado']

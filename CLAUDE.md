@@ -126,6 +126,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Tiempo libre más claro (2026-10-05):** la tabla provisoria de ventanas pasa a `VentanasLibres`: por día, una línea de 0 a 24 h con lo libre coloreado, la duración total, los horarios con su duración y "Cerca de dormir" en vez de "foco: no".
 
+- **Sin revisión semanal (2026-10-05):** se elimina la actividad (tipo, defaults, sugerencia, ícono y colores). Esquema v7: la migración v6→v7 quita la actividad y los bloques que la usaban; el psicólogo pasa a prioridad 6 en los valores por defecto.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

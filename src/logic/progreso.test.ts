@@ -19,7 +19,7 @@ const act = (id: IdActividad) => ACTIVIDADES_POR_DEFECTO.find((a) => a.id === id
 describe('avanceSemana', () => {
   it('sin bloques, todo en cero', () => {
     const r = avanceSemana(semana([]), ACTIVIDADES_POR_DEFECTO)
-    expect(r).toHaveLength(7)
+    expect(r).toHaveLength(6)
     expect(r.every((a) => a.fraccion === 0 && !a.cumplida)).toBe(true)
     expect(r.find((a) => a.actividad === 'gimnasio')?.texto).toBe('0 de 4 sesiones')
   })

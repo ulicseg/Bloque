@@ -213,7 +213,6 @@ describe('metas por defecto', () => {
       ['psicologo', 'sesiones', 1, 60, null],
       ['caminata', 'sesiones', 7, 30, 10],
       ['libre', 'sesiones', 2, 180, null],
-      ['revision', 'sesiones', 1, 20, null],
     ] as const
     for (const [id, tipo, meta, duracion, minimo] of tabla) {
       const a = por(id)

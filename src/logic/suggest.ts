@@ -24,7 +24,7 @@ export const VENTANA_MIN_LIBRE = 180
 const TARDE_DESDE = 12 * 60
 const NOCHE_DESDE = 18 * 60
 
-/** Las que exigen concentración. La revisión semanal es liviana, por eso puede ir en una ventana "foco: no". */
+/** Las que exigen concentración: no van en una ventana "foco: no" (cerca de la hora de dormir). */
 const FOCO: ReadonlySet<IdActividad> = new Set(['ingles', 'programacion'])
 
 /** Inglés admite dos por día; el resto, uno (caminata es diaria, no varias por día). */
@@ -35,7 +35,6 @@ const MAXIMO_POR_DIA: Record<IdActividad, number> = {
   psicologo: 1,
   caminata: 1,
   libre: 1,
-  revision: 1,
 }
 
 export type MotivoFalta =
@@ -232,9 +231,6 @@ function puntaje(ctx: Contexto, a: Actividad, c: Candidato): number[] {
     // Un hueco justo para la caminata, en el día menos cargado: deja los tramos grandes para lo demás
     case 'caminata':
       return [desajuste, ctx.asignadoDia[c.dia], c.pieza, c.dia, horario]
-    // El domingo, o el último día que tenga lugar
-    case 'revision':
-      return [-c.dia, desajuste, horario]
     // Gimnasio, programación y libre: no en días seguidos y en el día más liviano
     default:
       return [desajuste, vecino, ctx.asignadoDia[c.dia], c.dia, horario]

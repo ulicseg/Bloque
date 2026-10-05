@@ -296,7 +296,9 @@ describe('migrar', () => {
 
   describe('v4 → v5', () => {
     const v4 = (actividades: unknown) => ({ schemaVersion: 4, datos: { pestaña: 'metas', semanas: {}, ajustes: {}, actividades, rareza: 3 } })
-    const viejas = () => ACTIVIDADES_POR_DEFECTO.map((a) => ({ ...a, prioridad: PRIORIDADES_V4[a.id] }))
+    // La v4 todavía traía la revisión semanal (la v7 la quita): se agrega a mano para armar la lista de entonces
+    const revision = { id: 'revision', nombre: 'Revisión semanal', color: 'revision', tipoMeta: 'sesiones', meta: 1, duracionMin: 20, minimoMin: null, franja: 'noche', prioridad: PRIORIDADES_V4.revision, fija: false }
+    const viejas = () => [...ACTIVIDADES_POR_DEFECTO.map((a) => ({ ...a, prioridad: PRIORIDADES_V4[a.id] })), revision]
 
     it('con las prioridades de la v4 sin tocar, pasan al orden nuevo y no cambia nada más', () => {
       const r = migrar(v4(viejas()))
@@ -307,12 +309,35 @@ describe('migrar', () => {
 
     it('si hay alguna otra prioridad, o faltan actividades, se conserva tal cual', () => {
       const tocadas = viejas().map((a) => (a.id === 'caminata' ? { ...a, prioridad: 1, meta: 5 } : a))
-      // lo único que suma la v6 es el gimnasio cerrado los domingos
-      const conDomingo = tocadas.map((a) => (a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a))
+      // lo único que suman las migraciones siguientes es el gimnasio cerrado los domingos (v6) y sacar la revisión (v7)
+      const conDomingo = tocadas.filter((a) => a.id !== 'revision').map((a) => (a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a))
       expect(migrar(v4(tocadas))?.datos.actividades).toEqual(conDomingo)
       const incompletas = viejas().slice(0, 3)
       expect(migrar(v4(incompletas))?.datos.actividades).toEqual(incompletas.map((a) => (a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a)))
       expect(migrar(v4([]))?.datos.actividades).toEqual([])
+    })
+  })
+
+  describe('v6 → v7', () => {
+    const bloque = (id: string, actividad: string) => ({ id, actividad, dia: 6, inicio: 1200, fin: 1220, estado: 'planificado' })
+    const v6 = (datos: object) => ({ schemaVersion: 6, datos: { pestaña: 'hoy', semanas: {}, ajustes: {}, actividades: [], ...datos } })
+
+    it('quita la revisión semanal y sus bloques, y deja todo lo demás', () => {
+      const r = migrar(
+        v6({
+          actividades: [{ id: 'ingles', prioridad: 1 }, { id: 'revision', prioridad: 6 }, { id: 'psicologo', prioridad: 7 }],
+          semanas: { '2026-10-05': { lunes: '2026-10-05', turnos: [], bloques: [bloque('a', 'ingles'), bloque('b', 'revision')], rara: 1 } },
+          rareza: 3,
+        }),
+      )
+      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
+      expect(r?.datos.actividades).toEqual([{ id: 'ingles', prioridad: 1 }, { id: 'psicologo', prioridad: 7 }])
+      expect(r?.datos.semanas['2026-10-05']).toMatchObject({ bloques: [bloque('a', 'ingles')], rara: 1 })
+      expect((r?.datos as unknown as Record<string, unknown>).rareza).toBe(3)
+    })
+
+    it('con datos vacíos o raros no se cae', () => {
+      expect(migrar(v6({ actividades: undefined, semanas: undefined }))?.schemaVersion).toBe(VERSION_ACTUAL)
     })
   })
 

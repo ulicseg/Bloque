@@ -78,7 +78,7 @@ function violaciones(dias: DiaCalculado[], metas: Actividad[], fijos: Bloque[], 
   // Reglas por actividad
   const cuentaPorDia = (id: IdActividad) => dias.map((d) => r.bloques.filter((b) => b.actividad === id && diaDe(b) === d.dia).length)
   cuentaPorDia('ingles').forEach((n, d) => n > 2 && v.push(`inglés ${n} bloques el día ${d}`))
-  for (const id of ['gimnasio', 'caminata', 'programacion', 'libre', 'revision'] as const) {
+  for (const id of ['gimnasio', 'caminata', 'programacion', 'libre'] as const) {
     cuentaPorDia(id).forEach((n, d) => n > 1 && v.push(`${id} ${n} bloques el día ${d}`))
   }
   for (const b of r.bloques) {
@@ -127,15 +127,13 @@ describe('suggest: la semana de ejemplo', () => {
     expect(r.bloques.filter((b) => b.actividad === 'gimnasio')).toHaveLength(4)
     expect(r.bloques.filter((b) => b.actividad === 'caminata')).toHaveLength(7)
     expect(r.bloques.filter((b) => b.actividad === 'libre')).toHaveLength(2)
-    expect(r.bloques.filter((b) => b.actividad === 'revision')).toHaveLength(1)
     // el psicólogo es fijo: está en `fijos` y no se repite en la sugerencia
     expect(r.bloques.some((b) => b.actividad === 'psicologo')).toBe(false)
   })
 
-  it('el inglés queda repartido, la revisión el domingo y el libre en noches sin turno', () => {
+  it('el inglés queda repartido y el libre en noches sin turno', () => {
     const porDia = bloquesPorDia(r.bloques)
     expect(porDia.map((d) => d.filter((b) => b.actividad === 'ingles').length)).toEqual([1, 1, 1, 1, 1, 1, 1])
-    expect(porDia[6].some((b) => b.actividad === 'revision')).toBe(true)
     const diasLibre = porDia.flatMap((d, i) => (d.some((b) => b.actividad === 'libre') ? [i] : []))
     expect(diasLibre.every((d) => d >= 3 && d <= 5)).toBe(true)
   })
@@ -191,7 +189,7 @@ describe('suggest: informe de lo que no entró', () => {
     const vacias = ventanasDe(semanaVacia(SEMANA_EJEMPLO.lunes)).map((d) => ({ ...d, ventanas: [] }))
     const r = suggest(vacias, ACTIVIDADES_POR_DEFECTO, [])
     expect(r.bloques).toEqual([])
-    expect(r.faltantes.map((f) => f.actividad).sort()).toEqual(['caminata', 'gimnasio', 'ingles', 'libre', 'programacion', 'psicologo', 'revision'])
+    expect(r.faltantes.map((f) => f.actividad).sort()).toEqual(['caminata', 'gimnasio', 'ingles', 'libre', 'programacion', 'psicologo'])
     expect(r.faltantes.find((f) => f.actividad === 'ingles')).toMatchObject({ bloquesFaltantes: 7, faltanMin: 10 * H, motivo: 'sin-espacio' })
   })
 
@@ -264,13 +262,6 @@ describe('suggest: reglas por actividad', () => {
     expect(r.bloques.map(rango)).toEqual(['18:00–21:00', '18:00–21:00'])
     // en ventanas de 2 h 30 no entra nunca
     expect(suggest(semana((n) => dia(n, [[18, 20.5]])), [por('libre', { meta: 2 })], []).bloques).toEqual([])
-  })
-
-  it('revisión: el domingo, o el último día con ventana', () => {
-    const conDomingo = semana((n) => dia(n, [[9, 12]]))
-    expect(diasDe(suggest(conDomingo, [por('revision')], []).bloques)).toEqual([6])
-    const sinDomingo = semana((n) => dia(n, n < 5 ? [[9, 12]] : []))
-    expect(diasDe(suggest(sinDomingo, [por('revision')], []).bloques)).toEqual([4])
   })
 
   it('inglés: máximo dos por día y en las primeras ventanas', () => {

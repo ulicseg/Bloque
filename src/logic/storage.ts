@@ -7,7 +7,7 @@ import type { Datos } from './types'
 export type { Datos } from './types'
 
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 6
+export const VERSION_ACTUAL = 7
 
 export interface Guardado {
   schemaVersion: number
@@ -88,6 +88,21 @@ export const MIGRACIONES: Migracion[] = [
       esObjeto(a) && !('diasNo' in a) && a.id === 'gimnasio' ? { ...a, diasNo: [6] } : a,
     )
     return { ...v5, schemaVersion: 6, datos: { ...datos, actividades } }
+  },
+  // v6 → v7: se elimina la revisión semanal (pedido de la persona). Se quita la actividad y los bloques que la usaban;
+  // lo demás, incluidas las prioridades de las otras actividades, queda como estaba.
+  (v6) => {
+    const datos = v6.datos as Record<string, unknown>
+    const actividades = Array.isArray(datos.actividades) ? datos.actividades.filter((a) => !(esObjeto(a) && a.id === 'revision')) : datos.actividades
+    const semanas = esObjeto(datos.semanas)
+      ? Object.fromEntries(
+          Object.entries(datos.semanas).map(([lunes, s]) => [
+            lunes,
+            esObjeto(s) && Array.isArray(s.bloques) ? { ...s, bloques: s.bloques.filter((b) => !(esObjeto(b) && b.actividad === 'revision')) } : s,
+          ]),
+        )
+      : datos.semanas
+    return { ...v6, schemaVersion: 7, datos: { ...datos, actividades, semanas } }
   },
 ]
 

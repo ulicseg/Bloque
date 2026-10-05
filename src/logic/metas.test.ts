@@ -64,7 +64,7 @@ describe('textos', () => {
   it('meta, mínimo y resumen', () => {
     expect(textoMeta(de(lista, 'ingles'))).toBe('10 h')
     expect(textoMeta({ ...de(lista, 'ingles'), meta: 6.5 })).toBe('6,5 h')
-    expect(textoMeta(de(lista, 'revision'))).toBe('1 sesión')
+    expect(textoMeta(de(lista, 'psicologo'))).toBe('1 sesión')
     expect(textoMinimo(de(lista, 'libre'))).toBe('Sin mínimo')
     expect(textoMinimo(de(lista, 'gimnasio'))).toBe('30 min')
     expect(resumen(de(lista, 'gimnasio'))).toBe('4 sesiones por semana · 1 h 15 min · tarde')

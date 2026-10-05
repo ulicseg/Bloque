@@ -97,8 +97,6 @@
   --act-caminata-fondo: #e2f5e7;
   --act-libre: #8a5a00;
   --act-libre-fondo: #fcf0d6;
-  --act-revision: #3d5a6c;
-  --act-revision-fondo: #e6edf1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -138,7 +136,5 @@
     --act-caminata-fondo: #123522;
     --act-libre: #ffc65c;
     --act-libre-fondo: #3a2c0a;
-    --act-revision: #9fbccd;
-    --act-revision-fondo: #1c2a33;
   }
 }

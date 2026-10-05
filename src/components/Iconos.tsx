@@ -59,7 +59,6 @@ const ICONOS_ACTIVIDAD: Record<IdActividad, ReactNode> = {
     </>
   ),
   libre: <path d="M12 3.5l2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z" />,
-  revision: <path d="M9 7h10M9 12h10M9 17h10M4.5 7l1 1 2-2M4.5 12l1 1 2-2M4.5 17l1 1 2-2" />,
 }
 
 export function IconoActividad({ id }: { id: IdActividad }) {
