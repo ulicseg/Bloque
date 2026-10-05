@@ -131,15 +131,3 @@
     border-width: 0.125rem;
   }
 }
-
-@media (prefers-contrast: more) {
-  .cal-sueno,
-  .cal-turno,
-  .cal-otro {
-    border: 0.125rem solid var(--texto);
-  }
-
-  .cal-columna {
-    box-shadow: inset 0 0 0 0.0625rem var(--texto);
-  }
-}

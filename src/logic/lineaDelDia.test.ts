@@ -3,20 +3,22 @@ import { lineaDelDia } from './lineaDelDia'
 import type { DiaCalculado } from './windows'
 import type { Bloque } from './types'
 
-const h = (x: number) => x * 60
 const DIA = 2 // miércoles
 const base = DIA * 1440
+// Como los entrega computeWindows: minutos desde el lunes
+const hs = (x: number) => base + x * 60
+const h = (x: number) => x * 60
 
 const calculado: DiaCalculado = {
   dia: DIA,
   tramos: [
-    { tipo: 'sueno', inicio: h(0), fin: h(7) },
-    { tipo: 'turno', inicio: h(8), fin: h(12) },
-    { tipo: 'sueno', inicio: h(23), fin: h(24) },
+    { tipo: 'sueno', inicio: hs(0), fin: hs(7) },
+    { tipo: 'turno', inicio: hs(8), fin: hs(12) },
+    { tipo: 'sueno', inicio: hs(23), fin: hs(24) },
   ],
   ventanas: [
-    { inicio: h(12), fin: h(18), foco: true },
-    { inicio: h(20), fin: h(22), foco: false },
+    { inicio: hs(12), fin: hs(18), foco: true },
+    { inicio: hs(20), fin: hs(22), foco: false },
   ],
 }
 

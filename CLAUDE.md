@@ -131,6 +131,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Franjas múltiples, prioridad arrastrable y Calendario (2026-10-05):** la franja preferida es una lista (`franjas`, esquema v8 con migración v7→v8; las tres juntas = cualquiera) y se marcan varias a la vez. La prioridad se acomoda arrastrando el asa ≡ en la lista de Metas (`ListaPrioridad`, `Reorder` de motion; también con flechas del teclado; `reordenar` en `metas.ts` reemplaza a `moverPrioridad`); las fijas van aparte. Nueva pestaña **Calendario**: la semana completa en siete columnas y 24 h (sueño, turno, traslados, bloques y huecos libres), con línea de "ahora" y detalle al tocar un tramo; usa `lineaDelDia`. Sin verificar en pantalla: el navegador no estaba conectado.
 
+- **Sin Calendario y plan del día corregido (2026-10-05):** se quita la pestaña Calendario. Arreglo en `lineaDelDia`: `computeWindows` entrega minutos desde el lunes y se leían como minutos del día, así que de martes a domingo lo ocupado salía todo arriba y los bloques fuera de hora; ahora cada día se ordena por su horario real.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

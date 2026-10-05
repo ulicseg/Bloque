@@ -1,5 +1,6 @@
 // Cómo se ve un día de punta a punta: lo ocupado, los bloques ya puestos y los huecos donde todavía entra algo.
-// Función pura. Todos los tiempos de salida son minutos dentro del día (0–1440), no desde el lunes.
+// Función pura. Los tramos y ventanas de entrada vienen en minutos desde el lunes (como los entrega computeWindows);
+// todos los tiempos de salida son minutos dentro del día (0–1440).
 
 import { restar, type DiaCalculado, type Intervalo, type TipoTramo } from './windows'
 import { MIN_DIA } from './tiempo'
@@ -30,14 +31,15 @@ export function lineaDelDia(calculado: DiaCalculado, bloques: Bloque[], minimoMi
   const tapados: Intervalo[] = propios.map((x) => [x.inicio, x.fin])
 
   const segmentos: Segmento[] = [
-    ...calculado.tramos.map((t): Segmento => ({ tipo: 'ocupado', que: t.tipo, inicio: t.inicio, fin: t.fin })),
+    ...calculado.tramos.map((t): Segmento => ({ tipo: 'ocupado', que: t.tipo, inicio: t.inicio - base, fin: t.fin - base })),
     ...propios.map((x): Segmento => ({ tipo: 'bloque', bloque: x.bloque, inicio: x.inicio, fin: x.fin })),
-    ...calculado.ventanas.flatMap((v) =>
-      restar(v.inicio, v.fin, tapados)
+    ...calculado.ventanas.flatMap((w) => {
+      const v = { ...w, inicio: w.inicio - base, fin: w.fin - base }
+      return restar(v.inicio, v.fin, tapados)
         .filter(([a, b]) => b - a >= minimoMin)
         // Si el bloque ya puesto se come el final de la ventana, el hueco que queda ya no está pegado al sueño
-        .map(([a, b]): Segmento => ({ tipo: 'libre', inicio: a, fin: b, foco: v.foco || b < v.fin })),
-    ),
+        .map(([a, b]): Segmento => ({ tipo: 'libre', inicio: a, fin: b, foco: v.foco || b < v.fin }))
+    }),
   ]
   // A igual inicio, lo ocupado primero y el hueco al final
   const orden = { ocupado: 0, bloque: 1, libre: 2 }

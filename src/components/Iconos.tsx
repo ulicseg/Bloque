@@ -27,12 +27,6 @@ export const IconoSemana = icono(
     <path d="M4 10h16M9 3v4M15 3v4" />
   </>,
 )
-export const IconoCalendario = icono(
-  <>
-    <rect x="3.5" y="4" width="17" height="16" rx="3" />
-    <path d="M9.2 4v16M14.8 4v16M3.5 9.5h17M3.5 14.5h17" />
-  </>,
-)
 export const IconoMetas = icono(
   <>
     <circle cx="12" cy="12" r="8" />
