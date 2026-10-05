@@ -47,6 +47,15 @@ p {
   margin: 0;
 }
 
+/* Sin barra de scroll visible en ninguna pantalla; el desplazamiento sigue funcionando */
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
 button {
   font: inherit;
   letter-spacing: inherit;

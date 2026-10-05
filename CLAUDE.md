@@ -122,6 +122,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Barra en cápsula (2026-10-05):** la barra de pestañas vuelve a ser una cápsula de vidrio flotante, redondeada arriba y abajo. La aurora se desvanece hacia arriba (máscara) para no cortarse contra la barra de estado opaca del sistema.
 
+- **Fondo negro y sin barra de scroll (2026-10-05):** en modo oscuro `--aurora` es `none` (negro liso, se funde con la barra de estado del sistema); en claro sigue la aurora. Barras de scroll ocultas en toda la app.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.
