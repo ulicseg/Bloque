@@ -118,6 +118,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Mañana, gimnasio cerrado los domingos y alto completo (2026-10-05):** Hoy tiene selector Hoy / Mañana (mañana es solo lectura y cruza de semana los domingos). Las actividades tienen `diasNo` (esquema v6, migración v5→v6: el gimnasio queda cerrado los domingos si no traía el campo); la sugerencia no ubica nada esos días, el editor de bloque avisa y Metas permite marcarlos. Con el gimnasio fuera del domingo la semana de ejemplo es justa y una caminata de 30 min puede quedar afuera. Para el espacio negro de abajo en iOS: fondo en `html` y `.app` con `100lvh`.
 
+- **Hueco inferior en iOS, causa (2026-10-05):** regresión de WebKit en iOS 26: con `black-translucent` la app se dibuja desde y=0 pero `innerHeight` mide 57 px menos (iPhone 16: 795 de 852) y esa franja no se cubre con CSS (se probó correr la barra y estirar el contenedor: sin efecto). `apple-mobile-web-app-status-bar-style` pasa a `default`: la barra de estado deja de ser translúcida y la ventana empieza debajo. Si Apple lo corrige, se puede volver a `black-translucent`.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.
