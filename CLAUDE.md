@@ -120,6 +120,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Hueco inferior en iOS, causa (2026-10-05):** regresión de WebKit en iOS 26: con `black-translucent` la app se dibuja desde y=0 pero `innerHeight` mide 57 px menos (iPhone 16: 795 de 852) y esa franja no se cubre con CSS (se probó correr la barra y estirar el contenedor: sin efecto). `apple-mobile-web-app-status-bar-style` pasa a `default`: la barra de estado deja de ser translúcida y la ventana empieza debajo. Si Apple lo corrige, se puede volver a `black-translucent`.
 
+- **Barra en cápsula (2026-10-05):** la barra de pestañas vuelve a ser una cápsula de vidrio flotante, redondeada arriba y abajo. La aurora se desvanece hacia arriba (máscara) para no cortarse contra la barra de estado opaca del sistema.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

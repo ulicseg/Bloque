@@ -14,6 +14,10 @@
   inset: 0;
   z-index: -1;
   background: var(--aurora);
+  /* La barra de estado es del sistema (opaca) y no puede mostrar la luz de colores: el fondo nace liso arriba
+     y recién después aparece la aurora, así no se corta contra la isla dinámica */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16%);
+  mask-image: linear-gradient(to bottom, transparent, #000 16%);
   pointer-events: none;
 }
 
@@ -203,14 +207,14 @@
 /* ---------- Barra de pestañas flotante ---------- */
 
 .barra-pestanas {
-  /* Pegada al borde de abajo y de punta a punta: la zona segura queda adentro, no como hueco */
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 0.25rem max(var(--space-2), var(--safe-right)) calc(0.25rem + var(--safe-bottom)) max(var(--space-2), var(--safe-left));
-  border-radius: var(--radio-l) var(--radio-l) 0 0;
+  /* Cápsula de vidrio flotante: redondeada arriba y abajo, con el fondo de la app visible alrededor.
+     Baja hasta casi el indicador de inicio (la mitad de la zona segura alcanza para no pisarlo). */
+  left: max(var(--space-3), var(--safe-left));
+  right: max(var(--space-3), var(--safe-right));
+  bottom: max(var(--space-2), calc(var(--safe-bottom) - 0.5rem));
+  padding: 0.25rem;
+  border-radius: 999px;
   border: 1px solid var(--vidrio-borde);
-  border-bottom: 0;
   box-shadow: var(--vidrio-sombra);
 }
 
@@ -221,7 +225,7 @@
 
 .pestana {
   min-height: var(--tap-min);
-  border-radius: 1.25rem;
+  border-radius: 999px;
   font-weight: 600;
   transition:
     background-color 0.2s ease-out,

@@ -24,7 +24,7 @@
   }
 
   .barra-pestanas {
-    border-top: 0.125rem solid var(--texto);
+    border: 0.125rem solid var(--texto);
   }
 
   .pestana[aria-current='page'] {
