@@ -539,11 +539,82 @@
   margin: var(--space-2) 0 0;
 }
 
-/* ---------- Ventanas libres (tabla provisoria) ---------- */
+/* ---------- Tiempo libre por día ---------- */
 
-.ventana-linea {
-  display: block;
+.libre-dia {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.libre-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.libre-nada {
+  color: var(--texto-2);
+  font-weight: 400;
+}
+
+/* La línea de 24 h: el gris es lo ocupado, lo coloreado es libre */
+.libre-linea {
+  position: relative;
+  height: 0.625rem;
+  border-radius: 999px;
+  background: var(--relleno);
+  overflow: hidden;
+}
+
+.libre-tramo {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--tinte);
+}
+
+/* Cerca de dormir: mismo color pero más suave */
+.libre-tramo-liviano {
+  opacity: 0.4;
+}
+
+.libre-horarios {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
   font-variant-numeric: tabular-nums;
+}
+
+.libre-horarios li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.libre-duracion,
+.libre-etiqueta {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  color: var(--texto-2);
+}
+
+.libre-etiqueta {
+  margin-left: auto;
+}
+
+.libre-escala {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4) 0;
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  color: var(--texto-3);
 }
 
 /* ---------- Metas ---------- */

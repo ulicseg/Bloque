@@ -5,7 +5,7 @@ import { Presionable } from '../components/Presionable'
 import { Segmentado } from '../components/Segmentado'
 import { BloquesSemana } from '../components/BloquesSemana'
 import { ListaSugerencia } from '../components/ListaSugerencia'
-import { VentanasProvisorias } from '../components/VentanasProvisorias'
+import { VentanasLibres } from '../components/VentanasLibres'
 import { aceptarSugerencia, bloquesQueCuentan } from '../logic/bloques'
 import type { Bloque } from '../logic/types'
 import { conSemana, descripcionFin, etiquetaTurno, semanaVacia, textoTotal, turnoDelDia, vecinasDe } from '../logic/turnos'
@@ -91,8 +91,8 @@ export function Semana() {
           </Presionable>
         </div>
 
-        <h2 className="seccion-titulo">Ventanas libres (provisorio)</h2>
-        <VentanasProvisorias lunes={lunes} dias={dias} />
+        <h2 className="seccion-titulo">Tiempo libre</h2>
+        <VentanasLibres lunes={lunes} dias={dias} />
 
         <h2 className="seccion-titulo">Sugerencia</h2>
         <div className="grupo">

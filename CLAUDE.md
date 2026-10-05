@@ -124,6 +124,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Fondo negro y sin barra de scroll (2026-10-05):** en modo oscuro `--aurora` es `none` (negro liso, se funde con la barra de estado del sistema); en claro sigue la aurora. Barras de scroll ocultas en toda la app.
 
+- **Tiempo libre más claro (2026-10-05):** la tabla provisoria de ventanas pasa a `VentanasLibres`: por día, una línea de 0 a 24 h con lo libre coloreado, la duración total, los horarios con su duración y "Cerca de dormir" en vez de "foco: no".
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.
