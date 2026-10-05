@@ -539,82 +539,146 @@
   margin: var(--space-2) 0 0;
 }
 
-/* ---------- Tiempo libre por día ---------- */
+/* ---------- Plan del día (tiempo libre por día) ---------- */
 
-.libre-dia {
-  padding: var(--space-3) var(--space-4);
+.plan-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.plan-dia {
+  min-height: 4.25rem;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-}
-
-.libre-cabecera {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-.libre-nada {
-  color: var(--texto-2);
-  font-weight: 400;
-}
-
-/* La línea de 24 h: el gris es lo ocupado, lo coloreado es libre */
-.libre-linea {
-  position: relative;
-  height: 0.625rem;
-  border-radius: 999px;
-  background: var(--relleno);
-  overflow: hidden;
-}
-
-.libre-tramo {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  border-radius: 999px;
-  background: var(--tinte);
-}
-
-/* Cerca de dormir: mismo color pero más suave */
-.libre-tramo-liviano {
-  opacity: 0.4;
-}
-
-.libre-horarios {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.125rem;
+  border-radius: var(--radio-m);
+  background: var(--presionado);
   font-variant-numeric: tabular-nums;
 }
 
-.libre-horarios li {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
+.plan-dia[aria-pressed='true'] {
+  background: var(--tinte);
+  color: var(--tinte-texto);
 }
 
-.libre-duracion,
-.libre-etiqueta {
+.plan-dia-letra,
+.plan-dia-libre {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  opacity: 0.75;
+}
+
+.plan-dia-numero {
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+}
+
+/* Hoy: un punto bajo el número, sin cambiar el color de la selección */
+.plan-dia[data-hoy] .plan-dia-numero::after {
+  content: '';
+  display: block;
+  width: 0.25rem;
+  height: 0.25rem;
+  margin: 0.0625rem auto 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.plan-resumen {
+  margin: 0 var(--space-1) var(--space-3);
+  color: var(--texto-2);
+}
+
+.plan-resumen strong {
+  color: var(--texto);
+}
+
+.plan-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.plan-fila {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radio-m);
+  text-align: left;
+}
+
+.plan-hora {
+  display: flex;
+  flex-direction: column;
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+
+.plan-hora-fin {
+  color: var(--texto-3);
+}
+
+.plan-cuerpo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.plan-sub {
   font: var(--t-nota);
   letter-spacing: var(--ls-nota);
   color: var(--texto-2);
 }
 
-.libre-etiqueta {
-  margin-left: auto;
+/* Lo ocupado se ve apagado: es contexto, no algo para tocar */
+.plan-ocupado {
+  min-height: 2.5rem;
+  background: var(--relleno);
+  color: var(--texto-2);
 }
 
-.libre-escala {
+.plan-bloque {
+  min-height: var(--tap-min);
+  background: var(--act-fondo, var(--relleno));
+}
+
+.plan-titulo-bloque {
   display: flex;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4) 0;
-  font: var(--t-nota);
-  letter-spacing: var(--ls-nota);
-  color: var(--texto-3);
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--act, var(--texto));
+  font-weight: 600;
+}
+
+/* El hueco libre es lo que se puede tocar: borde punteado y un "+" */
+.plan-libre {
+  min-height: 3.5rem;
+  border: 0.125rem dashed var(--tinte);
+  background: color-mix(in srgb, var(--tinte) 8%, transparent);
+}
+
+.plan-libre .plan-titulo {
+  font-weight: 600;
+  color: var(--tinte);
+}
+
+.plan-mas {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--tinte);
+}
+
+.plan-leyenda {
+  margin-top: var(--space-3);
+  padding: 0 var(--space-1);
 }
 
 /* ---------- Metas ---------- */

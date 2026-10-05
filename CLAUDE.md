@@ -124,9 +124,10 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Fondo negro y sin barra de scroll (2026-10-05):** en modo oscuro `--aurora` es `none` (negro liso, se funde con la barra de estado del sistema); en claro sigue la aurora. Barras de scroll ocultas en toda la app.
 
-- **Tiempo libre más claro (2026-10-05):** la tabla provisoria de ventanas pasa a `VentanasLibres`: por día, una línea de 0 a 24 h con lo libre coloreado, la duración total, los horarios con su duración y "Cerca de dormir" en vez de "foco: no".
 
 - **Sin revisión semanal (2026-10-05):** se elimina la actividad (tipo, defaults, sugerencia, ícono y colores). Esquema v7: la migración v6→v7 quita la actividad y los bloques que la usaban; el psicólogo pasa a prioridad 6 en los valores por defecto.
+
+- **Plan del día (2026-10-05):** "Tiempo libre" en Semana se rehace como `PlanDelDia`: selector de los 7 días con las horas libres de cada uno y, del día elegido, una lista de punta a punta (lo ocupado en gris, los bloques con su color y los huecos libres con borde punteado y ＋). Tocar un hueco abre "Nuevo bloque" ya ubicado ahí. La lógica es `src/logic/lineaDelDia.ts` (huecos = ventanas menos bloques ya puestos), con tests. Sin verificar en pantalla: el navegador no estaba conectado.
 
 ## Pendientes conocidos
 

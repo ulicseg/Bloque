@@ -5,11 +5,11 @@ import { Presionable } from '../components/Presionable'
 import { Segmentado } from '../components/Segmentado'
 import { BloquesSemana } from '../components/BloquesSemana'
 import { ListaSugerencia } from '../components/ListaSugerencia'
-import { VentanasLibres } from '../components/VentanasLibres'
+import { PlanDelDia } from '../components/PlanDelDia'
 import { aceptarSugerencia, bloquesQueCuentan } from '../logic/bloques'
 import type { Bloque } from '../logic/types'
 import { conSemana, descripcionFin, etiquetaTurno, semanaVacia, textoTotal, turnoDelDia, vecinasDe } from '../logic/turnos'
-import { lunesActual, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
+import { diaDeLaSemana, fechaEnArgentina, lunesActual, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
 import { suggest } from '../logic/suggest'
 import { computeWindows } from '../logic/windows'
 import { useDatos } from '../useDatos'
@@ -24,6 +24,8 @@ export function Semana() {
   const [cargando, setCargando] = useState(false)
   // undefined = cerrado; null = bloque nuevo; un bloque = editarlo
   const [editando, setEditando] = useState<Bloque | null | undefined>(undefined)
+  // Si el bloque nuevo nace de un hueco libre del plan del día: en qué día y a qué hora
+  const [desdeHueco, setDesdeHueco] = useState<{ dia: number; desde: string; hasta: string } | undefined>(undefined)
   // Semana para la que se pidió la sugerencia: al cambiar de semana no se muestra una ajena
   const [pedida, setPedida] = useState<string | null>(null)
   const reducido = useReducedMotion() ?? false
@@ -92,7 +94,19 @@ export function Semana() {
         </div>
 
         <h2 className="seccion-titulo">Tiempo libre</h2>
-        <VentanasLibres lunes={lunes} dias={dias} />
+        <PlanDelDia
+          key={lunes}
+          semana={semana}
+          actividades={datos.actividades}
+          dias={dias}
+          ventanaMinimaMin={datos.ajustes.ventanaMinimaMin}
+          hoy={cual === 'esta' ? diaDeLaSemana(fechaEnArgentina(Date.now())) : null}
+          alAgregar={(dia, desde, hasta) => {
+            setDesdeHueco({ dia, desde, hasta })
+            setEditando(null)
+          }}
+          alEditar={(b) => setEditando(b)}
+        />
 
         <h2 className="seccion-titulo">Sugerencia</h2>
         <div className="grupo">
@@ -128,7 +142,13 @@ export function Semana() {
         <h2 className="seccion-titulo">Bloques de la semana</h2>
         <BloquesSemana semana={semana} actividades={datos.actividades} alElegir={(b) => setEditando(b)} />
         <div className="grupo">
-          <Presionable className="fila fila-boton" onClick={() => setEditando(null)}>
+          <Presionable
+            className="fila fila-boton"
+            onClick={() => {
+              setDesdeHueco(undefined)
+              setEditando(null)
+            }}
+          >
             Agregar bloque
           </Presionable>
         </div>
@@ -182,6 +202,7 @@ export function Semana() {
             <EditarBloque
               semana={semana}
               bloque={editando}
+              inicial={desdeHueco}
               actividades={datos.actividades}
               dias={dias}
               alGuardar={(s) => cambiar((d) => conSemana(d, s))}

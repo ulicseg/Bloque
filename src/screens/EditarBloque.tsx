@@ -12,6 +12,8 @@ interface Props {
   semana: Semana
   /** null = bloque nuevo. */
   bloque: Bloque | null
+  /** Para un bloque nuevo que nace de un hueco libre: día y horas ya puestos. */
+  inicial?: { dia: number; desde: string; hasta: string }
   actividades: Actividad[]
   dias: DiaCalculado[]
   alGuardar: (s: Semana) => void
@@ -20,12 +22,12 @@ interface Props {
 
 type Movilidad = 'movil' | 'fijo'
 
-export function EditarBloque({ semana, bloque, actividades, dias, alGuardar, alVolver }: Props) {
-  const dia0 = bloque ? diaDeBloque(bloque) : 0
+export function EditarBloque({ semana, bloque, inicial, actividades, dias, alGuardar, alVolver }: Props) {
+  const dia0 = bloque ? diaDeBloque(bloque) : (inicial?.dia ?? 0)
   const [actividad, setActividad] = useState<IdActividad>(bloque?.actividad ?? actividades[0].id)
   const [dia, setDia] = useState(dia0)
-  const [desde, setDesde] = useState(bloque ? horaCampo(bloque.inicio - dia0 * MIN_DIA) : '09:00')
-  const [hasta, setHasta] = useState(bloque ? horaCampo(bloque.fin - dia0 * MIN_DIA) : '10:00')
+  const [desde, setDesde] = useState(bloque ? horaCampo(bloque.inicio - dia0 * MIN_DIA) : (inicial?.desde ?? '09:00'))
+  const [hasta, setHasta] = useState(bloque ? horaCampo(bloque.fin - dia0 * MIN_DIA) : (inicial?.hasta ?? '10:00'))
   const [fijo, setFijo] = useState(bloque?.fijo ?? false)
   const [error, setError] = useState<string | null>(null)
   const [confirmaBorrar, setConfirmaBorrar] = useState(false)
