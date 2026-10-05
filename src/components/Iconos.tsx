@@ -41,3 +41,6 @@ export const IconoAjustes = icono(
   </>,
 )
 export const IconoAtras = icono(<path d="m14.5 5-7 7 7 7" />)
+export const IconoAdelante = icono(<path d="m9.5 5 7 7-7 7" />)
+export const IconoMas = icono(<path d="M12 5v14M5 12h14" />)
+export const IconoMenos = icono(<path d="M5 12h14" />)

@@ -77,3 +77,19 @@
     outline: 0.125rem solid var(--texto);
   }
 }
+
+/* Metas y sugerencia: mismas variantes. No hay superficies translúcidas nuevas ni desplazamientos propios. */
+@media (prefers-contrast: more) {
+  .contador-boton,
+  .meta-marca {
+    border: 0.0625rem solid var(--texto);
+  }
+
+  .contador-boton:disabled {
+    opacity: 0.6;
+  }
+
+  .sug-actividad::before {
+    border: 0.0625rem solid var(--texto);
+  }
+}

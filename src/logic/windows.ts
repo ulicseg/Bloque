@@ -47,10 +47,10 @@ const PRIORIDAD: Record<TipoTramo, number> = {
 /** Desde esta duración un turno se considera "de 8 h" y lleva recuperación. */
 const TURNO_LARGO_MIN = 8 * 60
 
-type Intervalo = [number, number]
+export type Intervalo = [number, number]
 
 /** Lo que queda de [a, b) al sacarle los intervalos `ocupados` (ordenados y sin superponerse). */
-function restar(a: number, b: number, ocupados: Intervalo[]): Intervalo[] {
+export function restar(a: number, b: number, ocupados: Intervalo[]): Intervalo[] {
   const resto: Intervalo[] = []
   let cursor = a
   for (const [oa, ob] of ocupados) {
@@ -63,7 +63,7 @@ function restar(a: number, b: number, ocupados: Intervalo[]): Intervalo[] {
   return resto
 }
 
-function unir(intervalos: Intervalo[]): Intervalo[] {
+export function unir(intervalos: Intervalo[]): Intervalo[] {
   const orden = [...intervalos].sort((x, y) => x[0] - y[0])
   const salida: Intervalo[] = []
   for (const [a, b] of orden) {

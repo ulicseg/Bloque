@@ -3,9 +3,11 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
 import { Segmentado } from '../components/Segmentado'
+import { ListaSugerencia } from '../components/ListaSugerencia'
 import { VentanasProvisorias } from '../components/VentanasProvisorias'
 import { conSemana, descripcionFin, etiquetaTurno, semanaVacia, textoTotal, turnoDelDia, vecinasDe } from '../logic/turnos'
 import { lunesActual, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
+import { suggest } from '../logic/suggest'
 import { computeWindows } from '../logic/windows'
 import { useDatos } from '../useDatos'
 import { CargarTurnos } from './CargarTurnos'
@@ -16,6 +18,8 @@ export function Semana() {
   const { datos, cambiar, fallo } = useDatos()
   const [cual, setCual] = useState<Cual>('esta')
   const [cargando, setCargando] = useState(false)
+  // Semana para la que se pidió la sugerencia: al cambiar de semana no se muestra una ajena
+  const [pedida, setPedida] = useState<string | null>(null)
   const reducido = useReducedMotion() ?? false
 
   // La semana actual se calcula una vez por visita a la pantalla, en hora de Argentina
@@ -24,6 +28,12 @@ export function Semana() {
   const semana = datos.semanas[lunes] ?? semanaVacia(lunes)
   const vecinas = vecinasDe(datos, lunes)
   const dias = useMemo(() => computeWindows(semana, datos.ajustes, vecinas.anterior), [semana, datos.ajustes, vecinas.anterior])
+
+  // Una vez pedida, se recalcula sola si cambian los turnos o las metas: nunca queda una sugerencia vieja en pantalla
+  const sugerencia = useMemo(
+    () => (pedida === lunes ? suggest(dias, datos.actividades, semana.bloques.filter((b) => b.fijo), datos.ajustes) : null),
+    [pedida, lunes, dias, datos.actividades, datos.ajustes, semana.bloques],
+  )
 
   return (
     <>
@@ -74,6 +84,19 @@ export function Semana() {
 
         <h2 className="seccion-titulo">Ventanas libres (provisorio)</h2>
         <VentanasProvisorias lunes={lunes} dias={dias} />
+
+        <h2 className="seccion-titulo">Sugerencia</h2>
+        <div className="grupo">
+          <Presionable className="fila fila-boton" onClick={() => setPedida(lunes)} disabled={semana.turnos.length === 0}>
+            Sugerir semana
+          </Presionable>
+          <p className="fila-nota">
+            {semana.turnos.length === 0
+              ? 'Cargá los turnos para poder sugerir.'
+              : 'Propone dónde ubicar cada bloque según tus metas. Por ahora solo se muestra: no se guarda.'}
+          </p>
+        </div>
+        {sugerencia && <ListaSugerencia lunes={lunes} sugerencia={sugerencia} actividades={datos.actividades} />}
 
         {import.meta.env.DEV && (
           <>

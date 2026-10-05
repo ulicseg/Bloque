@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { COMIDAS_V3 } from './defaults'
+import { ACTIVIDADES_POR_DEFECTO, COMIDAS_V3, PRIORIDADES_V4 } from './defaults'
 import { CLAVE, DATOS_INICIALES, MIGRACIONES, VERSION_ACTUAL, crearAlmacen, migrar, resumir, validarRespaldo, type Datos, type Migracion } from './storage'
 
 /** Storage falso mínimo; `falla` simula Safari privado o cuota llena. */
@@ -272,7 +272,7 @@ describe('migrar', () => {
 
     it('con los ajustes de la v3 sin tocar, aparecen las reglas nuevas y las comidas nuevas', () => {
       const r = migrar(v3({ trasladoMin: 30, suenoMin: 480, comidas: COMIDAS_V3 }))
-      expect(r?.schemaVersion).toBe(4)
+      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
       expect(r?.datos.ajustes).toEqual(DATOS_INICIALES.ajustes)
       expect((r?.datos as unknown as Record<string, unknown>).rareza).toBe(7)
     })
@@ -291,6 +291,26 @@ describe('migrar', () => {
     it('ajustes ausentes o rotos se completan con los valores por defecto', () => {
       expect(migrar(v3(undefined))?.datos.ajustes).toEqual(DATOS_INICIALES.ajustes)
       expect(migrar(v3('roto'))?.datos.ajustes).toEqual(DATOS_INICIALES.ajustes)
+    })
+  })
+
+  describe('v4 → v5', () => {
+    const v4 = (actividades: unknown) => ({ schemaVersion: 4, datos: { pestaña: 'metas', semanas: {}, ajustes: {}, actividades, rareza: 3 } })
+    const viejas = () => ACTIVIDADES_POR_DEFECTO.map((a) => ({ ...a, prioridad: PRIORIDADES_V4[a.id] }))
+
+    it('con las prioridades de la v4 sin tocar, pasan al orden nuevo y no cambia nada más', () => {
+      const r = migrar(v4(viejas()))
+      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
+      expect(r?.datos.actividades).toEqual(ACTIVIDADES_POR_DEFECTO)
+      expect((r?.datos as unknown as Record<string, unknown>).rareza).toBe(3)
+    })
+
+    it('si hay alguna otra prioridad, o faltan actividades, se conserva tal cual', () => {
+      const tocadas = viejas().map((a) => (a.id === 'caminata' ? { ...a, prioridad: 1, meta: 5 } : a))
+      expect(migrar(v4(tocadas))?.datos.actividades).toEqual(tocadas)
+      const incompletas = viejas().slice(0, 3)
+      expect(migrar(v4(incompletas))?.datos.actividades).toEqual(incompletas)
+      expect(migrar(v4([]))?.datos.actividades).toEqual([])
     })
   })
 })

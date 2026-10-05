@@ -1,13 +1,13 @@
 // Capa de almacenamiento: localStorage si anda, memoria si no.
 // Nunca lanza: Safari en modo privado o con cuota llena rompe setItem y la app no debe caerse.
 
-import { ACTIVIDADES_POR_DEFECTO, AJUSTES_POR_DEFECTO, COMIDAS_V3 } from './defaults'
+import { ACTIVIDADES_POR_DEFECTO, AJUSTES_POR_DEFECTO, COMIDAS_V3, PRIORIDADES_V4 } from './defaults'
 import type { Datos } from './types'
 
 export type { Datos } from './types'
 
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 4
+export const VERSION_ACTUAL = 5
 
 export interface Guardado {
   schemaVersion: number
@@ -63,6 +63,21 @@ export const MIGRACIONES: Migracion[] = [
         ajustes: { ...AJUSTES_POR_DEFECTO, ...suenoFin, ...resto, ...(comidasNuevas ? { comidas: AJUSTES_POR_DEFECTO.comidas } : {}) },
       },
     }
+  },
+  // v4 → v5: el orden de asignación por defecto pasa a ser inglés, gimnasio, programación, caminata, libre.
+  // Solo se reordena si las prioridades siguen siendo exactamente las de la v4 (nadie las podía editar todavía);
+  // si no coinciden, o falta alguna actividad, se deja todo como está.
+  (v4) => {
+    const datos = v4.datos as Record<string, unknown>
+    const lista = datos.actividades
+    const sinTocar =
+      Array.isArray(lista) &&
+      lista.length === Object.keys(PRIORIDADES_V4).length &&
+      lista.every((a) => esObjeto(a) && typeof a.id === 'string' && PRIORIDADES_V4[a.id] === a.prioridad)
+    if (!sinTocar) return { ...v4, schemaVersion: 5 }
+    const nueva = new Map<string, number>(ACTIVIDADES_POR_DEFECTO.map((a) => [a.id, a.prioridad]))
+    const actividades = (lista as Record<string, unknown>[]).map((a) => ({ ...a, prioridad: nueva.get(a.id as string) ?? a.prioridad }))
+    return { ...v4, schemaVersion: 5, datos: { ...datos, actividades } }
   },
 ]
 
