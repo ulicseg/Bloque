@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ACTIVIDADES_POR_DEFECTO } from './defaults'
-import { LIMITES, editarActividad, moverPrioridad, ordenadas, puede, resumen, siguiente, textoMeta, textoMinimo } from './metas'
+import { LIMITES, alternarFranja, editarActividad, esCualquierFranja, normalizarFranjas, ordenadas, reordenar, textoFranjas, puede, resumen, siguiente, textoMeta, textoMinimo } from './metas'
 import type { Actividad, IdActividad } from './types'
 
 const lista = ACTIVIDADES_POR_DEFECTO
@@ -8,8 +8,8 @@ const de = (l: Actividad[], id: IdActividad) => l.find((a) => a.id === id)!
 
 describe('editarActividad', () => {
   it('cambia solo la actividad pedida', () => {
-    const r = editarActividad(lista, 'gimnasio', { meta: 3, franja: 'noche' })
-    expect(de(r, 'gimnasio')).toMatchObject({ meta: 3, franja: 'noche', duracionMin: 75 })
+    const r = editarActividad(lista, 'gimnasio', { meta: 3, franjas: ['noche'] })
+    expect(de(r, 'gimnasio')).toMatchObject({ meta: 3, franjas: ['noche'], duracionMin: 75 })
     expect(r.filter((a) => a.id !== 'gimnasio')).toEqual(lista.filter((a) => a.id !== 'gimnasio'))
   })
 
@@ -38,25 +38,48 @@ describe('editarActividad', () => {
   })
 })
 
-describe('moverPrioridad', () => {
-  it('intercambia con quien tenía ese lugar y no repite números', () => {
-    const r = moverPrioridad(lista, 'gimnasio', 1)
+describe('reordenar', () => {
+  const sortables = ['gimnasio', 'ingles', 'programacion', 'caminata', 'libre'] as IdActividad[]
+
+  it('la lista acomodada a mano define las prioridades 1..N y las fijas quedan al final', () => {
+    const r = reordenar(lista, sortables)
+    expect(ordenadas(r).map((a) => a.id)).toEqual([...sortables, 'psicologo'])
+    expect(r.map((a) => a.prioridad).sort()).toEqual([1, 2, 3, 4, 5, 6])
     expect(de(r, 'gimnasio').prioridad).toBe(1)
-    expect(de(r, 'ingles').prioridad).toBe(2)
-    expect(ordenadas(r).map((a) => a.id).slice(0, 3)).toEqual(['gimnasio', 'ingles', 'programacion'])
-    expect(new Set(r.map((a) => a.prioridad)).size).toBe(lista.length)
   })
 
-  it('un lugar fuera de rango se corrige', () => {
-    expect(de(moverPrioridad(lista, 'ingles', 99), 'ingles').prioridad).toBe(lista.length)
-    expect(de(moverPrioridad(lista, 'ingles', -5), 'ingles').prioridad).toBe(1)
-  })
-
-  it('renumera si había prioridades repetidas', () => {
+  it('con prioridades repetidas las vuelve a numerar sin repetir', () => {
     const repetidas = lista.map((a) => ({ ...a, prioridad: 1 }))
-    const r = moverPrioridad(repetidas, 'libre', 3)
-    expect(new Set(r.map((a) => a.prioridad)).size).toBe(lista.length)
-    expect(de(r, 'libre').prioridad).toBe(3)
+    expect(new Set(reordenar(repetidas, sortables).map((a) => a.prioridad)).size).toBe(lista.length)
+  })
+
+  it('ignora ids que no existen o repetidos y no pierde ninguna actividad', () => {
+    const r = reordenar(lista, ['libre', 'libre', 'fantasma' as IdActividad])
+    expect(ordenadas(r)[0].id).toBe('libre')
+    expect(r).toHaveLength(lista.length)
+  })
+})
+
+describe('franjas', () => {
+  it('marcar y desmarcar mantiene el orden del día y nunca deja la lista vacía', () => {
+    expect(alternarFranja(['noche'], 'manana')).toEqual(['manana', 'noche'])
+    expect(alternarFranja(['manana', 'noche'], 'manana')).toEqual(['noche'])
+    expect(alternarFranja(['noche'], 'noche')).toEqual(['noche'])
+  })
+
+  it('normalizar descarta lo inválido y, sin nada válido, vuelve a las tres', () => {
+    expect(normalizarFranjas(['noche', 'tarde', 'tarde', 'x'])).toEqual(['tarde', 'noche'])
+    expect(normalizarFranjas([])).toEqual(['manana', 'tarde', 'noche'])
+  })
+
+  it('las tres juntas (o ninguna) son "cualquiera" y no se nombran en el resumen', () => {
+    expect(esCualquierFranja(['manana', 'tarde', 'noche'])).toBe(true)
+    expect(esCualquierFranja([])).toBe(true)
+    expect(esCualquierFranja(['tarde'])).toBe(false)
+    expect(textoFranjas(['manana', 'noche'])).toBe('mañana o noche')
+    expect(textoFranjas(['manana', 'tarde', 'noche'])).toBe('mañana, tarde o noche')
+    const dosFranjas = { ...de(lista, 'ingles'), franjas: ['manana', 'tarde'] as Actividad['franjas'] }
+    expect(resumen(dosFranjas)).toBe('10 h por semana · 1 h 30 min · mañana o tarde')
   })
 })
 

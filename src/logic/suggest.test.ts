@@ -249,7 +249,7 @@ describe('suggest: reglas por actividad', () => {
   it('gimnasio: reserva 15 min de traslado de cada lado', () => {
     // 75 min de gimnasio + 2 × 15 de traslado = 105 min: no entra en una ventana de 90, sí en una de 180
     expect(suggest(semana((n) => dia(n, [[10, 11.5]])), [por('gimnasio', { meta: 1 })], []).bloques).toEqual([])
-    const r = suggest(semana((n) => dia(n, [[10, 13]])), [por('gimnasio', { meta: 1, franja: 'cualquiera' })], [])
+    const r = suggest(semana((n) => dia(n, [[10, 13]])), [por('gimnasio', { meta: 1, franjas: ['manana', 'tarde', 'noche'] })], [])
     expect(r.bloques).toHaveLength(1)
     expect(rango(r.bloques[0])).toBe('10:15–11:30')
   })
@@ -323,7 +323,7 @@ describe('suggest: propiedades en semanas al azar', () => {
         ...a,
         meta: a.tipoMeta === 'horas' ? entre(0, 24) / 2 : entre(0, 8),
         duracionMin: entre(3, 30) * 5,
-        franja: (['manana', 'tarde', 'noche', 'cualquiera'] as const)[entre(0, 3)],
+        franjas: ([['manana'], ['tarde'], ['noche'], ['manana', 'noche'], ['manana', 'tarde', 'noche']] as const)[entre(0, 4)].slice(),
         prioridad: entre(1, 7),
       }))
 

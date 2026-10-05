@@ -1,13 +1,12 @@
-import { useState, type CSSProperties } from 'react'
+import { useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { AvanceSemana } from '../components/AvanceSemana'
-import { IconoActividad, IconoAdelante } from '../components/Iconos'
+import { ListaPrioridad } from '../components/ListaPrioridad'
 import { avanceSemana } from '../logic/progreso'
 import { lunesActual } from '../logic/tiempo'
 import { semanaVacia } from '../logic/turnos'
 import { Pantalla } from '../components/Pantalla'
-import { Presionable } from '../components/Presionable'
-import { conActividades, editarActividad, moverPrioridad, ordenadas, resumen } from '../logic/metas'
+import { conActividades, editarActividad, reordenar } from '../logic/metas'
 import type { IdActividad } from '../logic/types'
 import { useDatos } from '../useDatos'
 import { EditarMeta } from './EditarMeta'
@@ -19,7 +18,6 @@ export function Metas() {
 
   const [lunes] = useState(() => lunesActual(Date.now()))
   const semanaActual = datos.semanas[lunes] ?? semanaVacia(lunes)
-  const lista = ordenadas(datos.actividades)
   const editando = datos.actividades.find((a) => a.id === abierta)
 
   return (
@@ -36,23 +34,14 @@ export function Metas() {
         <h2 className="seccion-titulo">Esta semana</h2>
         <AvanceSemana avances={avanceSemana(semanaActual, datos.actividades)} actividades={datos.actividades} />
 
-        <h2 className="seccion-titulo">Por orden de prioridad</h2>
-        <div className="grupo">
-          {lista.map((a) => (
-            <Presionable key={a.id} className="fila fila-meta" onClick={() => setAbierta(a.id)} style={{ '--act': `var(--act-${a.color})`, '--act-fondo': `var(--act-${a.color}-fondo)` } as CSSProperties}>
-              <IconoActividad id={a.id} />
-              <span className="meta-texto">
-                <span className="meta-nombre">{a.nombre}</span>
-                <span className="meta-resumen">{resumen(a)}</span>
-              </span>
-              <span className="meta-flecha" aria-hidden>
-                <IconoAdelante />
-              </span>
-            </Presionable>
-          ))}
-        </div>
+        <h2 className="seccion-titulo">Prioridad</h2>
+        <ListaPrioridad
+          actividades={datos.actividades}
+          alAbrir={setAbierta}
+          alReordenar={(ids) => cambiar((d) => conActividades(d, reordenar(d.actividades, ids)))}
+        />
         <p className="fila-nota fila-nota-suelta">
-          La lista va de la que se ubica primero a la última. Las fijas (como el psicólogo) no se sugieren.
+          Arrastrá el asa ≡ para acomodar la lista: la de arriba se ubica primero, y cuando falta lugar quedan afuera las de abajo. Tocá una para editarla.
         </p>
       </Pantalla>
 
@@ -68,9 +57,7 @@ export function Metas() {
           >
             <EditarMeta
               actividad={editando}
-              total={datos.actividades.length}
               alCambiar={(c) => cambiar((d) => conActividades(d, editarActividad(d.actividades, editando.id, c)))}
-              alMoverPrioridad={(n) => cambiar((d) => conActividades(d, moverPrioridad(d.actividades, editando.id, n)))}
               alVolver={() => setAbierta(null)}
             />
           </motion.div>

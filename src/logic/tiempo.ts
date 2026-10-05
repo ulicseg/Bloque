@@ -37,6 +37,12 @@ export function fechaEnArgentina(ms: number): FechaISO {
   return deMs(ms + OFFSET_ARGENTINA_MIN * 60_000)
 }
 
+/** Minutos desde las 00:00 de Argentina para un instante (ms desde 1970). */
+export function minutosDelDiaEnArgentina(ms: number): number {
+  const d = new Date(ms + OFFSET_ARGENTINA_MIN * 60_000)
+  return d.getUTCHours() * MIN_HORA + d.getUTCMinutes()
+}
+
 export const lunesActual = (ms: number): FechaISO => lunesDe(fechaEnArgentina(ms))
 
 export const nombreDia = (dia: number): string => DIAS[dia]

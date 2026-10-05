@@ -1,22 +1,18 @@
 import { Contador } from '../components/Contador'
 import { Pantalla } from '../components/Pantalla'
-import { Segmentado } from '../components/Segmentado'
-import { FRANJAS, puede, resumen, siguiente, textoMeta, textoMinimo, type Cambio, type Campo } from '../logic/metas'
+import { FRANJAS, alternarFranja, esCualquierFranja, puede, resumen, siguiente, textoFranjas, textoMeta, textoMinimo, type Cambio, type Campo } from '../logic/metas'
 import { DIAS, formatearDuracion } from '../logic/tiempo'
 import { Presionable } from '../components/Presionable'
-import type { Actividad, Franja } from '../logic/types'
+import type { Actividad } from '../logic/types'
 
 interface Props {
   actividad: Actividad
-  /** Cantidad de actividades: la prioridad va de 1 a esta cifra. */
-  total: number
   alCambiar: (cambio: Cambio) => void
-  alMoverPrioridad: (nueva: number) => void
   alVolver: () => void
 }
 
 // Los cambios se guardan al instante, sin botón "Guardar": un contador que hay que confirmar es un contador lento.
-export function EditarMeta({ actividad: a, total, alCambiar, alMoverPrioridad, alVolver }: Props) {
+export function EditarMeta({ actividad: a, alCambiar, alVolver }: Props) {
   const paso = (campo: Campo, dir: 1 | -1) => () => alCambiar(siguiente(a, campo, dir))
   const contador = (campo: Campo, etiqueta: string, valor: string, nota?: string) => (
     <Contador
@@ -46,15 +42,23 @@ export function EditarMeta({ actividad: a, total, alCambiar, alMoverPrioridad, a
         </p>
       ) : (
         <>
-          <h2 className="seccion-titulo">Franja preferida</h2>
-          <Segmentado<Franja>
-            etiqueta="Franja preferida"
-            valor={a.franja}
-            alElegir={(franja) => alCambiar({ franja })}
-            opciones={FRANJAS.map((f) => ({ valor: f.valor, titulo: f.titulo }))}
-          />
+          <h2 className="seccion-titulo">Franjas preferidas</h2>
+          <div className="opciones opciones-franjas" role="group" aria-label="Franjas preferidas">
+            {FRANJAS.map((f) => (
+              <Presionable
+                key={f.valor}
+                className="opcion"
+                aria-pressed={a.franjas.includes(f.valor)}
+                onClick={() => alCambiar({ franjas: alternarFranja(a.franjas, f.valor) })}
+              >
+                {f.titulo}
+              </Presionable>
+            ))}
+          </div>
           <p className="fila-nota fila-nota-suelta">
-            Es una preferencia, no una regla: si no hay lugar en esa franja, se busca en otra.
+            {esCualquierFranja(a.franjas)
+              ? 'Sin preferencia: se ubica en cualquier momento del día. Desmarcá las franjas en las que no querés hacerla.'
+              : `Se busca primero a la ${textoFranjas(a.franjas)}. Es una preferencia, no una regla: si no hay lugar, se prueba en otra franja.`}
           </p>
 
           <h2 className="seccion-titulo">Días que no se puede</h2>
@@ -78,17 +82,9 @@ export function EditarMeta({ actividad: a, total, alCambiar, alMoverPrioridad, a
             Marcá los días en que no vas (por ejemplo, el gimnasio cerrado). La sugerencia no ubica nada ahí.
           </p>
 
-          <div className="grupo">
-            <Contador
-              etiqueta="Prioridad"
-              valor={`${a.prioridad} de ${total}`}
-              alBajar={() => alMoverPrioridad(a.prioridad - 1)}
-              alSubir={() => alMoverPrioridad(a.prioridad + 1)}
-              puedeBajar={a.prioridad > 1}
-              puedeSubir={a.prioridad < total}
-              nota="La 1 se ubica primero. Cuando falta lugar, las de número más alto son las que quedan afuera."
-            />
-          </div>
+          <p className="fila-nota fila-nota-suelta">
+            La prioridad se cambia arrastrando en la lista de Metas: la de arriba se ubica primero.
+          </p>
         </>
       )}
     </Pantalla>

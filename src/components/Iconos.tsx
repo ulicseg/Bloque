@@ -27,6 +27,12 @@ export const IconoSemana = icono(
     <path d="M4 10h16M9 3v4M15 3v4" />
   </>,
 )
+export const IconoCalendario = icono(
+  <>
+    <rect x="3.5" y="4" width="17" height="16" rx="3" />
+    <path d="M9.2 4v16M14.8 4v16M3.5 9.5h17M3.5 14.5h17" />
+  </>,
+)
 export const IconoMetas = icono(
   <>
     <circle cx="12" cy="12" r="8" />
@@ -45,6 +51,7 @@ export const IconoAtras = icono(<path d="m14.5 5-7 7 7 7" />)
 export const IconoAdelante = icono(<path d="m9.5 5 7 7-7 7" />)
 export const IconoMas = icono(<path d="M12 5v14M5 12h14" />)
 export const IconoMenos = icono(<path d="M5 12h14" />)
+export const IconoAsa = icono(<path d="M5 8h14M5 12h14M5 16h14" />)
 
 // Un ícono por actividad, mismo trazo que los de la barra. Van sobre el tinte de cada actividad.
 const ICONOS_ACTIVIDAD: Record<IdActividad, ReactNode> = {

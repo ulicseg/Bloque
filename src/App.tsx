@@ -1,11 +1,12 @@
 import { useEffect, useState, type JSX } from 'react'
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'motion/react'
 import { BarraPestanas, type Pestana } from './components/BarraPestanas'
-import { IconoAjustes, IconoHoy, IconoMetas, IconoSemana } from './components/Iconos'
+import { IconoAjustes, IconoCalendario, IconoHoy, IconoMetas, IconoSemana } from './components/Iconos'
 import { RESORTE_DEFECTO, transicion } from './design/resortes'
 import { AvisoActualizacion } from './components/AvisoActualizacion'
 import { almacen } from './almacenGlobal'
 import { Ajustes } from './screens/Ajustes'
+import { Calendario } from './screens/Calendario'
 import { Hoy } from './screens/Hoy'
 import { Metas } from './screens/Metas'
 import { Semana } from './screens/Semana'
@@ -13,11 +14,12 @@ import { Semana } from './screens/Semana'
 const PESTANAS: Pestana[] = [
   { id: 'hoy', titulo: 'Hoy', Icono: IconoHoy },
   { id: 'semana', titulo: 'Semana', Icono: IconoSemana },
+  { id: 'calendario', titulo: 'Calendario', Icono: IconoCalendario },
   { id: 'metas', titulo: 'Metas', Icono: IconoMetas },
   { id: 'ajustes', titulo: 'Ajustes', Icono: IconoAjustes },
 ]
 
-const PANTALLAS: Record<string, () => JSX.Element> = { hoy: Hoy, semana: Semana, metas: Metas, ajustes: Ajustes }
+const PANTALLAS: Record<string, () => JSX.Element> = { hoy: Hoy, semana: Semana, calendario: Calendario, metas: Metas, ajustes: Ajustes }
 
 export function App() {
   const [activa, setActiva] = useState(() => {

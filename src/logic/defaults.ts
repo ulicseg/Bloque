@@ -47,10 +47,10 @@ export const PRIORIDADES_V4: Record<string, number> = {
 // Orden de asignación: inglés, gimnasio, programación, caminata, libre/amigos.
 // El psicólogo es fijo: no se sugiere, así que su prioridad no cuenta y va último.
 export const ACTIVIDADES_POR_DEFECTO: Actividad[] = [
-  { id: 'ingles', nombre: 'Inglés', color: 'ingles', tipoMeta: 'horas', meta: 10, duracionMin: 90, minimoMin: 20, franja: 'cualquiera', prioridad: 1, fija: false },
-  { id: 'gimnasio', nombre: 'Gimnasio', color: 'gimnasio', tipoMeta: 'sesiones', meta: 4, duracionMin: 75, minimoMin: 30, franja: 'tarde', prioridad: 2, fija: false, diasNo: [6] },
-  { id: 'programacion', nombre: 'Programación', color: 'programacion', tipoMeta: 'horas', meta: 6, duracionMin: 120, minimoMin: 30, franja: 'cualquiera', prioridad: 3, fija: false },
-  { id: 'caminata', nombre: 'Caminata', color: 'caminata', tipoMeta: 'sesiones', meta: 7, duracionMin: 30, minimoMin: 10, franja: 'cualquiera', prioridad: 4, fija: false },
-  { id: 'libre', nombre: 'Libre / amigos', color: 'libre', tipoMeta: 'sesiones', meta: 2, duracionMin: 180, minimoMin: null, franja: 'noche', prioridad: 5, fija: false },
-  { id: 'psicologo', nombre: 'Psicólogo', color: 'psicologo', tipoMeta: 'sesiones', meta: 1, duracionMin: 60, minimoMin: null, franja: 'cualquiera', prioridad: 6, fija: true },
+  { id: 'ingles', nombre: 'Inglés', color: 'ingles', tipoMeta: 'horas', meta: 10, duracionMin: 90, minimoMin: 20, franjas: ['manana', 'tarde', 'noche'], prioridad: 1, fija: false },
+  { id: 'gimnasio', nombre: 'Gimnasio', color: 'gimnasio', tipoMeta: 'sesiones', meta: 4, duracionMin: 75, minimoMin: 30, franjas: ['tarde'], prioridad: 2, fija: false, diasNo: [6] },
+  { id: 'programacion', nombre: 'Programación', color: 'programacion', tipoMeta: 'horas', meta: 6, duracionMin: 120, minimoMin: 30, franjas: ['manana', 'tarde', 'noche'], prioridad: 3, fija: false },
+  { id: 'caminata', nombre: 'Caminata', color: 'caminata', tipoMeta: 'sesiones', meta: 7, duracionMin: 30, minimoMin: 10, franjas: ['manana', 'tarde', 'noche'], prioridad: 4, fija: false },
+  { id: 'libre', nombre: 'Libre / amigos', color: 'libre', tipoMeta: 'sesiones', meta: 2, duracionMin: 180, minimoMin: null, franjas: ['noche'], prioridad: 5, fija: false },
+  { id: 'psicologo', nombre: 'Psicólogo', color: 'psicologo', tipoMeta: 'sesiones', meta: 1, duracionMin: 60, minimoMin: null, franjas: ['manana', 'tarde', 'noche'], prioridad: 6, fija: true },
 ]

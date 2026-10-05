@@ -11,7 +11,7 @@ export type EstadoBloque = 'planificado' | 'hecho' | 'minimo' | 'salteado'
 export const ESTADOS_BLOQUE: readonly EstadoBloque[] = ['planificado', 'hecho', 'minimo', 'salteado']
 
 export type TipoMeta = 'sesiones' | 'horas'
-export type Franja = 'manana' | 'tarde' | 'noche' | 'cualquiera'
+export type Franja = 'manana' | 'tarde' | 'noche'
 
 /** Comida diaria que no se puede pisar con un bloque. `inicio` son minutos desde las 00:00 del día. */
 export interface Comida {
@@ -57,7 +57,8 @@ export interface Actividad {
   duracionMin: number
   /** null = no hay versión mínima (el bloque se hace entero o se saltea). */
   minimoMin: number | null
-  franja: Franja
+  /** Franjas del día en que prefiere ubicarse (una o varias). Las tres juntas equivalen a "cualquiera". Reemplaza a `franja` desde la v8. */
+  franjas: Franja[]
   /** 1 = la que se ubica primero cuando falta lugar. */
   prioridad: number
   /** Siempre va en el mismo horario (psicólogo): se ubica a mano, no se sugiere. */

@@ -97,6 +97,11 @@
   --act-caminata-fondo: #e2f5e7;
   --act-libre: #8a5a00;
   --act-libre-fondo: #fcf0d6;
+
+  /* Calendario: lo ocupado en tonos apagados, para que lo coloreado (bloques) y lo libre resalten */
+  --cal-sueno: #cfd3e8;
+  --cal-turno: #f0c48c;
+  --cal-otro: #e0e0e6;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -136,5 +141,8 @@
     --act-caminata-fondo: #123522;
     --act-libre: #ffc65c;
     --act-libre-fondo: #3a2c0a;
+    --cal-sueno: #262a44;
+    --cal-turno: #6e4710;
+    --cal-otro: #2b2b30;
   }
 }

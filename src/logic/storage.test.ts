@@ -318,6 +318,33 @@ describe('migrar', () => {
     })
   })
 
+  describe('v7 → v8', () => {
+    const v7 = (actividades: unknown) => ({ schemaVersion: 7, datos: { pestaña: 'hoy', semanas: {}, ajustes: {}, actividades, rareza: 3 } })
+
+    it('franja pasa a lista: "cualquiera" son las tres y el resto se conserva como única franja', () => {
+      const r = migrar(
+        v7([
+          { id: 'ingles', franja: 'cualquiera', meta: 10 },
+          { id: 'gimnasio', franja: 'tarde', meta: 4 },
+          { id: 'raro', franja: 'madrugada' },
+        ]),
+      )
+      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
+      expect(r?.datos.actividades).toEqual([
+        { id: 'ingles', franjas: ['manana', 'tarde', 'noche'], meta: 10 },
+        { id: 'gimnasio', franjas: ['tarde'], meta: 4 },
+        { id: 'raro', franjas: ['manana', 'tarde', 'noche'] },
+      ])
+      expect((r?.datos as unknown as Record<string, unknown>).rareza).toBe(3)
+    })
+
+    it('si ya traía franjas no se toca, y con datos vacíos no se cae', () => {
+      const propias = [{ id: 'ingles', franjas: ['noche'] }]
+      expect(migrar(v7(propias))?.datos.actividades).toEqual(propias)
+      expect(migrar(v7(undefined))?.schemaVersion).toBe(VERSION_ACTUAL)
+    })
+  })
+
   describe('v6 → v7', () => {
     const bloque = (id: string, actividad: string) => ({ id, actividad, dia: 6, inicio: 1200, fin: 1220, estado: 'planificado' })
     const v6 = (datos: object) => ({ schemaVersion: 6, datos: { pestaña: 'hoy', semanas: {}, ajustes: {}, actividades: [], ...datos } })

@@ -7,7 +7,7 @@ import type { Datos } from './types'
 export type { Datos } from './types'
 
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 7
+export const VERSION_ACTUAL = 8
 
 export interface Guardado {
   schemaVersion: number
@@ -103,6 +103,19 @@ export const MIGRACIONES: Migracion[] = [
         )
       : datos.semanas
     return { ...v6, schemaVersion: 7, datos: { ...datos, actividades, semanas } }
+  },
+  // v7 → v8: la franja preferida pasa de una sola (`franja`) a una lista (`franjas`). "cualquiera" equivale a las
+  // tres; cualquier otro valor se conserva tal cual como la única franja. Si el valor no se entiende, se toman las tres.
+  (v7) => {
+    const datos = v7.datos as Record<string, unknown>
+    if (!Array.isArray(datos.actividades)) return { ...v7, schemaVersion: 8 }
+    const actividades = datos.actividades.map((a) => {
+      if (!esObjeto(a) || 'franjas' in a || !('franja' in a)) return a
+      const { franja, ...resto } = a
+      const franjas = franja === 'manana' || franja === 'tarde' || franja === 'noche' ? [franja] : ['manana', 'tarde', 'noche']
+      return { ...resto, franjas }
+    })
+    return { ...v7, schemaVersion: 8, datos: { ...datos, actividades } }
   },
 ]
 

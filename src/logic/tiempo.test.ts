@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  minutosDelDiaEnArgentina,
   fechaEnArgentina,
   formatearDuracion,
   horaCampo,
@@ -78,5 +79,13 @@ describe('fechas de hoy', () => {
     expect(textoFecha('2026-01-01')).toBe('Jueves 1 de enero')
     // 01:00 UTC del lunes 5 sigue siendo domingo 4 en Argentina
     expect(fechaEnArgentina(Date.UTC(2026, 9, 5, 1, 0))).toBe('2026-10-04')
+  })
+})
+
+describe('minutosDelDiaEnArgentina', () => {
+  it('descuenta el huso: 03:00 UTC son las 00:00 en Argentina, y 02:59 UTC siguen siendo las 23:59 de ayer', () => {
+    expect(minutosDelDiaEnArgentina(Date.UTC(2026, 9, 5, 3, 0))).toBe(0)
+    expect(minutosDelDiaEnArgentina(Date.UTC(2026, 9, 5, 2, 59))).toBe(23 * 60 + 59)
+    expect(minutosDelDiaEnArgentina(Date.UTC(2026, 9, 5, 15, 30))).toBe(12 * 60 + 30)
   })
 })

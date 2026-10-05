@@ -9,7 +9,7 @@
 import { AJUSTES_POR_DEFECTO } from './defaults'
 import { MIN_DIA, MIN_SEMANA, formatearDuracion } from './tiempo'
 import { restar, unir, type DiaCalculado, type Intervalo } from './windows'
-import type { Actividad, Ajustes, Bloque, IdActividad } from './types'
+import type { Actividad, Ajustes, Bloque, Franja, IdActividad } from './types'
 
 /** Tope de lo que se asigna de las ventanas de cada día y de toda la semana: el resto es aire para imprevistos. */
 export const TOPE_DIA = 0.85
@@ -214,14 +214,14 @@ function motivoDe(ctx: Contexto, a: Actividad, dur: number): MotivoFalta {
   return 'sin-espacio'
 }
 
-function franjaDe(c: Candidato): Actividad['franja'] {
+function franjaDe(c: Candidato): Franja {
   const m = (c.inicio + c.fin) / 2 - c.dia * MIN_DIA
   return m < TARDE_DESDE ? 'manana' : m < NOCHE_DESDE ? 'tarde' : 'noche'
 }
 
 /** Menor es mejor; se compara de izquierda a derecha. Lo último siempre es el horario, para desempatar. */
 function puntaje(ctx: Contexto, a: Actividad, c: Candidato): number[] {
-  const desajuste = a.franja === 'cualquiera' || a.franja === franjaDe(c) ? 0 : 1
+  const desajuste = a.franjas.length === 0 || a.franjas.includes(franjaDe(c)) ? 0 : 1
   const vecino = cuenta(ctx, a.id, c.dia - 1) + cuenta(ctx, a.id, c.dia + 1) > 0 ? 1 : 0
   const horario = c.inicio
   switch (a.id) {
