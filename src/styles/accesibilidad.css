@@ -59,3 +59,21 @@
     background: rgb(0 0 0 / 0.6);
   }
 }
+
+/* Selector de semana, turnos y total flotante: mismas tres variantes */
+@media (prefers-contrast: more) {
+  .total-flotante,
+  .segmento-fondo {
+    border: 0.125rem solid var(--texto);
+  }
+
+  .opcion,
+  .campo input {
+    border: 0.0625rem solid var(--texto);
+  }
+
+  .opcion[aria-pressed='true'] {
+    border-color: var(--tinte-texto);
+    outline: 0.125rem solid var(--texto);
+  }
+}

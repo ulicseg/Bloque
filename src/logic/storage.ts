@@ -1,28 +1,25 @@
 // Capa de almacenamiento: localStorage si anda, memoria si no.
 // Nunca lanza: Safari en modo privado o con cuota llena rompe setItem y la app no debe caerse.
 
+import { ACTIVIDADES_POR_DEFECTO, AJUSTES_POR_DEFECTO } from './defaults'
+import type { Datos } from './types'
+
+export type { Datos } from './types'
+
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 2
-
-/** Una semana cargada. Los elementos se tipan cuando existan los pasos de turnos y bloques;
- *  mientras tanto se guardan tal cual vienen para no descartar nada. */
-export interface Semana {
-  turnos: unknown[]
-  bloques: unknown[]
-}
-
-export interface Datos {
-  pestaña: string
-  /** Clave = lunes de la semana (AAAA-MM-DD). Agregado en v2. */
-  semanas: Record<string, Semana>
-}
+export const VERSION_ACTUAL = 3
 
 export interface Guardado {
   schemaVersion: number
   datos: Datos
 }
 
-export const DATOS_INICIALES: Datos = { pestaña: 'hoy', semanas: {} }
+export const DATOS_INICIALES: Datos = {
+  pestaña: 'hoy',
+  semanas: {},
+  ajustes: AJUSTES_POR_DEFECTO,
+  actividades: ACTIVIDADES_POR_DEFECTO,
+}
 
 /** Cada migración lleva el guardado de la versión N a la N+1. Índice 0 = v1→v2. */
 export type Migracion = (viejo: Record<string, unknown>) => Record<string, unknown>
@@ -30,6 +27,24 @@ export type Migracion = (viejo: Record<string, unknown>) => Record<string, unkno
 export const MIGRACIONES: Migracion[] = [
   // v1 → v2: aparecen las semanas. Lo que ya había se conserva intacto.
   (v1) => ({ ...v1, schemaVersion: 2, datos: { semanas: {}, ...(v1.datos as object) } }),
+  // v2 → v3: cada semana pasa a llevar su propio lunes, y aparecen ajustes y actividades con sus valores por defecto.
+  // Los turnos y bloques se dejan tal cual vienen: en v2 no los escribía ninguna pantalla.
+  (v2) => {
+    const datos = v2.datos as Record<string, unknown>
+    const semanas = esObjeto(datos.semanas)
+      ? Object.fromEntries(Object.entries(datos.semanas).map(([lunes, s]) => [lunes, esObjeto(s) ? { lunes, ...s } : s]))
+      : datos.semanas
+    return {
+      ...v2,
+      schemaVersion: 3,
+      datos: {
+        ajustes: AJUSTES_POR_DEFECTO,
+        actividades: ACTIVIDADES_POR_DEFECTO,
+        ...datos,
+        ...(semanas === undefined ? {} : { semanas }),
+      },
+    }
+  },
 ]
 
 class AlmacenMemoria implements Storage {
@@ -110,6 +125,8 @@ function datosValidos(d: Datos): boolean {
   return (
     typeof d.pestaña === 'string' &&
     esObjeto(d.semanas) &&
+    esObjeto(d.ajustes) &&
+    Array.isArray(d.actividades) &&
     Object.values(d.semanas).every((x) => esObjeto(x) && Array.isArray(x.turnos) && Array.isArray(x.bloques))
   )
 }

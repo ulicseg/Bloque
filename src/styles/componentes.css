@@ -304,3 +304,237 @@
   background: var(--act-gimnasio-fondo);
   color: var(--act-gimnasio);
 }
+
+/* ---------- Semana: selector y resumen ---------- */
+
+.segmentado {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radio-m);
+  background: var(--presionado);
+  margin-bottom: var(--space-2);
+}
+
+.segmento {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-2);
+  border-radius: calc(var(--radio-m) - 0.125rem);
+  text-align: center;
+}
+
+/* Sólido, no translúcido: el selector ya está sobre un fondo claro y no se apilan materiales (§12) */
+.segmento-fondo {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--superficie);
+  box-shadow: 0 0.0625rem 0.1875rem rgb(0 0 0 / 0.14);
+}
+
+.segmento-titulo,
+.segmento-detalle {
+  position: relative;
+}
+
+.segmento-titulo {
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+}
+
+.segmento-detalle {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  color: var(--texto-2);
+}
+
+.fila-dia .fila-valor {
+  text-align: right;
+}
+
+.fila-valor-nota {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  font-weight: 400;
+}
+
+.fila-total {
+  background: var(--fondo);
+}
+
+.dia-numero {
+  color: var(--texto-2);
+  font-weight: 400;
+}
+
+/* ---------- Cargar turnos ---------- */
+
+.capa-detalle {
+  background: var(--fondo);
+  /* Borde izquierdo de sombra: el panel se lee como una capa que llega por encima */
+  box-shadow: -0.5rem 0 1.5rem rgb(0 0 0 / 0.12);
+  z-index: 5;
+}
+
+.boton-atras {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  min-height: var(--tap-min);
+  margin-left: -0.5rem;
+  padding: 0 var(--space-3) 0 var(--space-2);
+  color: var(--tinte);
+  font: var(--t-cuerpo);
+  letter-spacing: var(--ls-cuerpo);
+}
+
+.subtitulo {
+  font: var(--t-cuerpo);
+  letter-spacing: var(--ls-cuerpo);
+  color: var(--texto-2);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+}
+
+/* Material de barra: los días pasan por debajo (§12) */
+.total-flotante {
+  position: sticky;
+  top: calc(var(--safe-top) + var(--space-2));
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  border-radius: var(--radio-l);
+  background: var(--barra-fondo);
+  -webkit-backdrop-filter: var(--barra-blur);
+  backdrop-filter: var(--barra-blur);
+  box-shadow: 0 0.125rem 0.75rem rgb(0 0 0 / 0.1);
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+}
+
+.total-flotante strong {
+  font: var(--t-titulo-2);
+  letter-spacing: var(--ls-titulo-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.fila-boton:disabled {
+  color: var(--texto-3);
+  cursor: default;
+}
+
+.dia {
+  background: var(--superficie);
+  border-radius: var(--radio-l);
+  padding: var(--space-3) var(--space-3) var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.dia-titulo {
+  font: var(--t-titulo-3);
+  letter-spacing: var(--ls-titulo-3);
+  margin: 0 var(--space-1) var(--space-2);
+}
+
+.dia-nota {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  color: var(--texto-2);
+  margin: 0 var(--space-1) var(--space-2);
+}
+
+.opciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radio-m);
+  background: var(--fondo);
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+  text-align: center;
+}
+
+.opcion-ancha {
+  grid-column: span 2;
+}
+
+.opcion-detalle {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  font-weight: 400;
+}
+
+/* El elegido va con color sólido y texto de alto contraste, no solo con un cambio de tono */
+.opcion[aria-pressed='true'] {
+  background: var(--tinte);
+  color: var(--tinte-texto);
+}
+
+.otro {
+  overflow: hidden;
+}
+
+.otro-campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+}
+
+.campo {
+  display: grid;
+  gap: var(--space-1);
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  color: var(--texto-2);
+}
+
+.campo input {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radio-m);
+  background: var(--fondo);
+  color: var(--texto);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.otro-duracion {
+  font: var(--t-detalle);
+  letter-spacing: var(--ls-detalle);
+  color: var(--texto-2);
+  margin: var(--space-2) var(--space-1);
+}
+
+.otro-acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.boton-hoja-tinte {
+  background: var(--tinte);
+  color: var(--tinte-texto);
+}
+
+.dia-error {
+  margin: var(--space-2) 0 0;
+}

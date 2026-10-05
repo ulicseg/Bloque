@@ -102,9 +102,18 @@ describe('storage', () => {
 function semanasDe(n: number, bloquesPorSemana: number): Datos['semanas'] {
   const r: Datos['semanas'] = {}
   for (let i = 0; i < n; i++) {
-    r[`2026-10-${String(5 + 7 * i).padStart(2, '0')}`] = {
-      turnos: [{ dia: 0, desde: 6, hasta: 14 }],
-      bloques: Array.from({ length: bloquesPorSemana }, (_, j) => ({ id: `${i}-${j}`, estado: 'hecho' })),
+    const lunes = `2026-10-${String(5 + 7 * i).padStart(2, '0')}`
+    r[lunes] = {
+      lunes,
+      turnos: [{ inicio: 360, fin: 840 }],
+      bloques: Array.from({ length: bloquesPorSemana }, (_, j) => ({
+        id: `${i}-${j}`,
+        actividad: 'ingles' as const,
+        inicio: 900,
+        fin: 990,
+        estado: 'hecho' as const,
+        fijo: false,
+      })),
     }
   }
   return r
@@ -113,6 +122,7 @@ function semanasDe(n: number, bloquesPorSemana: number): Datos['semanas'] {
 describe('exportar e importar', () => {
   it('devuelve exactamente los mismos datos', () => {
     const origen = {
+      ...DATOS_INICIALES,
       pestaña: 'semana',
       semanas: semanasDe(3, 4),
       // Un campo que esta versión no conoce también tiene que sobrevivir
@@ -189,7 +199,7 @@ describe('exportar e importar', () => {
 describe('migrar', () => {
   it('lleva un respaldo v1 a la versión actual sin perder nada', () => {
     const r = migrar({ schemaVersion: 1, datos: { pestaña: 'metas' } })
-    expect(r).toEqual({ schemaVersion: VERSION_ACTUAL, datos: { pestaña: 'metas', semanas: {} } })
+    expect(r).toEqual({ schemaVersion: VERSION_ACTUAL, datos: { ...DATOS_INICIALES, pestaña: 'metas' } })
   })
 
   it('conserva campos desconocidos al migrar', () => {
@@ -214,11 +224,45 @@ describe('migrar', () => {
   })
 
   it('un dato ya actual pasa sin cambios; versión futura o inválida da null', () => {
-    const actual = { schemaVersion: VERSION_ACTUAL, datos: { pestaña: 'hoy', semanas: semanasDe(1, 1) } }
+    const actual = { schemaVersion: VERSION_ACTUAL, datos: { ...DATOS_INICIALES, semanas: semanasDe(1, 1) } }
     expect(migrar(actual)).toEqual(actual)
     expect(migrar({ schemaVersion: VERSION_ACTUAL + 1, datos: {} })).toBeNull()
     expect(migrar({ schemaVersion: 0, datos: {} })).toBeNull()
     expect(migrar({ schemaVersion: 1.5, datos: {} })).toBeNull()
     expect(migrar({ schemaVersion: 1, datos: 'roto' })).toBeNull()
+  })
+
+  it('v2 → v3: cada semana recibe su lunes, aparecen los valores por defecto y no se pierde nada', () => {
+    const v2 = {
+      schemaVersion: 2,
+      datos: {
+        pestaña: 'semana',
+        semanas: { '2026-10-05': { turnos: [{ dia: 0, desde: 6, hasta: 14 }], bloques: [{ id: 'x' }], nota: 'vieja' } },
+        rareza: [1, 2],
+      },
+    }
+    const r = migrar(v2)
+    expect(r?.schemaVersion).toBe(3)
+    expect(r?.datos.ajustes).toEqual(DATOS_INICIALES.ajustes)
+    expect(r?.datos.actividades).toEqual(DATOS_INICIALES.actividades)
+    expect(r?.datos.semanas['2026-10-05']).toEqual({
+      lunes: '2026-10-05',
+      turnos: [{ dia: 0, desde: 6, hasta: 14 }],
+      bloques: [{ id: 'x' }],
+      nota: 'vieja',
+    })
+    expect((r?.datos as unknown as Record<string, unknown>).rareza).toEqual([1, 2])
+    expect(r?.datos.pestaña).toBe('semana')
+  })
+
+  it('v1 → v3 encadena las dos migraciones', () => {
+    const r = migrar({ schemaVersion: 1, datos: { pestaña: 'ajustes' } })
+    expect(r).toEqual({ schemaVersion: 3, datos: { ...DATOS_INICIALES, pestaña: 'ajustes' } })
+  })
+
+  it('v2 → v3 no pisa ajustes que ya existieran por una importación rara', () => {
+    const ajustes = { trasladoMin: 10, suenoMin: 420, comidas: [] }
+    const r = migrar({ schemaVersion: 2, datos: { pestaña: 'hoy', semanas: {}, ajustes } })
+    expect(r?.datos.ajustes).toEqual(ajustes)
   })
 })

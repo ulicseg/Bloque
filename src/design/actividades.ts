@@ -2,7 +2,10 @@
 // repite estos valores y actividades.test.ts verifica que ambos coincidan.
 // "color" es el de texto/íconos; "fondo" es el tinte suave sobre el que se apoya.
 
-export type Actividad = 'ingles' | 'gimnasio' | 'programacion' | 'psicologo' | 'caminata' | 'libre' | 'revision'
+import type { IdActividad } from '../logic/types'
+
+// Mismas claves que las actividades de la lógica: hay un solo lugar donde se definen
+export type Actividad = IdActividad
 
 export interface ParColores {
   color: string

@@ -56,6 +56,7 @@
   --texto-3: #6b6b75;
   --separador: rgb(60 60 67 / 0.18);
   --tinte: #0a6cff;
+  --tinte-texto: #ffffff;
   --presionado: rgb(0 0 0 / 0.08);
 
   /* Materiales translúcidos. La hoja es más gruesa que la barra: superficie mayor, más blur y sombra más profunda (§12). */
@@ -92,6 +93,7 @@
     --texto-3: #9a9aa5;
     --separador: rgb(84 84 88 / 0.5);
     --tinte: #4d9bff;
+    --tinte-texto: #000000;
     --presionado: rgb(255 255 255 / 0.12);
 
     --barra-fondo: rgb(28 28 30 / 0.72);

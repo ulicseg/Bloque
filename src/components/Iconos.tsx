@@ -40,3 +40,4 @@ export const IconoAjustes = icono(
     <circle cx="9" cy="17" r="2" />
   </>,
 )
+export const IconoAtras = icono(<path d="m14.5 5-7 7 7 7" />)
