@@ -538,3 +538,10 @@
 .dia-error {
   margin: var(--space-2) 0 0;
 }
+
+/* ---------- Ventanas libres (tabla provisoria) ---------- */
+
+.ventana-linea {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}

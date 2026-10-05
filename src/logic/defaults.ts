@@ -1,15 +1,34 @@
-import type { Actividad, Ajustes } from './types'
+import type { Actividad, Ajustes, Comida } from './types'
 
 // Valores de arranque; todos se pueden editar después.
-// Los horarios de comidas y la franja de cada actividad son supuestos razonables, no datos del usuario.
+// La franja de cada actividad es un supuesto razonable, no un dato del usuario.
+
+/** Las comidas que traía la versión 3 (supuestos que ninguna pantalla podía editar): la migración v3→v4 las
+ *  reconoce para cambiarlas por las nuevas sin tocar nada que el usuario haya escrito. */
+export const COMIDAS_V3: Comida[] = [
+  { nombre: 'Desayuno', inicio: 8 * 60, duracionMin: 30 },
+  { nombre: 'Almuerzo', inicio: 13 * 60, duracionMin: 60 },
+  { nombre: 'Cena', inicio: 21 * 60, duracionMin: 60 },
+]
+
+const h = (hora: number, min = 0) => hora * 60 + min
 
 export const AJUSTES_POR_DEFECTO: Ajustes = {
   trasladoMin: 30,
-  suenoMin: 480,
+  despertarMin: 30,
+  recuperacionMin: 60,
+  suenoInicio: h(0),
+  suenoFin: h(8),
+  turnoTardeDesde: h(21),
+  suenoTrasTardeInicio: h(23, 30),
+  turnoTempranoHasta: h(7),
+  suenoPreTempranoInicio: h(21, 30),
+  suenoTrasNocheHasta: h(14),
+  focoMargenMin: 60,
+  ventanaMinimaMin: 20,
   comidas: [
-    { nombre: 'Desayuno', inicio: 8 * 60, duracionMin: 30 },
-    { nombre: 'Almuerzo', inicio: 13 * 60, duracionMin: 60 },
-    { nombre: 'Cena', inicio: 21 * 60, duracionMin: 60 },
+    { nombre: 'Almuerzo', inicio: h(12, 30), duracionMin: 60 },
+    { nombre: 'Cena', inicio: h(20, 30), duracionMin: 60 },
   ],
 }
 

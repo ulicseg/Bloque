@@ -1,13 +1,13 @@
 // Capa de almacenamiento: localStorage si anda, memoria si no.
 // Nunca lanza: Safari en modo privado o con cuota llena rompe setItem y la app no debe caerse.
 
-import { ACTIVIDADES_POR_DEFECTO, AJUSTES_POR_DEFECTO } from './defaults'
+import { ACTIVIDADES_POR_DEFECTO, AJUSTES_POR_DEFECTO, COMIDAS_V3 } from './defaults'
 import type { Datos } from './types'
 
 export type { Datos } from './types'
 
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 3
+export const VERSION_ACTUAL = 4
 
 export interface Guardado {
   schemaVersion: number
@@ -42,6 +42,25 @@ export const MIGRACIONES: Migracion[] = [
         actividades: ACTIVIDADES_POR_DEFECTO,
         ...datos,
         ...(semanas === undefined ? {} : { semanas }),
+      },
+    }
+  },
+  // v3 → v4: los ajustes pasan a describir las reglas de sueño, despertar, recuperación y foco.
+  // Se parte de los valores por defecto y encima se pone todo lo que ya había: nada escrito se pierde.
+  // `suenoMin` (duración) pasa a `suenoFin` porque el sueño arranca a las 00:00: 420 min → 00:00–07:00.
+  // Las comidas se cambian solo si siguen siendo las tres que traía la v3 (que ninguna pantalla podía editar).
+  (v3) => {
+    const datos = v3.datos as Record<string, unknown>
+    const viejos = esObjeto(datos.ajustes) ? datos.ajustes : {}
+    const { suenoMin, ...resto } = viejos
+    const suenoFin = typeof suenoMin === 'number' && suenoMin > 0 && suenoMin < 1440 ? { suenoFin: suenoMin } : {}
+    const comidasNuevas = !('comidas' in viejos) || JSON.stringify(viejos.comidas) === JSON.stringify(COMIDAS_V3)
+    return {
+      ...v3,
+      schemaVersion: 4,
+      datos: {
+        ...datos,
+        ajustes: { ...AJUSTES_POR_DEFECTO, ...suenoFin, ...resto, ...(comidasNuevas ? { comidas: AJUSTES_POR_DEFECTO.comidas } : {}) },
       },
     }
   },

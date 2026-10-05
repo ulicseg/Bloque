@@ -3,6 +3,7 @@ import {
   fechaEnArgentina,
   formatearDuracion,
   horaCampo,
+  horaDeFin,
   horaCorta,
   leerHoraCampo,
   lunesActual,
@@ -56,5 +57,14 @@ describe('horas', () => {
     expect(formatearDuracion(480)).toBe('8 h')
     expect(formatearDuracion(510)).toBe('8 h 30 min')
     expect(formatearDuracion(45)).toBe('45 min')
+  })
+})
+
+describe('horaDeFin', () => {
+  it('la medianoche de cierre se lee 24:00 y el resto igual que horaCampo', () => {
+    expect(horaDeFin(1440)).toBe('24:00')
+    expect(horaDeFin(2 * 1440)).toBe('24:00')
+    expect(horaDeFin(0)).toBe('00:00')
+    expect(horaDeFin(1440 + 750)).toBe('12:30')
   })
 })

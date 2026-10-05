@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
 import { Segmentado } from '../components/Segmentado'
+import { VentanasProvisorias } from '../components/VentanasProvisorias'
 import { conSemana, descripcionFin, etiquetaTurno, semanaVacia, textoTotal, turnoDelDia, vecinasDe } from '../logic/turnos'
 import { lunesActual, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
+import { computeWindows } from '../logic/windows'
 import { useDatos } from '../useDatos'
 import { CargarTurnos } from './CargarTurnos'
 
@@ -21,6 +23,7 @@ export function Semana() {
   const lunes = cual === 'esta' ? actual : sumarDias(actual, 7)
   const semana = datos.semanas[lunes] ?? semanaVacia(lunes)
   const vecinas = vecinasDe(datos, lunes)
+  const dias = useMemo(() => computeWindows(semana, datos.ajustes, vecinas.anterior), [semana, datos.ajustes, vecinas.anterior])
 
   return (
     <>
@@ -68,6 +71,9 @@ export function Semana() {
             {semana.turnos.length > 0 ? 'Editar turnos' : 'Cargar turnos'}
           </Presionable>
         </div>
+
+        <h2 className="seccion-titulo">Ventanas libres (provisorio)</h2>
+        <VentanasProvisorias lunes={lunes} dias={dias} />
 
         {import.meta.env.DEV && (
           <>

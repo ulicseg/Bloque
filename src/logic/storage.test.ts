@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { COMIDAS_V3 } from './defaults'
 import { CLAVE, DATOS_INICIALES, MIGRACIONES, VERSION_ACTUAL, crearAlmacen, migrar, resumir, validarRespaldo, type Datos, type Migracion } from './storage'
 
 /** Storage falso mínimo; `falla` simula Safari privado o cuota llena. */
@@ -242,7 +243,7 @@ describe('migrar', () => {
       },
     }
     const r = migrar(v2)
-    expect(r?.schemaVersion).toBe(3)
+    expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
     expect(r?.datos.ajustes).toEqual(DATOS_INICIALES.ajustes)
     expect(r?.datos.actividades).toEqual(DATOS_INICIALES.actividades)
     expect(r?.datos.semanas['2026-10-05']).toEqual({
@@ -255,14 +256,41 @@ describe('migrar', () => {
     expect(r?.datos.pestaña).toBe('semana')
   })
 
-  it('v1 → v3 encadena las dos migraciones', () => {
+  it('v1 → actual encadena todas las migraciones', () => {
     const r = migrar({ schemaVersion: 1, datos: { pestaña: 'ajustes' } })
-    expect(r).toEqual({ schemaVersion: 3, datos: { ...DATOS_INICIALES, pestaña: 'ajustes' } })
+    expect(r).toEqual({ schemaVersion: VERSION_ACTUAL, datos: { ...DATOS_INICIALES, pestaña: 'ajustes' } })
   })
 
   it('v2 → v3 no pisa ajustes que ya existieran por una importación rara', () => {
-    const ajustes = { trasladoMin: 10, suenoMin: 420, comidas: [] }
-    const r = migrar({ schemaVersion: 2, datos: { pestaña: 'hoy', semanas: {}, ajustes } })
-    expect(r?.datos.ajustes).toEqual(ajustes)
+    const ajustes = { trasladoMin: 10, comidas: [] }
+    const v3 = MIGRACIONES[1]({ schemaVersion: 2, datos: { pestaña: 'hoy', semanas: {}, ajustes } })
+    expect((v3.datos as Datos).ajustes).toEqual(ajustes)
+  })
+
+  describe('v3 → v4', () => {
+    const v3 = (ajustes: unknown) => ({ schemaVersion: 3, datos: { pestaña: 'semana', semanas: {}, actividades: [], ajustes, rareza: 7 } })
+
+    it('con los ajustes de la v3 sin tocar, aparecen las reglas nuevas y las comidas nuevas', () => {
+      const r = migrar(v3({ trasladoMin: 30, suenoMin: 480, comidas: COMIDAS_V3 }))
+      expect(r?.schemaVersion).toBe(4)
+      expect(r?.datos.ajustes).toEqual(DATOS_INICIALES.ajustes)
+      expect((r?.datos as unknown as Record<string, unknown>).rareza).toBe(7)
+    })
+
+    it('conserva lo que el usuario cambió: traslado, duración del sueño y comidas propias', () => {
+      const comidas = [{ nombre: 'Merienda', inicio: 1000, duracionMin: 20 }]
+      const r = migrar(v3({ trasladoMin: 45, suenoMin: 420, comidas }))
+      expect(r?.datos.ajustes.trasladoMin).toBe(45)
+      expect(r?.datos.ajustes.suenoInicio).toBe(0)
+      expect(r?.datos.ajustes.suenoFin).toBe(420)
+      expect(r?.datos.ajustes.comidas).toEqual(comidas)
+      expect(r?.datos.ajustes.despertarMin).toBe(30)
+      expect('suenoMin' in (r?.datos.ajustes ?? {})).toBe(false)
+    })
+
+    it('ajustes ausentes o rotos se completan con los valores por defecto', () => {
+      expect(migrar(v3(undefined))?.datos.ajustes).toEqual(DATOS_INICIALES.ajustes)
+      expect(migrar(v3('roto'))?.datos.ajustes).toEqual(DATOS_INICIALES.ajustes)
+    })
   })
 })

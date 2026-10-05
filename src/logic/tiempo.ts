@@ -80,3 +80,8 @@ export function formatearDuracion(min: number): string {
   if (h === 0) return `${m} min`
   return m === 0 ? `${h} h` : `${h} h ${m} min`
 }
+
+/** Como horaCampo, pero un fin a medianoche se lee "24:00" y no "00:00": "21:30–24:00". */
+export function horaDeFin(min: number): string {
+  return min > 0 && min % MIN_DIA === 0 ? '24:00' : horaCampo(min)
+}

@@ -20,10 +20,29 @@ export interface Comida {
   duracionMin: number
 }
 
+/** Reglas del cálculo de ventanas libres. Los horarios son minutos desde las 00:00 del día. */
 export interface Ajustes {
   trasladoMin: number
-  /** Sueño que se descuenta por defecto entre un turno y el siguiente bloque libre. */
-  suenoMin: number
+  /** Los minutos después de levantarse que no se pueden asignar. */
+  despertarMin: number
+  /** Descanso después de un turno largo (8 h), salvo el nocturno. */
+  recuperacionMin: number
+  /** Sueño por defecto. Si el inicio es menor que el fin (00:00–08:00) la noche arranca después de medianoche;
+   *  si es mayor (23:00–07:00) arranca la noche anterior. */
+  suenoInicio: number
+  suenoFin: number
+  /** Un turno que termina desde esta hora (21:00) hasta la medianoche manda a dormir a `suenoTrasTardeInicio`. */
+  turnoTardeDesde: number
+  suenoTrasTardeInicio: number
+  /** Un turno que empieza a esta hora o antes (07:00) manda a dormir la noche anterior desde `suenoPreTempranoInicio`. */
+  turnoTempranoHasta: number
+  suenoPreTempranoInicio: number
+  /** Tras un turno nocturno se duerme hasta esta hora (14:00). */
+  suenoTrasNocheHasta: number
+  /** Una ventana que termina menos de estos minutos antes de dormir no sirve para concentrarse. */
+  focoMargenMin: number
+  /** Las ventanas más cortas que esto se descartan. */
+  ventanaMinimaMin: number
   comidas: Comida[]
 }
 
