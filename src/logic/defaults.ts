@@ -53,6 +53,6 @@ export const ACTIVIDADES_POR_DEFECTO: Actividad[] = [
   { id: 'caminata', nombre: 'Caminata', color: 'caminata', tipoMeta: 'sesiones', meta: 7, duracionMin: 30, minimoMin: 10, franjas: ['manana', 'tarde', 'noche'], prioridad: 4, fija: false },
   { id: 'libre', nombre: 'Libre / amigos', color: 'libre', tipoMeta: 'sesiones', meta: 2, duracionMin: 180, minimoMin: null, franjas: ['noche'], prioridad: 5, fija: false },
   { id: 'psicologo', nombre: 'Psicólogo', color: 'psicologo', tipoMeta: 'sesiones', meta: 1, duracionMin: 60, minimoMin: null, franjas: ['manana', 'tarde', 'noche'], prioridad: 6, fija: true },
-  // La siesta es de 35 min (rápida); con duración 105 son 3 bloques seguidos (larga). Es lo último que se ubica cuando falta lugar
-  { id: 'siesta', nombre: 'Siesta', color: 'siesta', tipoMeta: 'sesiones', meta: 3, duracionMin: 35, minimoMin: null, franjas: ['tarde'], prioridad: 7, fija: false },
+  // La siesta es una recomendación, no una meta (meta 0: no cuenta ni se pide). 35 min la rápida; con 105 son 3 bloques seguidos (larga)
+  { id: 'siesta', nombre: 'Siesta', color: 'siesta', tipoMeta: 'sesiones', meta: 0, duracionMin: 35, minimoMin: null, franjas: ['tarde'], prioridad: 7, fija: true },
 ]

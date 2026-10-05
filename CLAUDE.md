@@ -135,7 +135,7 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Siestas (2026-10-05):** nueva actividad `siesta` (esquema v9, la migración la agrega al final de la lista). Un bloque de siesta dura 35 min (rápida) o 3 × 35 = 1 h 45 min (larga); el editor de bloque ofrece los dos botones y completa la hora de fin (`src/logic/siestas.ts`, con tests). x Sin verificar en pantalla.
 
-- **La sugerencia ubica siestas (2026-10-05):** la siesta deja de ser fija (esquema v10: si seguía como la dejó la v9, pasa a meta 3 por semana). Se sugiere en la franja de tarde, uno por día, termina al menos 3 h antes del sueño de la noche (`MARGEN_SUENO_SIESTA_MIN`) y es lo último que se ubica cuando falta lugar (prioridad 7). Siesta larga = duración 105 min en Metas. Sin verificar en pantalla.
+- **Siestas como recomendación (2026-10-05):** la siesta no es una meta (esquema v11: vuelve a meta 0, no cuenta en el avance ni en lo que falta). `suggest` la propone al final, con lo que sobró: una por día en el primer hueco libre desde las 13:00, terminando 3 h antes del sueño de la noche, sin gastar de los topes; si ese día no hay hueco no pasa nada. Largo en Metas → Siesta (rápida 35 min / larga 105). Para no hacerla, se saltea en Hoy. Sin verificar en pantalla.
 
 ## Pendientes conocidos
 

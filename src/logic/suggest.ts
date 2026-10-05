@@ -19,6 +19,8 @@ export const TRASLADO_GIMNASIO_MIN = 15
 export const MARGEN_SUENO_GIMNASIO_MIN = 120
 /** La siesta tiene que terminar 3 h antes del sueño de la noche, para no robarle el sueño. */
 export const MARGEN_SUENO_SIESTA_MIN = 180
+/** La siesta no se recomienda antes de las 13:00. */
+export const SIESTA_DESDE_MIN = 13 * 60
 export const VENTANA_MIN_PROGRAMACION = 120
 export const VENTANA_MIN_LIBRE = 180
 
@@ -61,7 +63,7 @@ const TEXTO_MOTIVO: Record<MotivoFalta, string> = {
   foco: 'las ventanas que quedan son «foco: no»',
   'ventana-corta': `no hay ventanas de ${VENTANA_MIN_PROGRAMACION / 60} h o más`,
   'noche-libre': `no hay una noche sin turno con una ventana de ${VENTANA_MIN_LIBRE / 60} h o más`,
-  sueno: `lo que queda cae muy cerca de la hora de dormir (el gimnasio pide ${MARGEN_SUENO_GIMNASIO_MIN / 60} h de margen y la siesta ${MARGEN_SUENO_SIESTA_MIN / 60} h)`,
+  sueno: `lo que queda cae en las ${MARGEN_SUENO_GIMNASIO_MIN / 60} h previas a dormir`,
   'sin-espacio': 'no queda lugar en las ventanas libres',
   'dias-no': 'los días en que sí se puede ya no tienen lugar',
   fija: 'es un bloque fijo: ubicalo a mano',
@@ -183,9 +185,11 @@ function candidatos(ctx: Contexto, a: Actividad, dur: number, relajar: Relajar =
         if (a.id === 'programacion' && largo < VENTANA_MIN_PROGRAMACION) return
         if (a.id === 'libre' && (ctx.conTurno[dia] || largo < VENTANA_MIN_LIBRE)) return
       }
-      // El gimnasio tiene que terminar 2 h antes del próximo sueño, y la siesta 3 h antes
-      const margenSueno = a.id === 'gimnasio' ? MARGEN_SUENO_GIMNASIO_MIN : a.id === 'siesta' ? MARGEN_SUENO_SIESTA_MIN : 0
-      const limite = margenSueno > 0 && !relajar.especial ? (ctx.suenos.find((s) => s >= w.fin) ?? Infinity) - margenSueno : Infinity
+      // El gimnasio tiene que terminar 2 h antes del próximo sueño
+      const limite =
+        a.id === 'gimnasio' && !relajar.especial
+          ? (ctx.suenos.find((s) => s >= w.fin) ?? Infinity) - MARGEN_SUENO_GIMNASIO_MIN
+          : Infinity
       for (const [pa, pb] of restar(w.inicio, w.fin, ctx.ocupados[dia])) {
         const desde = pa + traslado
         const hasta = Math.min(pb - traslado, limite)
@@ -209,7 +213,7 @@ function motivoDe(ctx: Contexto, a: Actividad, dur: number): MotivoFalta {
   if (hay({ topes: true, maxDia: true })) return 'maximo-dia'
   if (hay({ topes: true, maxDia: true, foco: true })) return 'foco'
   if (hay({ topes: true, maxDia: true, foco: true, especial: true })) {
-    return a.id === 'gimnasio' || a.id === 'siesta' ? 'sueno' : a.id === 'programacion' ? 'ventana-corta' : 'noche-libre'
+    return a.id === 'gimnasio' ? 'sueno' : a.id === 'programacion' ? 'ventana-corta' : 'noche-libre'
   }
   if (hay({ topes: true, maxDia: true, foco: true, especial: true, dias: true })) return 'dias-no'
   return 'sin-espacio'
@@ -278,6 +282,35 @@ function frase(a: Actividad, bloques: number, min: number, motivo: MotivoFalta):
   return `${a.nombre}: ${cuantos} (${formatearDuracion(min)}); ${TEXTO_MOTIVO[motivo]}.`
 }
 
+/**
+ * Las siestas son una recomendación, no una meta: no cuentan en el avance ni en lo que falta. Se hace al final, con lo
+ * que sobró: en cada día, la primera siesta que entra en un hueco libre, desde las 13:00 y terminando al menos 3 h
+ * antes del sueño de la noche. No usa los topes de uso (no le quita lugar a nada) y, si no hay hueco, no pasa nada.
+ */
+function recomendarSiestas(ctx: Contexto, a: Actividad | undefined, fijos: Bloque[]) {
+  if (!a || a.duracionMin <= 0) return
+  ctx.dias.forEach((d, dia) => {
+    if (a.diasNo?.includes(dia)) return
+    // Si ya hay una siesta ese día (fija o ya hecha) no se agrega otra
+    if (fijos.some((b) => b.actividad === a.id && Math.floor(b.inicio / MIN_DIA) === dia)) return
+    for (const w of d.ventanas) {
+      const limite = (ctx.suenos.find((s) => s >= w.fin) ?? Infinity) - MARGEN_SUENO_SIESTA_MIN
+      for (const [pa, pb] of restar(w.inicio, w.fin, ctx.ocupados[dia])) {
+        const inicio = Math.max(pa, dia * MIN_DIA + SIESTA_DESDE_MIN)
+        if (Math.min(pb, limite) - inicio < a.duracionMin) continue
+        confirmarSiesta(ctx, a, dia, inicio)
+        return
+      }
+    }
+  })
+}
+
+function confirmarSiesta(ctx: Contexto, a: Actividad, dia: number, inicio: number) {
+  const fin = inicio + a.duracionMin
+  ctx.ocupados[dia] = unir([...ctx.ocupados[dia], [inicio, fin]])
+  ctx.bloques.push({ id: `sug-${a.id}-${inicio}`, actividad: a.id, inicio, fin, estado: 'planificado', fijo: false })
+}
+
 /** Propone dónde ubicar los bloques de la semana.
  *  `dias` sale de computeWindows; `metas` son las actividades con su meta, duración, franja y prioridad;
  *  `fijos` son los bloques que no se mueven (el psicólogo): cuentan para la meta y no se pisan. */
@@ -341,6 +374,8 @@ export function suggest(
       })
     }
   }
+
+  recomendarSiestas(ctx, metas.find((a) => a.id === 'siesta'), fijos)
 
   const ventanasDia = dias.map((d) => d.ventanas.reduce((n, v) => n + (v.fin - v.inicio), 0))
   return {

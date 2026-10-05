@@ -324,15 +324,31 @@ describe('migrar', () => {
     const v9 = (actividades: unknown) => ({ schemaVersion: 9, datos: { pestaña: 'hoy', semanas: {}, ajustes: {}, actividades } })
 
     it('la siesta tal cual salió de la v9 (fija y sin meta) pasa a sugerirse', () => {
-      const r = migrar(v9([{ id: 'siesta', fija: true, meta: 0, prioridad: 7 }]))
-      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
+      const r = migrar(v9([{ id: 'siesta', fija: true, meta: 0, prioridad: 7 }]), MIGRACIONES, 10)
+      expect(r?.schemaVersion).toBe(10)
       expect(r?.datos.actividades).toEqual([{ id: 'siesta', fija: false, meta: 3, prioridad: 7 }])
     })
 
     it('si la persona ya la tocó no se pisa, y con datos vacíos no se cae', () => {
       const propia = [{ id: 'siesta', fija: false, meta: 5, prioridad: 2 }]
-      expect(migrar(v9(propia))?.datos.actividades).toEqual(propia)
-      expect(migrar(v9(undefined))?.schemaVersion).toBe(VERSION_ACTUAL)
+      expect(migrar(v9(propia), MIGRACIONES, 10)?.datos.actividades).toEqual(propia)
+      expect(migrar(v9(undefined), MIGRACIONES, 10)?.schemaVersion).toBe(10)
+    })
+  })
+
+  describe('v10 → v11', () => {
+    const v10 = (actividades: unknown) => ({ schemaVersion: 10, datos: { pestaña: 'hoy', semanas: {}, ajustes: {}, actividades } })
+
+    it('la siesta como la dejó la v10 (meta 3, sugerible) vuelve a ser una recomendación sin meta', () => {
+      const r = migrar(v10([{ id: 'siesta', fija: false, meta: 3, prioridad: 7 }]))
+      expect(r?.schemaVersion).toBe(VERSION_ACTUAL)
+      expect(r?.datos.actividades).toEqual([{ id: 'siesta', fija: true, meta: 0, prioridad: 7 }])
+    })
+
+    it('si la persona ya la tocó no se pisa, y con datos vacíos no se cae', () => {
+      const propia = [{ id: 'siesta', fija: false, meta: 5, prioridad: 2 }]
+      expect(migrar(v10(propia))?.datos.actividades).toEqual(propia)
+      expect(migrar(v10(undefined))?.schemaVersion).toBe(VERSION_ACTUAL)
     })
   })
 

@@ -7,7 +7,7 @@ import type { Datos } from './types'
 export type { Datos } from './types'
 
 export const CLAVE = 'bloques'
-export const VERSION_ACTUAL = 10
+export const VERSION_ACTUAL = 11
 
 export interface Guardado {
   schemaVersion: number
@@ -133,6 +133,14 @@ export const MIGRACIONES: Migracion[] = [
     if (!Array.isArray(datos.actividades)) return { ...v9, schemaVersion: 10 }
     const actividades = datos.actividades.map((a) => (esObjeto(a) && a.id === 'siesta' && a.fija === true && a.meta === 0 ? { ...a, fija: false, meta: 3 } : a))
     return { ...v9, schemaVersion: 10, datos: { ...datos, actividades } }
+  },
+  // v10 → v11: la siesta deja de ser una meta semanal (pedido de la persona): vuelve a meta 0 y sin prioridad, y la
+  // sugerencia la recomienda donde haya hueco. Solo si seguía como la dejó la v10 (meta 3, sugerible); si no, no se pisa.
+  (v10) => {
+    const datos = v10.datos as Record<string, unknown>
+    if (!Array.isArray(datos.actividades)) return { ...v10, schemaVersion: 11 }
+    const actividades = datos.actividades.map((a) => (esObjeto(a) && a.id === 'siesta' && a.fija === false && a.meta === 3 ? { ...a, fija: true, meta: 0 } : a))
+    return { ...v10, schemaVersion: 11, datos: { ...datos, actividades } }
   },
 ]
 

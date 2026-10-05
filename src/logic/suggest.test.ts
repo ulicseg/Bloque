@@ -4,6 +4,7 @@ import { SEMANA_EJEMPLO } from './ejemplo'
 import {
   MARGEN_SUENO_GIMNASIO_MIN,
   MARGEN_SUENO_SIESTA_MIN,
+  SIESTA_DESDE_MIN,
   TOPE_DIA,
   TOPE_SEMANA,
   TRASLADO_GIMNASIO_MIN,
@@ -65,7 +66,8 @@ function violaciones(dias: DiaCalculado[], metas: Actividad[], fijos: Bloque[], 
   }
 
   // Topes de uso: 85 % por día y 70 % de la semana
-  const costo = (b: Bloque) => b.fin - b.inicio + 2 * pad(b)
+  // La siesta es una recomendación aparte: no gasta de los topes
+  const costo = (b: Bloque) => (b.actividad === 'siesta' ? 0 : b.fin - b.inicio + 2 * pad(b))
   let total = 0
   for (const d of dias) {
     const libre = d.ventanas.reduce((n, w) => n + (w.fin - w.inicio), 0)
@@ -79,7 +81,7 @@ function violaciones(dias: DiaCalculado[], metas: Actividad[], fijos: Bloque[], 
   // Reglas por actividad
   const cuentaPorDia = (id: IdActividad) => dias.map((d) => r.bloques.filter((b) => b.actividad === id && diaDe(b) === d.dia).length)
   cuentaPorDia('ingles').forEach((n, d) => n > 2 && v.push(`inglés ${n} bloques el día ${d}`))
-  for (const id of ['gimnasio', 'caminata', 'programacion', 'libre'] as const) {
+  for (const id of ['gimnasio', 'caminata', 'programacion', 'libre', 'siesta'] as const) {
     cuentaPorDia(id).forEach((n, d) => n > 1 && v.push(`${id} ${n} bloques el día ${d}`))
   }
   for (const b of r.bloques) {
@@ -92,6 +94,12 @@ function violaciones(dias: DiaCalculado[], metas: Actividad[], fijos: Bloque[], 
       if (conTurno[dia]) v.push(`libre en día con turno (${dia})`)
       if (w.fin - w.inicio < 180) v.push('libre en ventana de menos de 3 h')
       if ((b.inicio + b.fin) / 2 - dia * MIN_DIA < 18 * H) v.push('libre fuera de la noche')
+    }
+    if (b.actividad === 'siesta') {
+      if (b.inicio - dia * MIN_DIA < SIESTA_DESDE_MIN) v.push(`siesta ${rango(b)} antes de las 13:00`)
+      for (const s of sueno) {
+        if (s.inicio > b.inicio && s.inicio - b.fin < MARGEN_SUENO_SIESTA_MIN) v.push(`siesta ${rango(b)} a menos de 3 h de dormir`)
+      }
     }
     if (b.actividad === 'gimnasio') {
       for (const s of sueno) {
@@ -190,7 +198,7 @@ describe('suggest: informe de lo que no entró', () => {
     const vacias = ventanasDe(semanaVacia(SEMANA_EJEMPLO.lunes)).map((d) => ({ ...d, ventanas: [] }))
     const r = suggest(vacias, ACTIVIDADES_POR_DEFECTO, [])
     expect(r.bloques).toEqual([])
-    expect(r.faltantes.map((f) => f.actividad).sort()).toEqual(['caminata', 'gimnasio', 'ingles', 'libre', 'programacion', 'psicologo', 'siesta'])
+    expect(r.faltantes.map((f) => f.actividad).sort()).toEqual(['caminata', 'gimnasio', 'ingles', 'libre', 'programacion', 'psicologo'])
     expect(r.faltantes.find((f) => f.actividad === 'ingles')).toMatchObject({ bloquesFaltantes: 7, faltanMin: 10 * H, motivo: 'sin-espacio' })
   })
 
@@ -247,18 +255,30 @@ describe('suggest: reglas por actividad', () => {
     expect(violaciones(dias, metas, [], r)).toEqual([])
   })
 
-  it('siesta: bloques de 35 min (3 seguidos si es larga) que terminan 3 h antes de dormir', () => {
+  it('siesta: una por día en el primer hueco desde las 13:00, termina 3 h antes de dormir y no cuenta como meta', () => {
     const sueno = (n: number) => ({ tipo: 'sueno' as const, inicio: n * MIN_DIA + 22 * H, fin: n * MIN_DIA + 24 * H })
-    const dias = semana((n) => ({ ...dia(n, [[12, 22]]), tramos: [sueno(n)] }))
+    const dias = semana((n) => ({ ...dia(n, [[9, 22]]), tramos: [sueno(n)] }))
     for (const duracionMin of [35, 105]) {
-      const metas = [por('siesta', { meta: 3, duracionMin, franjas: ['manana', 'tarde', 'noche'] })]
+      const metas = [por('siesta', { duracionMin })]
       const r = suggest(dias, metas, [])
-      expect(r.bloques).toHaveLength(3)
+      expect(r.faltantes).toEqual([])
+      expect(r.bloques).toHaveLength(7)
       for (const b of r.bloques) {
         expect(b.fin - b.inicio).toBe(duracionMin)
-        expect(b.fin % MIN_DIA).toBeLessThanOrEqual(22 * H - MARGEN_SUENO_SIESTA_MIN)
+        expect(rango(b)).toBe(duracionMin === 35 ? '13:00–13:35' : '13:00–14:45')
       }
+      expect(violaciones(dias, metas, [], r)).toEqual([])
     }
+  })
+
+  it('siesta: sin hueco después de las 13:00 (o muy cerca de dormir) no se propone nada, y respeta una ya puesta', () => {
+    const metas = [por('siesta')]
+    expect(suggest(semana((n) => dia(n, [[9, 12.5]])), metas, []).bloques).toEqual([])
+    const sueno = (n: number) => ({ tipo: 'sueno' as const, inicio: n * MIN_DIA + 15 * H, fin: n * MIN_DIA + 24 * H })
+    expect(suggest(semana((n) => ({ ...dia(n, [[13, 15]]), tramos: [sueno(n)] })), metas, []).bloques).toEqual([])
+    const dias = semana((n) => dia(n, [[13, 16]]))
+    const r = suggest(dias, metas, [fijo('siesta', 2, 14, 14.5)])
+    expect(r.bloques.map(diaDe)).toEqual([0, 1, 3, 4, 5, 6])
   })
 
   it('gimnasio: reserva 15 min de traslado de cada lado', () => {
