@@ -19,20 +19,6 @@ window.addEventListener('load', () => [0, 300, 1000].forEach((ms) => setTimeout(
 window.addEventListener('pageshow', empujar)
 document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && empujar())
 
-// En iOS instalado la ventana a veces es más corta que la pantalla (iPhone 16: 795 de 852) y todo lo anclado abajo
-// queda flotando con un hueco negro. Se mide la diferencia y el CSS corre la barra y el contenedor para cubrirla;
-// si iOS corrige la ventana (resize), la diferencia vuelve a 0 sola.
-const medirDesfase = () => {
-  const instalada = (navigator as { standalone?: boolean }).standalone === true || window.matchMedia('(display-mode: standalone)').matches
-  const falta = instalada ? Math.max(0, Math.round(window.screen.height - window.innerHeight)) : 0
-  // Solo en vertical y con tope: una diferencia enorme no es este problema (teclado, horizontal)
-  document.documentElement.style.setProperty('--desfase', `${window.innerHeight > window.innerWidth && falta < 120 ? falta : 0}px`)
-}
-medirDesfase()
-window.addEventListener('resize', medirDesfase)
-window.addEventListener('orientationchange', medirDesfase)
-window.addEventListener('pageshow', medirDesfase)
-
 // Cuanto antes se pida, antes puede el navegador marcar los datos como protegidos del borrado automático
 void pedirPersistencia()
 

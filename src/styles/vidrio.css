@@ -207,8 +207,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  /* Baja la barra hasta el borde real de la pantalla (ver --desfase en main.tsx) */
-  transform: translateY(var(--desfase, 0px));
   padding: 0.25rem max(var(--space-2), var(--safe-right)) calc(0.25rem + var(--safe-bottom)) max(var(--space-2), var(--safe-left));
   border-radius: var(--radio-l) var(--radio-l) 0 0;
   border: 1px solid var(--vidrio-borde);
