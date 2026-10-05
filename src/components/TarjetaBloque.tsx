@@ -13,34 +13,56 @@ interface Props {
   alMarcar: (estado: EstadoBloque) => void
 }
 
-const OPCIONES: { estado: Exclude<EstadoBloque, 'planificado'>; titulo: string }[] = [
+type Marca = Exclude<EstadoBloque, 'planificado'>
+
+const OPCIONES: { estado: Marca; titulo: string }[] = [
   { estado: 'hecho', titulo: 'Hecho' },
   { estado: 'minimo', titulo: 'Mínimo' },
   { estado: 'salteado', titulo: 'Salteado' },
 ]
 
+const ETIQUETA_ESTADO: Record<EstadoBloque, string> = {
+  planificado: 'Pendiente',
+  hecho: 'Hecho ✓',
+  minimo: 'Mínimo ✓',
+  salteado: 'Salteado',
+}
+
+// Cada bloque es una fila de la línea del día: la hora a la izquierda (lo primero que se busca)
+// y a la derecha qué es, cuánto dura y en qué estado está.
 export function TarjetaBloque({ bloque, dia, actividad, alMarcar }: Props) {
   const estilo = actividad ? ({ '--act': `var(--act-${actividad.color})`, '--act-fondo': `var(--act-${actividad.color}-fondo)` } as CSSProperties) : undefined
   const opciones = OPCIONES.filter((o) => o.estado !== 'minimo' || admiteMinimo(actividad))
+  const nombre = actividad?.nombre ?? bloque.actividad
   return (
-    <section className="tarjeta" style={estilo} data-estado={bloque.estado} aria-label={actividad?.nombre ?? bloque.actividad}>
-      <div className="tarjeta-cabecera">
-        <span className="sug-actividad">
-          <IconoActividad id={bloque.actividad} />
-          <span className="sug-texto">{actividad?.nombre ?? bloque.actividad}</span>
-        </span>
-        <span className="sug-duracion">{formatearDuracion(bloque.fin - bloque.inicio)}</span>
+    <section className="bloque-hoy" style={estilo} data-estado={bloque.estado} aria-label={nombre}>
+      <div className="bloque-hora">
+        <strong>{horaCampo(bloque.inicio - dia * MIN_DIA)}</strong>
+        <span>{horaDeFin(bloque.fin - dia * MIN_DIA)}</span>
       </div>
-      <p className="tarjeta-hora">
-        {horaCampo(bloque.inicio - dia * MIN_DIA)}–{horaDeFin(bloque.fin - dia * MIN_DIA)}
-        {actividad?.minimoMin != null && <span className="fila-valor-nota"> · mínimo: {formatearDuracion(actividad.minimoMin)}</span>}
-      </p>
-      <div className="estados" style={{ gridTemplateColumns: `repeat(${opciones.length}, 1fr)` }}>
-        {opciones.map((o) => (
-          <Presionable key={o.estado} className="opcion" aria-pressed={bloque.estado === o.estado} onClick={() => alMarcar(o.estado)}>
-            {o.titulo}
-          </Presionable>
-        ))}
+      <div className="bloque-cuerpo">
+        <div className="bloque-titulo">
+          <IconoActividad id={bloque.actividad} />
+          <span className="bloque-nombre">{nombre}</span>
+          <span className="bloque-estado">{ETIQUETA_ESTADO[bloque.estado]}</span>
+        </div>
+        <p className="bloque-detalle">
+          {formatearDuracion(bloque.fin - bloque.inicio)}
+          {actividad?.minimoMin != null && ` · mínimo ${formatearDuracion(actividad.minimoMin)}`}
+        </p>
+        <div className="estados" style={{ gridTemplateColumns: `repeat(${opciones.length}, 1fr)` }}>
+          {opciones.map((o) => (
+            <Presionable
+              key={o.estado}
+              className="opcion opcion-estado"
+              data-marca={o.estado}
+              aria-pressed={bloque.estado === o.estado}
+              onClick={() => alMarcar(o.estado)}
+            >
+              {o.titulo}
+            </Presionable>
+          ))}
+        </div>
       </div>
     </section>
   )

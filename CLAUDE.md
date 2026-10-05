@@ -112,6 +112,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Hoy compacta (2026-10-04):** la pestaña Hoy baja un escalón de tamaños (títulos, tarjetas, botones, barras) para el iPhone 16; los botones mantienen 44 px de alto. Clase `pantalla-hoy` en `hoy.css`.
 
+- **Hoy y turnos más claros (2026-10-04):** Hoy es una línea del día (hora a la izquierda, tarjeta teñida con el color de la actividad, turno en gris, resumen "X de N hechos", estados con color propio: verde, ámbar, gris). Cargar turnos elige primero el largo (Libre / 4 h / 8 h / Otro) y después la hora; `TURNOS_CORTOS` y `largoDeTurno` en `src/logic/turnos.ts`, con test.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

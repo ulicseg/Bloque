@@ -15,6 +15,7 @@ import {
   terminaAlDiaSiguiente,
   textoConflicto,
   textoTotal,
+  largoDeTurno,
   tipoDeTurno,
   vecinasDe,
 } from './turnos'
@@ -50,7 +51,18 @@ describe('crearTurno', () => {
     expect(crearTurno(0, 360, MIN_DIA)).toBeNull()
   })
 
-  it('un turno de 4 h es "otro" y terminar justo a las 24 no cuenta como día siguiente', () => {
+  it('los turnos de 4 h se reconocen y el 22–2 cruza la medianoche', () => {
+    expect(tipoDeTurno(turno(0, 6, 10))).toBe('6-10')
+    expect(tipoDeTurno(turno(0, 18, 22))).toBe('18-22')
+    const noche = turno(3, 22, 2)
+    expect(tipoDeTurno(noche)).toBe('22-2')
+    expect(terminaAlDiaSiguiente(noche)).toBe(true)
+    expect(largoDeTurno(noche)).toBe('4')
+    expect(largoDeTurno(turno(0, 6, 14))).toBe('8')
+    expect(largoDeTurno(turno(0, 8, 12))).toBe('otro')
+  })
+
+  it('un horario de 4 h que no es de la lista es "otro" y terminar justo a las 24 no cuenta como día siguiente', () => {
     expect(tipoDeTurno(turno(0, 8, 12))).toBe('otro')
     const noche = turno(0, 20, 0)
     expect(noche.fin).toBe(MIN_DIA + 0)

@@ -13,6 +13,7 @@ import {
   rangoSemana,
 } from '../logic/tiempo'
 import {
+  TURNOS_CORTOS,
   TURNOS_FIJOS,
   continuaciones,
   copiarTurnos,
@@ -21,6 +22,7 @@ import {
   duracionTurno,
   etiquetaTurno,
   fijarTurnoDelDia,
+  largoDeTurno,
   textoConflicto,
   textoTotal,
   tipoDeTurno,
@@ -50,6 +52,7 @@ export function CargarTurnos({ semana, vecinas, alGuardar, alVolver }: Props) {
   const [edicion, setEdicion] = useState<Edicion | null>(null)
   const [confirmaCopia, setConfirmaCopia] = useState(false)
   const [aviso, setAviso] = useState<string | null>(null)
+  const [pendiente, setPendiente] = useState<Record<number, '4' | '8' | undefined>>({})
 
   const origenCopia = vecinas.anterior
   const hayOrigen = (origenCopia?.turnos.length ?? 0) > 0
@@ -142,6 +145,10 @@ export function CargarTurnos({ semana, vecinas, alGuardar, alVolver }: Props) {
         const tipo = turno ? tipoDeTurno(turno) : null
         const fin = turno ? descripcionFin(turno) : null
         const abierto = edicion?.dia === dia
+        // Lo que se está eligiendo (aún sin guardar) manda sobre lo guardado
+        const largo: 'libre' | '4' | '8' | 'otro' = abierto
+          ? 'otro'
+          : (pendiente[dia] ?? (turno ? largoDeTurno(turno) : 'libre'))
         return (
           <section key={dia} className="dia" aria-label={`${nombreDia(dia)} ${numeroDelDia(semana.lunes, dia)}`}>
             <h2 className="dia-titulo">
@@ -150,35 +157,64 @@ export function CargarTurnos({ semana, vecinas, alGuardar, alVolver }: Props) {
             {dia === 0 && sigueDelDomingo && (
               <p className="dia-nota">Sigue el turno del domingo hasta las {horaCorta(sigueDelDomingo.fin)}.</p>
             )}
-            <div className="opciones">
-              {TURNOS_FIJOS.map((f) => (
-                <Presionable
-                  key={f.id}
-                  className={`opcion ${f.id === '22-6' ? 'opcion-ancha' : ''}`}
-                  aria-pressed={tipo === f.id}
-                  onClick={() => {
-                    setEdicion(null)
-                    elegir(dia, crearTurno(dia, f.desde, f.hasta))
-                  }}
-                >
-                  <span>{f.etiqueta}</span>
-                  {f.id === '22-6' && <span className="opcion-detalle">termina al día siguiente</span>}
-                </Presionable>
-              ))}
+            <div className="opciones opciones-largo" role="group" aria-label="Largo del turno">
               <Presionable
                 className="opcion"
-                aria-pressed={turno === undefined && !abierto}
+                aria-pressed={largo === 'libre'}
                 onClick={() => {
                   setEdicion(null)
+                  setPendiente((p) => ({ ...p, [dia]: undefined }))
                   elegir(dia, null)
                 }}
               >
                 Libre
               </Presionable>
-              <Presionable className="opcion" aria-pressed={tipo === 'otro' || abierto} onClick={() => abrirOtro(dia)}>
-                {tipo === 'otro' && !abierto && turno ? `Otro · ${etiquetaTurno(turno)}` : 'Otro'}
+              {(['4', '8'] as const).map((l) => (
+                <Presionable
+                  key={l}
+                  className="opcion"
+                  aria-pressed={largo === l}
+                  onClick={() => {
+                    setEdicion(null)
+                    setError(null)
+                    setPendiente((p) => ({ ...p, [dia]: l }))
+                  }}
+                >
+                  {l} h
+                </Presionable>
+              ))}
+              <Presionable
+                className="opcion"
+                aria-pressed={largo === 'otro'}
+                onClick={() => {
+                  setPendiente((p) => ({ ...p, [dia]: undefined }))
+                  abrirOtro(dia)
+                }}
+              >
+                Otro
               </Presionable>
             </div>
+
+            {(largo === '4' || largo === '8') && (
+              <div className="opciones opciones-hora" role="group" aria-label={`Horario del turno de ${largo} horas`}>
+                <p className="opciones-ayuda">¿A qué hora arranca?</p>
+                {(largo === '4' ? TURNOS_CORTOS : TURNOS_FIJOS).map((f) => (
+                  <Presionable
+                    key={f.id}
+                    className="opcion"
+                    aria-pressed={tipo === f.id}
+                    onClick={() => {
+                      setEdicion(null)
+                      if (elegir(dia, crearTurno(dia, f.desde, f.hasta))) setPendiente((p) => ({ ...p, [dia]: undefined }))
+                    }}
+                  >
+                    {f.etiqueta}
+                  </Presionable>
+                ))}
+              </div>
+            )}
+
+            {largo === 'otro' && turno && !abierto && <p className="dia-nota">Horario propio: {etiquetaTurno(turno)}</p>}
 
             <AnimatePresence initial={false}>
               {abierto && edicion && (

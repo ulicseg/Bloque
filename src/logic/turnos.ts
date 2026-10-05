@@ -11,7 +11,7 @@ export interface Vecinas {
 export const semanaVacia = (lunes: FechaISO): Semana => ({ lunes, turnos: [], bloques: [] })
 
 export interface TurnoFijo {
-  id: '6-14' | '14-22' | '22-6'
+  id: '6-14' | '14-22' | '22-6' | '6-10' | '10-14' | '14-18' | '18-22' | '22-2'
   etiqueta: string
   /** Minutos desde las 00:00 del día. */
   desde: number
@@ -22,6 +22,15 @@ export const TURNOS_FIJOS: readonly TurnoFijo[] = [
   { id: '6-14', etiqueta: '6–14', desde: 6 * MIN_HORA, hasta: 14 * MIN_HORA },
   { id: '14-22', etiqueta: '14–22', desde: 14 * MIN_HORA, hasta: 22 * MIN_HORA },
   { id: '22-6', etiqueta: '22–6', desde: 22 * MIN_HORA, hasta: 6 * MIN_HORA },
+]
+
+/** Turnos de 4 h: los mismos tramos de 8 h partidos a la mitad, más el de las 18 que cierra el día. */
+export const TURNOS_CORTOS: readonly TurnoFijo[] = [
+  { id: '6-10', etiqueta: '6–10', desde: 6 * MIN_HORA, hasta: 10 * MIN_HORA },
+  { id: '10-14', etiqueta: '10–14', desde: 10 * MIN_HORA, hasta: 14 * MIN_HORA },
+  { id: '14-18', etiqueta: '14–18', desde: 14 * MIN_HORA, hasta: 18 * MIN_HORA },
+  { id: '18-22', etiqueta: '18–22', desde: 18 * MIN_HORA, hasta: 22 * MIN_HORA },
+  { id: '22-2', etiqueta: '22–2', desde: 22 * MIN_HORA, hasta: 2 * MIN_HORA },
 ]
 
 const enteroEn = (n: number, min: number, max: number) => Number.isInteger(n) && n >= min && n <= max
@@ -51,8 +60,17 @@ export const terminaAlDiaSiguiente = (t: Turno): boolean => t.fin > (diaDeInicio
 
 export function tipoDeTurno(t: Turno): TurnoFijo['id'] | 'otro' {
   const desde = t.inicio % MIN_DIA
-  const fijo = TURNOS_FIJOS.find((f) => f.desde === desde && duracionTurno(t) === 8 * MIN_HORA)
+  const fijo =
+    TURNOS_FIJOS.find((f) => f.desde === desde && duracionTurno(t) === 8 * MIN_HORA) ??
+    TURNOS_CORTOS.find((f) => f.desde === desde && duracionTurno(t) === 4 * MIN_HORA)
   return fijo ? fijo.id : 'otro'
+}
+
+/** Largo del turno para elegir en la pantalla: 4 h, 8 h u otro horario. */
+export function largoDeTurno(t: Turno): '4' | '8' | 'otro' {
+  const tipo = tipoDeTurno(t)
+  if (tipo === 'otro') return 'otro'
+  return duracionTurno(t) === 4 * MIN_HORA ? '4' : '8'
 }
 
 export const etiquetaTurno = (t: Turno): string => `${horaCorta(t.inicio)}–${horaCorta(t.fin)}`

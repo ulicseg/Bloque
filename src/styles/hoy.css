@@ -85,10 +85,9 @@
   }
 }
 
-/* ---------- Hoy compacta (iPhone 16: 393 pt de ancho) ----------
-   Todo va un escalón más chico que en el resto de la app para que entren más bloques sin scrollear.
-   Se escribe con .pantalla-hoy delante para ganarle a vidrio.css, que se carga después.
-   Las zonas táctiles de los botones se mantienen en 44 px. */
+/* ---------- Hoy: la línea del día ----------
+   Cada fila es hora | contenido. El color de la actividad tiñe el fondo y la marca lateral, y el
+   estado se lee por la etiqueta, el color del botón elegido y el peso de la tarjeta (no solo por el color). */
 .pantalla-hoy {
   padding-left: max(var(--space-3), var(--safe-left));
   padding-right: max(var(--space-3), var(--safe-right));
@@ -98,88 +97,218 @@
   padding-top: var(--space-3);
 }
 
-.pantalla-hoy .sobretitulo {
-  font-size: 0.6875rem;
-}
-
 .pantalla-hoy .titulo-grande {
-  font-size: 1.875rem;
-  margin-bottom: var(--space-2);
+  font-size: 2rem;
+  margin-bottom: var(--space-3);
 }
 
-.pantalla-hoy .subtitulo {
-  font-size: 0.9375rem;
-  margin: 0 0 var(--space-3);
-}
-
-.pantalla-hoy .tarjeta {
-  padding: var(--space-3) var(--space-3) var(--space-3) calc(var(--space-3) + 0.5rem);
-  margin-bottom: var(--space-2);
+.resumen-hoy {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
   border-radius: var(--radio-m);
+  background: var(--vidrio-fondo);
+  -webkit-backdrop-filter: var(--vidrio-blur);
+  backdrop-filter: var(--vidrio-blur);
+  border: 1px solid var(--vidrio-borde);
+  box-shadow: var(--vidrio-sombra);
 }
 
-.pantalla-hoy .tarjeta::before {
-  left: 0.5rem;
-  top: 0.75rem;
-  bottom: 0.75rem;
+.resumen-principal {
+  font: var(--t-titulo-3);
+  letter-spacing: var(--ls-titulo-3);
 }
 
-.pantalla-hoy .tarjeta-cabecera .sug-actividad {
-  font-size: 1.0625rem;
+.resumen-turno {
+  font: var(--t-detalle);
+  color: var(--texto-2);
+}
+
+.resumen-barra {
+  grid-column: 1 / -1;
+  height: 0.5rem;
+  margin-top: var(--space-2);
+  border-radius: 0.25rem;
+  background: var(--relleno);
+  overflow: hidden;
+}
+
+.resumen-relleno {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tinte);
+  transition: width 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.bloque-hoy,
+.turno-hoy {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.bloque-hora {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.bloque-hora strong {
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+}
+
+.bloque-hora span {
+  font: var(--t-nota);
+  color: var(--texto-2);
+}
+
+.bloque-cuerpo {
+  min-width: 0;
+  padding: var(--space-3);
+  border-radius: var(--radio-m);
+  border: 1px solid var(--vidrio-borde);
+  border-left: 0.3125rem solid var(--act);
+  background: linear-gradient(0deg, color-mix(in srgb, var(--act-fondo) 70%, transparent), color-mix(in srgb, var(--act-fondo) 70%, transparent)),
+    var(--vidrio-fondo);
+  -webkit-backdrop-filter: var(--vidrio-blur);
+  backdrop-filter: var(--vidrio-blur);
+  box-shadow: var(--vidrio-sombra);
+}
+
+.bloque-titulo {
+  display: flex;
+  align-items: center;
   gap: var(--space-2);
 }
 
-.pantalla-hoy .chip-actividad,
-.pantalla-hoy .sug-actividad .chip-actividad {
-  width: 1.75rem;
-  height: 1.75rem;
+.bloque-titulo .chip-actividad {
+  width: 2rem;
+  height: 2rem;
   border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--act) 20%, transparent);
+  color: var(--act);
 }
 
-.pantalla-hoy .chip-actividad svg {
-  width: 1rem;
-  height: 1rem;
+.bloque-titulo .chip-actividad svg {
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
-.pantalla-hoy .tarjeta-hora {
-  font-size: 0.875rem;
-  margin: 0 0 var(--space-2);
+.bloque-nombre {
+  flex: 1;
+  min-width: 0;
+  font: var(--t-titulo-3);
+  letter-spacing: var(--ls-titulo-3);
+  color: var(--act);
 }
 
-.pantalla-hoy .estados {
+.bloque-estado {
+  flex: none;
+  font: var(--t-nota);
+  font-weight: 600;
+  color: var(--texto-2);
+}
+
+.bloque-detalle {
+  font: var(--t-detalle);
+  color: var(--texto-2);
+  margin: var(--space-1) 0 var(--space-3);
+}
+
+.bloque-hoy .estados {
   gap: var(--space-1);
 }
 
-.pantalla-hoy .opcion {
+.bloque-hoy .opcion-estado {
   font-size: 0.9375rem;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radio-s);
+  padding: var(--space-1);
+  background: var(--relleno);
 }
 
-.pantalla-hoy .seccion-titulo {
-  margin: var(--space-4) var(--space-3) var(--space-1);
+/* Cada estado con su color propio: verde hecho, ámbar mínimo, gris salteado */
+.bloque-hoy .opcion-estado[aria-pressed='true'] {
+  box-shadow: none;
+  color: var(--texto);
+  border: 0.125rem solid var(--estado);
+  background: color-mix(in srgb, var(--estado) 22%, transparent);
+  font-weight: 700;
 }
 
-.pantalla-hoy .grupo {
+.opcion-estado[data-marca='hecho'] {
+  --estado: var(--act-caminata);
+}
+
+.opcion-estado[data-marca='minimo'] {
+  --estado: var(--act-libre);
+}
+
+.opcion-estado[data-marca='salteado'] {
+  --estado: var(--texto-3);
+}
+
+/* Resuelto: la tarjeta se aquieta para que lo pendiente destaque */
+.bloque-hoy[data-estado='hecho'] .bloque-cuerpo,
+.bloque-hoy[data-estado='minimo'] .bloque-cuerpo {
+  border-left-color: var(--act-caminata);
+}
+
+.bloque-hoy[data-estado='hecho'] .bloque-estado,
+.bloque-hoy[data-estado='minimo'] .bloque-estado {
+  color: var(--act-caminata);
+}
+
+.bloque-hoy[data-estado='salteado'] .bloque-cuerpo {
+  opacity: 0.65;
+}
+
+.bloque-hoy[data-estado='salteado'] .bloque-nombre {
+  text-decoration: line-through;
+}
+
+/* El turno es contexto, no una tarea: gris, sin botones, más bajo */
+.turno-hoy-cuerpo {
+  padding: var(--space-3);
   border-radius: var(--radio-m);
+  border: 1px dashed var(--separador);
+  background: var(--relleno);
 }
 
-.pantalla-hoy .avance {
-  padding: var(--space-2) var(--space-3);
+.turno-hoy-nombre {
+  font: var(--t-cuerpo-destacado);
+  color: var(--texto-2);
 }
 
-.pantalla-hoy .avance-linea {
-  margin-bottom: var(--space-1);
+.turno-hoy-cuerpo .bloque-detalle {
+  margin-bottom: 0;
 }
 
-.pantalla-hoy .avance-nombre {
-  font-size: 0.9375rem;
+@media (prefers-contrast: more) {
+  .bloque-cuerpo,
+  .resumen-hoy {
+    border-color: var(--texto);
+  }
 }
 
-.pantalla-hoy .avance-texto {
-  font-size: 0.8125rem;
+/* ---------- Cargar turnos: primero el largo (4 h u 8 h), después la hora ---------- */
+.opciones-largo {
+  grid-template-columns: repeat(4, 1fr);
 }
 
-.pantalla-hoy .avance-barra {
-  height: 0.375rem;
+.opciones-hora {
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: var(--space-2);
+}
+
+.opciones-ayuda {
+  grid-column: 1 / -1;
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  color: var(--texto-2);
+  margin: var(--space-1) var(--space-1) 0;
 }
