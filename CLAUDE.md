@@ -100,3 +100,4 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Paso 0 (2026-10-04):** CLAUDE.md con reglas y versiones verificadas, `.gitignore`, repo privado `bloques` en GitHub.
 - **Paso 1 (2026-10-04):** proyecto Vite + React + TS, sistema de diseño (tokens, resortes, materiales, variantes de accesibilidad), barra de pestañas y pantallas vacías, capa de almacenamiento versionada con tests.
+- **Paso 2 (2026-10-04):** PWA instalable y sin conexión (vite-plugin-pwa 2.0, `registerType: 'prompt'`, aviso de versión nueva), ajustes de iOS, íconos con `@vite-pwa/assets-generator`, `vercel.json` sin caché agresiva para `sw.js` y manifest, persistencia (`storage.persist()` + aviso de instalar), esquema v2 (`semanas`) con migración v1→v2, respaldo exportable/importable con vista previa y aviso a los 7 días. Sin push: todavía no hay remoto.

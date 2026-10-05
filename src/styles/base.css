@@ -11,6 +11,11 @@ body,
   margin: 0;
 }
 
+/* Sin zoom por doble toque en toda la app; el pellizco de accesibilidad sigue funcionando */
+html {
+  touch-action: manipulation;
+}
+
 body {
   background: var(--fondo);
   color: var(--texto);

@@ -42,3 +42,20 @@
     transition: opacity 0.15s ease-out;
   }
 }
+
+/* Avisos y hoja nuevos: mismas tres variantes */
+@media (prefers-contrast: more) {
+  .aviso,
+  .hoja,
+  .aviso-actualizacion {
+    border: 0.125rem solid var(--texto);
+  }
+
+  .grupo {
+    border: 0.0625rem solid var(--texto);
+  }
+
+  .hoja-capa {
+    background: rgb(0 0 0 / 0.6);
+  }
+}

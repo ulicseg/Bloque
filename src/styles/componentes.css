@@ -125,3 +125,182 @@
   opacity: 0.6;
   transition: none;
 }
+
+/* ---------- Avisos ---------- */
+
+/* Colores sólidos (no translúcidos): son texto importante y no deben apilar materiales claros (§12) */
+.aviso {
+  font: var(--t-detalle);
+  letter-spacing: var(--ls-detalle);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radio-m);
+  margin-bottom: var(--space-4);
+}
+
+.aviso-atencion {
+  background: var(--act-libre-fondo);
+  color: var(--act-libre);
+}
+
+.aviso-error {
+  background: var(--act-gimnasio-fondo);
+  color: var(--act-gimnasio);
+}
+
+.aviso-ok {
+  background: var(--act-caminata-fondo);
+  color: var(--act-caminata);
+}
+
+/* Versión nueva: flota arriba, sobre el contenido, con material de barra */
+.aviso-actualizacion {
+  position: fixed;
+  z-index: 30;
+  top: calc(var(--safe-top) + var(--space-2));
+  left: max(var(--space-3), var(--safe-left));
+  right: max(var(--space-3), var(--safe-right));
+  max-width: 28rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  border-radius: var(--radio-l);
+  background: var(--hoja-fondo);
+  -webkit-backdrop-filter: var(--hoja-blur);
+  backdrop-filter: var(--hoja-blur);
+  box-shadow: var(--hoja-sombra);
+}
+
+.aviso-actualizacion-texto {
+  flex: 1;
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+}
+
+.boton-chico {
+  min-height: var(--tap-min);
+  min-width: var(--tap-min);
+  padding: 0 var(--space-3);
+  border-radius: var(--radio-m);
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+  color: var(--texto-2);
+}
+
+.boton-chico-tinte {
+  color: var(--tinte);
+}
+
+/* ---------- Listas agrupadas (Ajustes) ---------- */
+
+.seccion-titulo {
+  font: var(--t-nota);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--texto-2);
+  margin: var(--space-5) var(--space-4) var(--space-2);
+}
+
+.grupo {
+  background: var(--superficie);
+  border-radius: var(--radio-l);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  text-align: left;
+}
+
+.fila + .fila,
+.fila + .fila-nota {
+  border-top: 1px solid var(--separador);
+}
+
+.fila-boton {
+  color: var(--tinte);
+  justify-content: flex-start;
+}
+
+.fila-valor {
+  color: var(--texto-2);
+  font-weight: 600;
+}
+
+.fila-nota {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  color: var(--texto-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* ---------- Hoja de confirmación ---------- */
+
+.hoja-capa {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--space-3) max(var(--space-3), var(--safe-right)) max(var(--space-3), var(--safe-bottom))
+    max(var(--space-3), var(--safe-left));
+  /* Tarea modal: se atenúa el fondo (§12) */
+  background: rgb(0 0 0 / 0.35);
+}
+
+.hoja {
+  width: 100%;
+  max-width: 28rem;
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  border-radius: var(--radio-l);
+  background: var(--hoja-fondo);
+  -webkit-backdrop-filter: var(--hoja-blur);
+  backdrop-filter: var(--hoja-blur);
+  box-shadow: var(--hoja-sombra);
+}
+
+.hoja-titulo {
+  font: var(--t-titulo-3);
+  letter-spacing: var(--ls-titulo-3);
+  margin-bottom: var(--space-2);
+}
+
+.hoja-cuerpo {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.hoja-nota {
+  font: var(--t-nota);
+  letter-spacing: var(--ls-nota);
+  color: var(--texto-2);
+}
+
+.hoja-acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.boton-hoja {
+  min-height: var(--tap-min);
+  border-radius: var(--radio-m);
+  background: var(--presionado);
+  font: var(--t-cuerpo-destacado);
+  letter-spacing: var(--ls-cuerpo-destacado);
+}
+
+.boton-hoja-destructivo {
+  background: var(--act-gimnasio-fondo);
+  color: var(--act-gimnasio);
+}

@@ -3,7 +3,8 @@ import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'motion/
 import { BarraPestanas, type Pestana } from './components/BarraPestanas'
 import { IconoAjustes, IconoHoy, IconoMetas, IconoSemana } from './components/Iconos'
 import { RESORTE_DEFECTO, transicion } from './design/resortes'
-import { crearAlmacen } from './logic/storage'
+import { AvisoActualizacion } from './components/AvisoActualizacion'
+import { almacen } from './almacenGlobal'
 import { Ajustes } from './screens/Ajustes'
 import { Hoy } from './screens/Hoy'
 import { Metas } from './screens/Metas'
@@ -17,8 +18,6 @@ const PESTANAS: Pestana[] = [
 ]
 
 const PANTALLAS: Record<string, () => JSX.Element> = { hoy: Hoy, semana: Semana, metas: Metas, ajustes: Ajustes }
-
-const almacen = crearAlmacen()
 
 export function App() {
   const [activa, setActiva] = useState(() => {
@@ -50,6 +49,7 @@ export function App() {
             <Actual />
           </motion.div>
         </AnimatePresence>
+        <AvisoActualizacion />
         <BarraPestanas pestanas={PESTANAS} activa={activa} alElegir={setActiva} />
       </div>
     </MotionConfig>
