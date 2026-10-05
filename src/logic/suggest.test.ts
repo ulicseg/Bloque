@@ -255,29 +255,39 @@ describe('suggest: reglas por actividad', () => {
     expect(violaciones(dias, metas, [], r)).toEqual([])
   })
 
-  it('siesta: una por día en el primer hueco desde las 13:00, termina 3 h antes de dormir y no cuenta como meta', () => {
-    const sueno = (n: number) => ({ tipo: 'sueno' as const, inicio: n * MIN_DIA + 22 * H, fin: n * MIN_DIA + 24 * H })
-    const dias = semana((n) => ({ ...dia(n, [[9, 22]]), tramos: [sueno(n)] }))
+  // Almuerzo de 12:00 a 13:30: el hueco libre arranca justo cuando se termina de comer
+  const conAlmuerzo = (n: number, finAlmuerzo = 13.5, hasta = 22): DiaCalculado => ({
+    dia: n,
+    tramos: [
+      { tipo: 'comida', inicio: n * MIN_DIA + (finAlmuerzo - 1.5) * H, fin: n * MIN_DIA + finAlmuerzo * H },
+      { tipo: 'sueno', inicio: n * MIN_DIA + 22 * H, fin: n * MIN_DIA + 24 * H },
+    ],
+    ventanas: [{ inicio: n * MIN_DIA + finAlmuerzo * H, fin: n * MIN_DIA + hasta * H, foco: true }],
+  })
+
+  it('siesta: una por día, pegada al final de la comida (desde las 13:00), antes de cualquier otra cosa y sin ser meta', () => {
+    const dias = semana((n) => conAlmuerzo(n))
     for (const duracionMin of [35, 105]) {
-      const metas = [por('siesta', { duracionMin })]
+      const metas = [por('siesta', { duracionMin }), ...ACTIVIDADES_POR_DEFECTO.filter((a) => a.id === 'caminata')]
       const r = suggest(dias, metas, [])
-      expect(r.faltantes).toEqual([])
-      expect(r.bloques).toHaveLength(7)
-      for (const b of r.bloques) {
+      const siestas = r.bloques.filter((b) => b.actividad === 'siesta')
+      expect(siestas).toHaveLength(7)
+      for (const b of siestas) {
         expect(b.fin - b.inicio).toBe(duracionMin)
-        expect(rango(b)).toBe(duracionMin === 35 ? '13:00–13:35' : '13:00–14:45')
+        expect(rango(b)).toBe(duracionMin === 35 ? '13:30–14:05' : '13:30–15:15')
       }
+      expect(r.faltantes.map((f) => f.actividad)).not.toContain('siesta')
       expect(violaciones(dias, metas, [], r)).toEqual([])
     }
   })
 
-  it('siesta: sin hueco después de las 13:00 (o muy cerca de dormir) no se propone nada, y respeta una ya puesta', () => {
+  it('siesta: sin comida, con la comida antes de las 13:00 o con el sueño muy cerca, no se propone; respeta una ya puesta', () => {
     const metas = [por('siesta')]
-    expect(suggest(semana((n) => dia(n, [[9, 12.5]])), metas, []).bloques).toEqual([])
-    const sueno = (n: number) => ({ tipo: 'sueno' as const, inicio: n * MIN_DIA + 15 * H, fin: n * MIN_DIA + 24 * H })
-    expect(suggest(semana((n) => ({ ...dia(n, [[13, 15]]), tramos: [sueno(n)] })), metas, []).bloques).toEqual([])
-    const dias = semana((n) => dia(n, [[13, 16]]))
-    const r = suggest(dias, metas, [fijo('siesta', 2, 14, 14.5)])
+    expect(suggest(semana((n) => dia(n, [[13.5, 18]])), metas, []).bloques).toEqual([])
+    expect(suggest(semana((n) => conAlmuerzo(n, 12.5)), metas, []).bloques).toEqual([])
+    // Un hueco de 24 min después de comer no alcanza para 35
+    expect(suggest(semana((n) => conAlmuerzo(n, 13.5, 13.9)), metas, []).bloques).toEqual([])
+    const r = suggest(semana((n) => conAlmuerzo(n)), metas, [fijo('siesta', 2, 14, 14.5)])
     expect(r.bloques.map(diaDe)).toEqual([0, 1, 3, 4, 5, 6])
   })
 

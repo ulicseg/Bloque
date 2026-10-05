@@ -45,7 +45,7 @@ export function EditarMeta({ actividad: a, alCambiar, alVolver }: Props) {
             ))}
           </div>
           <p className="fila-nota fila-nota-suelta">
-            Una siesta rápida es 1 bloque de {BLOQUE_SIESTA_MIN} min y una larga son 3 seguidos. No es una meta ni se cuenta: al sugerir la semana se propone una por día en el primer hueco libre desde las 13:00 (terminando 3 h antes de dormir). Si ese día no la querés, la salteás en Hoy.
+            Una siesta rápida es 1 bloque de {BLOQUE_SIESTA_MIN} min y una larga son 3 seguidos. No es una meta ni se cuenta: al sugerir la semana se propone una por día justo después de comer (desde las 13:00, terminando 3 h antes de dormir), antes de hacer otra cosa. Si ese día no la querés, la salteás en Hoy.
           </p>
         </>
       ) : (

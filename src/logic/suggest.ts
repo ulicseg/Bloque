@@ -283,9 +283,10 @@ function frase(a: Actividad, bloques: number, min: number, motivo: MotivoFalta):
 }
 
 /**
- * Las siestas son una recomendación, no una meta: no cuentan en el avance ni en lo que falta. Se hace al final, con lo
- * que sobró: en cada día, la primera siesta que entra en un hueco libre, desde las 13:00 y terminando al menos 3 h
- * antes del sueño de la noche. No usa los topes de uso (no le quita lugar a nada) y, si no hay hueco, no pasa nada.
+ * Las siestas son una recomendación, no una meta: no cuentan en el avance ni en lo que falta. Va justo después de
+ * comer, antes de hacer cualquier otra cosa: por eso se reserva primero, en el hueco que arranca donde termina una
+ * comida (desde las 13:00) y que termina al menos 3 h antes del sueño de la noche. Una por día; si ese día no hay
+ * un hueco así, no se propone nada. No usa los topes de uso.
  */
 function recomendarSiestas(ctx: Contexto, a: Actividad | undefined, fijos: Bloque[]) {
   if (!a || a.duracionMin <= 0) return
@@ -293,12 +294,12 @@ function recomendarSiestas(ctx: Contexto, a: Actividad | undefined, fijos: Bloqu
     if (a.diasNo?.includes(dia)) return
     // Si ya hay una siesta ese día (fija o ya hecha) no se agrega otra
     if (fijos.some((b) => b.actividad === a.id && Math.floor(b.inicio / MIN_DIA) === dia)) return
+    const finesDeComida = d.tramos.filter((t) => t.tipo === 'comida' && t.fin >= dia * MIN_DIA + SIESTA_DESDE_MIN).map((t) => t.fin)
     for (const w of d.ventanas) {
       const limite = (ctx.suenos.find((s) => s >= w.fin) ?? Infinity) - MARGEN_SUENO_SIESTA_MIN
       for (const [pa, pb] of restar(w.inicio, w.fin, ctx.ocupados[dia])) {
-        const inicio = Math.max(pa, dia * MIN_DIA + SIESTA_DESDE_MIN)
-        if (Math.min(pb, limite) - inicio < a.duracionMin) continue
-        confirmarSiesta(ctx, a, dia, inicio)
+        if (!finesDeComida.includes(pa) || Math.min(pb, limite) - pa < a.duracionMin) continue
+        confirmarSiesta(ctx, a, dia, pa)
         return
       }
     }
@@ -321,6 +322,8 @@ export function suggest(
   ajustes: Ajustes = AJUSTES_POR_DEFECTO,
 ): Sugerencia {
   const ctx = armarContexto(dias, fijos, ajustes)
+  // Primero la siesta: tiene que quedar pegada a la comida, antes de que otra actividad ocupe ese hueco
+  recomendarSiestas(ctx, metas.find((a) => a.id === 'siesta'), fijos)
   const faltantes: { prioridad: number; orden: number; f: Faltante }[] = []
   const hechosPor = (a: Actividad) => fijos.filter((b) => b.actividad === a.id && b.fin > b.inicio)
 
@@ -374,8 +377,6 @@ export function suggest(
       })
     }
   }
-
-  recomendarSiestas(ctx, metas.find((a) => a.id === 'siesta'), fijos)
 
   const ventanasDia = dias.map((d) => d.ventanas.reduce((n, v) => n + (v.fin - v.inicio), 0))
   return {
