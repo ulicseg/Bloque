@@ -100,3 +100,18 @@ export const diaDeLaSemana = (f: FechaISO): number => (new Date(aMs(f)).getUTCDa
 /** "Domingo 4 de octubre". */
 export const textoFecha = (f: FechaISO): string =>
   `${DIAS[diaDeLaSemana(f)]} ${Number(f.slice(8))} de ${MESES_LARGOS[Number(f.slice(5, 7)) - 1]}`
+
+/** "2026-10" → "octubre 2026". */
+export const nombreMes = (mes: string): string => `${MESES_LARGOS[Number(mes.slice(5, 7)) - 1]} ${mes.slice(0, 4)}`
+
+/** Mes "AAAA-MM" de una fecha. */
+export const mesDe = (f: FechaISO): string => f.slice(0, 7)
+
+/** Corre un mes "AAAA-MM" hacia adelante (n > 0) o hacia atrás (n < 0). */
+export function sumarMeses(mes: string, n: number): string {
+  const total = Number(mes.slice(0, 4)) * 12 + (Number(mes.slice(5, 7)) - 1) + n
+  return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}`
+}
+
+/** Cantidad de días del mes "AAAA-MM". */
+export const diasDelMes = (mes: string): number => new Date(Date.UTC(Number(mes.slice(0, 4)), Number(mes.slice(5, 7)), 0)).getUTCDate()

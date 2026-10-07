@@ -9,12 +9,14 @@ import { PlanDelDia } from '../components/PlanDelDia'
 import { aceptarSugerencia, bloquesQueCuentan } from '../logic/bloques'
 import type { Bloque } from '../logic/types'
 import { conSemana, descripcionFin, etiquetaTurno, semanaVacia, textoTotal, turnoDelDia, vecinasDe } from '../logic/turnos'
-import { diaDeLaSemana, fechaEnArgentina, lunesActual, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
+import { diaDeLaSemana, fechaEnArgentina, formatearDuracion, lunesActual, mesDe, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
 import { suggest } from '../logic/suggest'
 import { computeWindows } from '../logic/windows'
 import { useDatos } from '../useDatos'
 import { CargarTurnos } from './CargarTurnos'
 import { EditarBloque } from './EditarBloque'
+import { HorasMes } from './HorasMes'
+import { horasDelMes, textoDiferencia } from '../logic/horasMes'
 
 type Cual = 'esta' | 'proxima'
 
@@ -22,6 +24,7 @@ export function Semana() {
   const { datos, cambiar, fallo } = useDatos()
   const [cual, setCual] = useState<Cual>('esta')
   const [cargando, setCargando] = useState(false)
+  const [verHoras, setVerHoras] = useState(false)
   // undefined = cerrado; null = bloque nuevo; un bloque = editarlo
   const [editando, setEditando] = useState<Bloque | null | undefined>(undefined)
   // Si el bloque nuevo nace de un hueco libre del plan del día: en qué día y a qué hora
@@ -39,6 +42,8 @@ export function Semana() {
     () => computeWindows(semana, datos.ajustes, vecinas.anterior, vecinas.siguiente),
     [semana, datos.ajustes, vecinas.anterior, vecinas.siguiente],
   )
+
+  const resumenMes = useMemo(() => horasDelMes(datos, mesDe(fechaEnArgentina(Date.now()))), [datos])
 
   // Una vez pedida, se recalcula sola si cambian los turnos o las metas: nunca queda una sugerencia vieja en pantalla
   const sugerencia = useMemo(
@@ -90,6 +95,12 @@ export function Semana() {
         <div className="grupo">
           <Presionable className="fila fila-boton" onClick={() => setCargando(true)}>
             {semana.turnos.length > 0 ? 'Editar turnos' : 'Cargar turnos'}
+          </Presionable>
+          <Presionable className="fila" onClick={() => setVerHoras(true)}>
+            <span>Horas del mes</span>
+            <span className="fila-valor">
+              {resumenMes.totalMin > 0 ? `${formatearDuracion(resumenMes.totalMin)} (${textoDiferencia(resumenMes.diferenciaMin)})` : 'Ver'}
+            </span>
           </Presionable>
         </div>
 
@@ -189,6 +200,17 @@ export function Semana() {
               alGuardar={(s) => cambiar((d) => conSemana(d, s))}
               alVolver={() => setCargando(false)}
             />
+          </motion.div>
+        )}
+        {verHoras && (
+          <motion.div
+            key="horas-mes"
+            className="pantalla-capa capa-detalle"
+            initial={reducido ? { opacity: 0 } : { x: '100%' }}
+            animate={reducido ? { opacity: 1 } : { x: 0 }}
+            exit={reducido ? { opacity: 0, pointerEvents: 'none' } : { x: '100%', pointerEvents: 'none' }}
+          >
+            <HorasMes datos={datos} hoy={fechaEnArgentina(Date.now())} alVolver={() => setVerHoras(false)} />
           </motion.div>
         )}
         {editando !== undefined && (

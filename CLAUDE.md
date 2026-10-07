@@ -137,6 +137,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Siestas como recomendación (2026-10-05):** la siesta no es una meta (esquema v11: vuelve a meta 0, no cuenta en el avance ni en lo que falta). `suggest` la propone primero, pegada al final de una comida (desde las 13:00) y antes de cualquier otra actividad: una por día, terminando 3 h antes del sueño de la noche, sin gastar de los topes; si ese día no hay un hueco así no pasa nada. Largo en Metas → Siesta (rápida 35 min / larga 105). Para no hacerla, se saltea en Hoy. Sin verificar en pantalla.
 
+- **Horas del mes (2026-10-07):** control propio de horas trabajadas (`src/logic/horasMes.ts`, con tests). Se calcula desde los turnos ya cargados, sin cambiar el esquema: semana a semana del mes contra una base de 24 h (4 h × 6 días), con las semanas de borde proporcionales a sus días y un 22–6 contado entero en el día en que empieza. Las semanas sin turnos no cuentan como faltante. Se abre desde Semana → "Horas del mes". Sin verificar en pantalla.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

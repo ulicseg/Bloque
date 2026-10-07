@@ -932,3 +932,30 @@
 .fila-ordenable[data-arrastrando] {
   background: var(--superficie);
 }
+
+/* Horas del mes: selector de mes y signo de la diferencia (de más en ámbar, de menos neutro) */
+.selector-mes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.selector-mes-boton {
+  display: grid;
+  place-items: center;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  color: var(--tinte);
+}
+
+.selector-mes-nombre {
+  text-transform: capitalize;
+}
+
+.horas-diferencia[data-signo='1'] {
+  color: color-mix(in srgb, var(--act-libre) 55%, var(--texto));
+}
+
+.horas-diferencia[data-signo='0'] {
+  color: var(--texto-2);
+}
