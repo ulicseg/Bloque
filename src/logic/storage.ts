@@ -259,9 +259,19 @@ export interface Almacen {
   /** Fecha (ms) del último respaldo exportado, o null si nunca. No forma parte del respaldo. */
   ultimoRespaldo(): number | null
   marcarRespaldo(ms: number): void
+  /** Fecha (ms) del último cambio real en los datos, sin contar cambiar de pestaña. null si nunca hubo. No forma parte del respaldo. */
+  modificado(): number | null
+  /** La usa la sincronización tras bajar datos: lo recién descargado no cuenta como un cambio local. */
+  fijarModificado(ms: number): void
+  /** Avisa después de cada cambio real (no de pestaña). Devuelve cómo dejar de escuchar. */
+  suscribir(fn: () => void): () => void
 }
 
 const CLAVE_RESPALDO = `${CLAVE}:ultimo-respaldo`
+const CLAVE_MODIFICADO = `${CLAVE}:modificado`
+
+/** Lo que cuenta como cambio: todo menos la pestaña activa, que cambia en cada toque de la barra. */
+const sinPestana = (d: Datos): string => JSON.stringify({ ...d, pestaña: '' })
 
 export function crearAlmacen(backend?: Storage): Almacen {
   const candidato = backend ?? localStorageSeguro()
@@ -306,10 +316,43 @@ export function crearAlmacen(backend?: Storage): Almacen {
     }
   }
 
+  const oyentes = new Set<() => void>()
+  const avisar = () => oyentes.forEach((fn) => fn())
+
+  const leerModificado = (): number | null => {
+    try {
+      const n = Number(s.getItem(CLAVE_MODIFICADO))
+      return Number.isFinite(n) && n > 0 ? n : null
+    } catch {
+      return null
+    }
+  }
+  const escribirModificado = (ms: number) => {
+    try {
+      s.setItem(CLAVE_MODIFICADO, String(ms))
+    } catch {
+      /* sin lugar: la sincronización lo toma como "sin cambios" y no sube; el dato local queda igual */
+    }
+  }
+
   return {
     persistente,
     leer: () => leerGuardado().datos,
-    guardar: (datos) => escribir({ schemaVersion: VERSION_ACTUAL, datos }),
+    guardar(datos) {
+      const cambio = sinPestana(leerGuardado().datos) !== sinPestana(datos)
+      const ok = escribir({ schemaVersion: VERSION_ACTUAL, datos })
+      if (ok && cambio) {
+        escribirModificado(Date.now())
+        avisar()
+      }
+      return ok
+    },
+    modificado: leerModificado,
+    fijarModificado: escribirModificado,
+    suscribir(fn) {
+      oyentes.add(fn)
+      return () => void oyentes.delete(fn)
+    },
     exportarJSON: () => JSON.stringify(leerGuardado(), null, 2),
     importarJSON(texto) {
       const r = validarRespaldo(texto)
@@ -322,7 +365,12 @@ export function crearAlmacen(backend?: Storage): Almacen {
         /* sin lectura: no hay nada que copiar */
       }
       if (actual !== null) conservar(actual, 'antes-de-importar')
-      return escribir(r.guardado)
+      const ok = escribir(r.guardado)
+      if (ok) {
+        escribirModificado(Date.now())
+        avisar()
+      }
+      return ok
     },
     ultimoRespaldo() {
       try {

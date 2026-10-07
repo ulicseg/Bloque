@@ -437,3 +437,53 @@ describe('migrar', () => {
     })
   })
 })
+
+describe('modificado y suscripción (base de la copia en GitHub)', () => {
+  const sem = (lunes: string) => ({ lunes, turnos: [], bloques: [] })
+
+  it('cambiar de pestaña no cuenta como cambio', () => {
+    const { s } = falso()
+    const a = crearAlmacen(s)
+    let avisos = 0
+    a.suscribir(() => avisos++)
+    a.guardar({ ...DATOS_INICIALES, pestaña: 'metas' })
+    a.guardar({ ...DATOS_INICIALES, pestaña: 'semana' })
+    expect(a.modificado()).toBeNull()
+    expect(avisos).toBe(0)
+  })
+
+  it('un cambio real anota la fecha y avisa una vez', () => {
+    const { s } = falso()
+    const a = crearAlmacen(s)
+    let avisos = 0
+    a.suscribir(() => avisos++)
+    a.guardar({ ...DATOS_INICIALES, semanas: { '2026-10-05': sem('2026-10-05') } })
+    expect(a.modificado()).toBeGreaterThan(0)
+    expect(avisos).toBe(1)
+    // Guardar lo mismo otra vez no es un cambio
+    a.guardar({ ...DATOS_INICIALES, semanas: { '2026-10-05': sem('2026-10-05') }, pestaña: 'otra' })
+    expect(avisos).toBe(1)
+  })
+
+  it('importar cuenta como cambio y dejar de escuchar funciona', () => {
+    const { s } = falso()
+    const a = crearAlmacen(s)
+    let avisos = 0
+    const dejar = a.suscribir(() => avisos++)
+    expect(a.importarJSON(JSON.stringify({ schemaVersion: VERSION_ACTUAL, datos: DATOS_INICIALES }))).toBe(true)
+    expect(avisos).toBe(1)
+    dejar()
+    a.guardar({ ...DATOS_INICIALES, semanas: { '2026-10-12': sem('2026-10-12') } })
+    expect(avisos).toBe(1)
+  })
+
+  it('fijarModificado no avisa: lo descargado no se vuelve a subir', () => {
+    const { s } = falso()
+    const a = crearAlmacen(s)
+    let avisos = 0
+    a.suscribir(() => avisos++)
+    a.fijarModificado(1234)
+    expect(a.modificado()).toBe(1234)
+    expect(avisos).toBe(0)
+  })
+})

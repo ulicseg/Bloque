@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { almacen } from '../almacenGlobal'
 import { IconoAdelante } from '../components/Iconos'
 import { HojaConfirmacion } from '../components/HojaConfirmacion'
+import { CopiaGitHub } from '../components/CopiaGitHub'
 import { DiagnosticoPantalla } from '../components/DiagnosticoPantalla'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
@@ -135,6 +136,9 @@ export function Ajustes() {
           <p className="fila-nota">Este navegador no deja guardar datos: lo que cargues se pierde al cerrar.</p>
         )}
       </div>
+
+      <h2 className="seccion-titulo">Copia en GitHub</h2>
+      <CopiaGitHub />
 
       <h2 className="seccion-titulo">Respaldo</h2>
       {estado.aviso && (

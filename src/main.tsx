@@ -7,6 +7,8 @@ import './styles/hoy.css'
 import './styles/vidrio.css'
 import './styles/accesibilidad.css'
 import { App } from './App'
+import { almacen } from './almacenGlobal'
+import { iniciarSyncAutomatica } from './sync/sincronizar'
 import { pedirPersistencia } from './plataforma'
 
 // iOS instalado a veces arranca con la ventana más corta que la pantalla (hueco abajo) y la corrige recién con el
@@ -21,6 +23,9 @@ document.addEventListener('visibilitychange', () => document.visibilityState ===
 
 // Cuanto antes se pida, antes puede el navegador marcar los datos como protegidos del borrado automático
 void pedirPersistencia()
+
+// Copia en GitHub (si la persona la conectó en Ajustes): al abrir, al volver a la app y tras cada cambio
+iniciarSyncAutomatica(almacen)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
