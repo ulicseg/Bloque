@@ -141,6 +141,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Copia en GitHub (2026-10-07):** los datos se sincronizan con `datos.json` en la rama `datos` del repo (Ajustes → Copia en GitHub). El token (fine-grained, solo Contents: Read and write) se pega una vez y vive únicamente en el `localStorage` del teléfono, en su propia clave: no entra en `Datos` ni en los respaldos. `src/logic/sync.ts` (puro, con tests) decide subir / bajar / nada con la fecha del último cambio real (`almacen.modificado()`, que no cuenta cambiar de pestaña) y el sha de lo último sincronizado; gana lo más nuevo, nunca pisa lo local con un remoto vacío y un teléfono vacío se recupera solo. Lo reemplazado queda en una copia local (`antes-de-importar`) o en el historial de commits. `src/sync` tiene la red (`github.ts`), la config y el orquestador (al abrir, al volver a la app, al reconectar y 4 s después de cada cambio; recarga si bajó datos). `vercel.json` desactiva el despliegue de la rama `datos`. Sin verificar contra GitHub real ni en pantalla.
 
+- **Anotar días pasados (2026-10-12):** en Hoy el selector Hoy/Mañana pasa a un selector de fecha (flechas, calendario y "Volver a hoy"). Los días pasados se marcan igual que hoy y los futuros solo se miran. "Anotar lo que hice" (`EditarBloque` con `anotando`) agrega un bloque ya hecho a cualquier día pasado o de hoy, y pisa lo que ese día solo estaba planificado o salteado a esa hora. Sin cambio de esquema. Sin verificar en pantalla.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

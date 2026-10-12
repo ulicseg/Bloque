@@ -323,3 +323,45 @@
   padding: var(--space-1);
   font-size: 0.8125rem;
 }
+
+/* Selector de día: flechas de 44 px y el campo de fecha del sistema en el medio (16 px para que iOS no haga zoom) */
+.selector-fecha {
+  display: grid;
+  grid-template-columns: var(--tap-min) 1fr var(--tap-min);
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.selector-fecha input {
+  min-height: var(--tap-min);
+  min-width: 0;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radio-m);
+  background: var(--relleno);
+  color: var(--texto);
+  font: inherit;
+  font-size: 16px;
+  text-align: center;
+}
+
+.selector-fecha-flecha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  border-radius: var(--radio-m);
+  background: var(--relleno);
+  color: var(--tinte);
+}
+
+.selector-fecha-hoy {
+  min-height: var(--tap-min);
+  margin: calc(-1 * var(--space-1)) 0 var(--space-3);
+  color: var(--tinte);
+  font: var(--t-cuerpo-destacado);
+}
+
+.anotar-hecho {
+  margin-top: var(--space-3);
+}
