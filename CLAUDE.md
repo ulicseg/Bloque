@@ -143,6 +143,8 @@ Puntos que no se negocian (entre paréntesis, la sección de la skill):
 
 - **Anotar días pasados (2026-10-12):** en Hoy el selector Hoy/Mañana pasa a un selector de fecha (flechas, calendario y "Volver a hoy"). Los días pasados se marcan igual que hoy y los futuros solo se miran. "Anotar lo que hice" (`EditarBloque` con `anotando`) agrega un bloque ya hecho a cualquier día pasado o de hoy, y pisa lo que ese día solo estaba planificado o salteado a esa hora. Sin cambio de esquema. Sin verificar en pantalla.
 
+- **Turnos de cualquier semana (2026-10-12):** Semana ya no se limita a Esta/Próxima: flechas, calendario y "Volver a esta semana" para cargar o editar turnos de semanas pasadas o futuras (por ejemplo los primeros días del mes). Las horas del mes los incluyen sin cambios. Sin verificar en pantalla.
+
 ## Pendientes conocidos
 
 - Probar en un iPhone real: zonas seguras, teclado con los campos de hora, mantener apretado en los contadores y la instalación.

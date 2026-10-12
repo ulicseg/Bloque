@@ -2,14 +2,14 @@ import { useMemo, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Pantalla } from '../components/Pantalla'
 import { Presionable } from '../components/Presionable'
-import { Segmentado } from '../components/Segmentado'
+import { IconoAdelante, IconoAtras } from '../components/Iconos'
 import { BloquesSemana } from '../components/BloquesSemana'
 import { ListaSugerencia } from '../components/ListaSugerencia'
 import { PlanDelDia } from '../components/PlanDelDia'
 import { aceptarSugerencia, bloquesQueCuentan } from '../logic/bloques'
 import type { Bloque } from '../logic/types'
 import { conSemana, descripcionFin, etiquetaTurno, semanaVacia, textoTotal, turnoDelDia, vecinasDe } from '../logic/turnos'
-import { diaDeLaSemana, fechaEnArgentina, formatearDuracion, lunesActual, mesDe, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
+import { diaDeLaSemana, fechaEnArgentina, formatearDuracion, lunesActual, lunesDe, mesDe, nombreDia, numeroDelDia, rangoSemana, sumarDias } from '../logic/tiempo'
 import { suggest } from '../logic/suggest'
 import { computeWindows } from '../logic/windows'
 import { useDatos } from '../useDatos'
@@ -18,11 +18,10 @@ import { EditarBloque } from './EditarBloque'
 import { HorasMes } from './HorasMes'
 import { horasDelMes, textoDiferencia } from '../logic/horasMes'
 
-type Cual = 'esta' | 'proxima'
-
 export function Semana() {
   const { datos, cambiar, fallo } = useDatos()
-  const [cual, setCual] = useState<Cual>('esta')
+  // Cualquier semana, pasada o futura: así se cargan los turnos de días que faltaron o que vienen más adelante
+  const [elegida, setElegida] = useState<string | null>(null)
   const [cargando, setCargando] = useState(false)
   const [verHoras, setVerHoras] = useState(false)
   // undefined = cerrado; null = bloque nuevo; un bloque = editarlo
@@ -35,7 +34,7 @@ export function Semana() {
 
   // La semana actual se calcula una vez por visita a la pantalla, en hora de Argentina
   const [actual] = useState(() => lunesActual(Date.now()))
-  const lunes = cual === 'esta' ? actual : sumarDias(actual, 7)
+  const lunes = elegida ?? actual
   const semana = datos.semanas[lunes] ?? semanaVacia(lunes)
   const vecinas = vecinasDe(datos, lunes)
   const dias = useMemo(
@@ -54,15 +53,30 @@ export function Semana() {
   return (
     <>
       <Pantalla titulo="Semana">
-        <Segmentado
-          etiqueta="Semana"
-          valor={cual}
-          alElegir={setCual}
-          opciones={[
-            { valor: 'esta', titulo: 'Esta semana', detalle: rangoSemana(actual) },
-            { valor: 'proxima', titulo: 'Próxima', detalle: rangoSemana(sumarDias(actual, 7)) },
-          ]}
-        />
+        <div className="selector-fecha selector-semana">
+          <Presionable className="selector-fecha-flecha" aria-label="Semana anterior" onClick={() => setElegida(sumarDias(lunes, -7))}>
+            <IconoAtras />
+          </Presionable>
+          {/* El campo de fecha va transparente encima del texto: tocar la semana abre el calendario del sistema */}
+          <label className="selector-semana-centro">
+            <strong>{lunes === actual ? 'Esta semana' : rangoSemana(lunes)}</strong>
+            {lunes === actual && <span>{rangoSemana(lunes)}</span>}
+            <input
+              type="date"
+              aria-label="Ir a la semana de un día"
+              value={lunes}
+              onChange={(e) => e.target.value && setElegida(lunesDe(e.target.value))}
+            />
+          </label>
+          <Presionable className="selector-fecha-flecha" aria-label="Semana siguiente" onClick={() => setElegida(sumarDias(lunes, 7))}>
+            <IconoAdelante />
+          </Presionable>
+        </div>
+        {lunes !== actual && (
+          <Presionable className="selector-fecha-hoy" onClick={() => setElegida(null)}>
+            Volver a esta semana
+          </Presionable>
+        )}
 
         {fallo && (
           <p className="aviso aviso-error" role="alert">
@@ -111,7 +125,7 @@ export function Semana() {
           actividades={datos.actividades}
           dias={dias}
           ventanaMinimaMin={datos.ajustes.ventanaMinimaMin}
-          hoy={cual === 'esta' ? diaDeLaSemana(fechaEnArgentina(Date.now())) : null}
+          hoy={lunes === actual ? diaDeLaSemana(fechaEnArgentina(Date.now())) : null}
           alAgregar={(dia, desde, hasta) => {
             setDesdeHueco({ dia, desde, hasta })
             setEditando(null)

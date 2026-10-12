@@ -365,3 +365,27 @@
 .anotar-hecho {
   margin-top: var(--space-3);
 }
+
+.selector-semana-centro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  border-radius: var(--radio-m);
+  background: var(--relleno);
+  font: var(--t-cuerpo-destacado);
+}
+
+.selector-semana-centro span {
+  font: var(--t-nota);
+  color: var(--texto-2);
+}
+
+.selector-semana-centro input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+}
